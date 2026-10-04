@@ -200,12 +200,13 @@ export default function HomeScreen({ navigation }) {
         style={[styles.card, { backgroundColor: colors.surface }]}
       >
         <View style={styles.cardRow}>
-          <View style={[styles.iconBox, { backgroundColor: colors.accentSoft }]}>
-            <Ionicons
-              name={item.type === "mc" ? "list" : "git-compare-outline"}
-              size={22}
-              color={colors.primary}
-            />
+          <View
+            style={[styles.iconBox, { backgroundColor: colors.tonal }]}
+            accessibilityLabel={typeLabel(item)}
+          >
+            <Text style={[styles.typeMark, { color: colors.primary }]}>
+              {item.type === "mc" ? "A–E" : "V/F"}
+            </Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text
@@ -483,6 +484,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  typeMark: { fontSize: 13, fontWeight: "800", letterSpacing: 0.3 },
   cardFooter: {
     flexDirection: "row",
     alignItems: "center",

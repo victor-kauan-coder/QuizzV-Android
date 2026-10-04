@@ -151,7 +151,7 @@ export default function GeneratorScreen({ navigation }) {
           onPress={() => navigation.navigate("Configurações")}
           accessibilityRole="button"
           accessibilityHint="Abre as configurações para trocar o motor de IA"
-          style={[styles.engine, { backgroundColor: colors.accentSoft }]}
+          style={[styles.engine, { backgroundColor: colors.tonal }]}
         >
           <Ionicons name="hardware-chip-outline" size={16} color={colors.primary} />
           <Text style={[type.caption, { color: colors.primary }]}>

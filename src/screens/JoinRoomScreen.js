@@ -49,7 +49,7 @@ export default function JoinRoomScreen({ navigation }) {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={[styles.hero, { backgroundColor: colors.accentSoft }]}>
+        <View style={[styles.hero, { backgroundColor: colors.tonal }]}>
           <Ionicons name="game-controller" size={40} color={colors.primary} />
         </View>
         <Text style={[type.display, styles.center, { color: colors.text }]}>
@@ -66,6 +66,7 @@ export default function JoinRoomScreen({ navigation }) {
             autoCapitalize="characters"
             autoCorrect={false}
             maxLength={6}
+            inputStyle={styles.codeInput}
             value={roomCode}
             onChangeText={(t) => setRoomCode(t.replace(/\s/g, ""))}
           />
@@ -104,4 +105,11 @@ const styles = StyleSheet.create({
   },
   center: { textAlign: "center" },
   form: { gap: 16, marginTop: 24 },
+  codeInput: {
+    fontSize: 24,
+    lineHeight: 30,
+    fontWeight: "800",
+    letterSpacing: 6,
+    textAlign: "center",
+  },
 });

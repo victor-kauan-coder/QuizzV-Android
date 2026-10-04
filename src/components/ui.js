@@ -45,7 +45,7 @@ export function Button({
   const tint = color ?? colors.primary;
   const v = {
     filled: { bg: colors.accent, fg: colors.onAccent },
-    tonal: { bg: colors.accentSoft, fg: colors.primary },
+    tonal: { bg: colors.tonal, fg: colors.primary },
     outlined: { bg: "transparent", fg: tint, border: colors.border },
     text: { bg: "transparent", fg: tint },
   }[variant];
@@ -165,7 +165,7 @@ export function Segmented({ options, value, onChange }) {
   );
 }
 
-export function Field({ label, hint, error, style, ...inputProps }) {
+export function Field({ label, hint, error, style, inputStyle, ...inputProps }) {
   const { colors } = useTheme();
   const [focused, setFocused] = useState(false);
   return (
@@ -191,6 +191,7 @@ export function Field({ label, hint, error, style, ...inputProps }) {
                 ? colors.primary
                 : colors.border,
           },
+          inputStyle,
         ]}
       />
       {(error || hint) && (

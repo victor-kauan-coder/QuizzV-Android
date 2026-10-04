@@ -3,6 +3,9 @@ import { useTheme } from "@react-navigation/native";
 import * as NavigationBar from "expo-navigation-bar";
 import { useEffect, useMemo, useState } from "react";
 import {
+  AccessibilityInfo,
+  Animated,
+  Easing,
   Image,
   Platform,
   Pressable,
@@ -21,6 +24,36 @@ const LETTERS = "ABCDE";
 const stripLetter = (opt) =>
   String(opt).replace(/^\s*\(?[A-Ea-e][).:-]\s*/, "");
 const answerLetter = (q) => String(q.answer).trim().charAt(0).toUpperCase();
+
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+// O momento da partida: a porcentagem sobe até o resultado (instantâneo se o
+// sistema pede menos movimento)
+function CountUp({ value, style }) {
+  const [shown, setShown] = useState(0);
+  useEffect(() => {
+    const anim = new Animated.Value(0);
+    const id = anim.addListener(({ value: v }) => setShown(Math.round(v)));
+    AccessibilityInfo.isReduceMotionEnabled().then((reduce) => {
+      if (reduce) return setShown(value);
+      Animated.timing(anim, {
+        toValue: value,
+        duration: 900,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: false,
+      }).start();
+    });
+    return () => {
+      anim.stopAnimation();
+      anim.removeListener(id);
+    };
+  }, [value]);
+  return (
+    <Text style={style} accessibilityLabel={`${value}%`}>
+      {shown}%
+    </Text>
+  );
+}
 
 const shuffled = (list) => {
   const a = [...list];
@@ -169,53 +202,78 @@ export default function QuizPlayerScreen({ route, navigation }) {
     const wrongCount = total - score;
     const verdict =
       pct >= 70 ? "Mandou bem!" : pct >= 40 ? "Bom trabalho" : "Continue praticando";
+    const exit = () => navigation.goBack();
 
     return (
       <ScrollView
         style={{ backgroundColor: colors.background }}
-        contentContainerStyle={[styles.result, { paddingBottom: 24 + insets.bottom }]}
+        contentContainerStyle={[styles.result, { paddingBottom: 16 + insets.bottom }]}
       >
-        <Ionicons
-          name={pct >= 70 ? "trophy" : pct >= 40 ? "ribbon" : "book"}
-          size={56}
-          color={colors.primary}
-        />
-        <Text style={[type.headline, { color: colors.text, marginTop: 16 }]}>
-          {verdict}
-        </Text>
-        <Text style={[styles.bigScore, { color: colors.text }]}>{pct}%</Text>
-        <Text style={[type.body, { color: colors.textMuted }]}>
-          {score} de {total} {total === 1 ? "questão correta" : "questões corretas"}
-          {isRetry ? " na revisão" : ""}
-        </Text>
+        <View style={styles.resultHero}>
+          <Ionicons
+            name={pct >= 70 ? "trophy" : pct >= 40 ? "ribbon" : "book"}
+            size={56}
+            color={colors.primary}
+          />
+          <Text
+            style={[type.caption, styles.center, { color: colors.textMuted, marginTop: 16 }]}
+            numberOfLines={2}
+          >
+            {quiz.title}
+            {isRetry ? " · revisão dos erros" : ""}
+          </Text>
+          <Text style={[type.headline, { color: colors.text, marginTop: 4 }]}>
+            {verdict}
+          </Text>
+          <CountUp value={pct} style={[styles.bigScore, { color: colors.text }]} />
+          <Text style={[type.body, { color: colors.textMuted }]}>
+            {score} de {plural(total, "questão correta", "questões corretas")}
+          </Text>
 
-        <View style={styles.statRow}>
-          <View style={[styles.stat, { backgroundColor: colors.successSoft }]}>
-            <Ionicons name="checkmark-circle" size={20} color={colors.success} />
-            <Text style={[type.label, { color: colors.text }]}>{score} acertos</Text>
-          </View>
-          <View style={[styles.stat, { backgroundColor: colors.errorSoft }]}>
-            <Ionicons name="close-circle" size={20} color={colors.error} />
-            <Text style={[type.label, { color: colors.text }]}>{wrongCount} erros</Text>
+          <View style={styles.statRow}>
+            <View style={[styles.stat, { backgroundColor: colors.successSoft }]}>
+              <Ionicons name="checkmark-circle" size={20} color={colors.success} />
+              <Text style={[type.label, { color: colors.text }]}>
+                {plural(score, "acerto", "acertos")}
+              </Text>
+            </View>
+            <View style={[styles.stat, { backgroundColor: colors.errorSoft }]}>
+              <Ionicons name="close-circle" size={20} color={colors.error} />
+              <Text style={[type.label, { color: colors.text }]}>
+                {plural(wrongCount, "erro", "erros")}
+              </Text>
+            </View>
           </View>
         </View>
 
+        {/* Com erros, o próximo passo de quem estuda é revisá-los */}
         <View style={styles.resultActions}>
-          {wrongCount > 0 && (
-            <Button
-              variant="tonal"
-              icon="refresh"
-              title={`Refazer ${wrongCount === 1 ? "a errada" : `as ${wrongCount} erradas`}`}
-              onPress={redoIncorrect}
-            />
+          {wrongCount > 0 ? (
+            <>
+              <Button
+                icon="refresh"
+                title={`Refazer ${wrongCount === 1 ? "a errada" : `as ${wrongCount} erradas`}`}
+                onPress={redoIncorrect}
+              />
+              <Button
+                variant="outlined"
+                icon={shuffle ? "shuffle" : "play"}
+                title="Jogar de novo"
+                onPress={playAgain}
+              />
+              <Button variant="text" title="Voltar à biblioteca" onPress={exit} />
+            </>
+          ) : (
+            <>
+              <Button title="Voltar à biblioteca" onPress={exit} />
+              <Button
+                variant="outlined"
+                icon={shuffle ? "shuffle" : "play"}
+                title="Jogar de novo"
+                onPress={playAgain}
+              />
+            </>
           )}
-          <Button
-            variant="outlined"
-            icon={shuffle ? "shuffle" : "play"}
-            title="Jogar de novo"
-            onPress={playAgain}
-          />
-          <Button title="Voltar à biblioteca" onPress={() => navigation.goBack()} />
         </View>
       </ScrollView>
     );
@@ -445,7 +503,9 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
   },
-  result: { alignItems: "center", padding: 24, paddingTop: 40 },
+  result: { flexGrow: 1, padding: 24 },
+  resultHero: { flex: 1, alignItems: "center", justifyContent: "center" },
+  center: { textAlign: "center" },
   bigScore: {
     fontSize: 64,
     lineHeight: 72,
@@ -463,5 +523,5 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: radius.md,
   },
-  resultActions: { alignSelf: "stretch", gap: 10, marginTop: 32 },
+  resultActions: { gap: 10, marginTop: 32 },
 });

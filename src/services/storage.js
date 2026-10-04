@@ -35,7 +35,12 @@ export const saveSettings = async (newSettings) => {
 let cache = null;
 let queue = Promise.resolve();
 
+// No navegador (preview de design com Playwright/Figma) não há sistema de
+// arquivos: a biblioteca fica no AsyncStorage, que lá é o localStorage.
+const WEB = !FileSystem.documentDirectory;
+
 const persist = async (list) => {
+  if (WEB) return AsyncStorage.setItem(LEGACY_QUIZZES_KEY, JSON.stringify(list));
   const tmp = LIBRARY_FILE + ".tmp";
   await FileSystem.writeAsStringAsync(tmp, JSON.stringify(list));
   await FileSystem.deleteAsync(LIBRARY_FILE, { idempotent: true });
@@ -44,6 +49,10 @@ const persist = async (list) => {
 
 const readLibrary = async () => {
   if (cache) return cache;
+  if (WEB) {
+    cache = JSON.parse((await AsyncStorage.getItem(LEGACY_QUIZZES_KEY)) || "[]");
+    return cache;
+  }
   // uma gravação interrompida deixa só o .tmp: recupera ele
   const tmp = LIBRARY_FILE + ".tmp";
   if (

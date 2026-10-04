@@ -81,6 +81,9 @@ export const buildColors = (dark, accent) => {
     onAccent: contrast("#FFFFFF", fill) >= 4.5 ? "#FFFFFF" : INK,
     primary: readable(accent, 4.5, base.background, base.surface), // texto e ícones
     accentSoft: fill + (dark ? "2B" : "1A"),
+    // botões e ícones secundários: no escuro o accent translúcido sobre o
+    // marinho fica marrom, então usamos a superfície neutra
+    tonal: dark ? base.surfaceAlt : fill + "1A",
     // chaves esperadas pelo React Navigation
     card: base.surface,
     notification: fill,
