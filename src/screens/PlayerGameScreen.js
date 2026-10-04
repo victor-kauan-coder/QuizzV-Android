@@ -3,14 +3,13 @@ import { useTheme } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 
-import { ProgressBar } from "../components/ui";
+import { Choice, haptic, ProgressBar } from "../components/ui";
 import { supabase } from "../services/supabase";
 import { radius, type } from "../theme";
 
@@ -99,6 +98,7 @@ export default function PlayerGameScreen({ route, navigation }) {
   const handleAnswer = async (choice) => {
     if (hasAnswered || timeLeft === 0) return;
     setSelected(choice);
+    haptic(isCorrect(choice) ? "success" : "error");
     if (!isCorrect(choice)) return;
 
     // resposta rápida vale mais: de 500 a 1000 pontos
@@ -121,17 +121,10 @@ export default function PlayerGameScreen({ route, navigation }) {
     }
   };
 
-  const optionColors = (choice) => {
-    if (!hasAnswered) {
-      return { bg: colors.surface, border: colors.border, fg: colors.text };
-    }
-    if (isCorrect(choice)) {
-      return { bg: colors.successSoft, border: colors.success, fg: colors.text };
-    }
-    if (choice === selected) {
-      return { bg: colors.errorSoft, border: colors.error, fg: colors.text };
-    }
-    return { bg: colors.surface, border: colors.border, fg: colors.textMuted };
+  const optionState = (choice) => {
+    if (!hasAnswered) return "idle";
+    if (isCorrect(choice)) return "correct";
+    return choice === selected ? "wrong" : "dim";
   };
 
   if (!question) {
@@ -160,7 +153,7 @@ export default function PlayerGameScreen({ route, navigation }) {
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={styles.top}>
         <View style={{ flex: 1 }}>
-          <ProgressBar value={timeLeft / QUESTION_TIME} />
+          <ProgressBar value={timeLeft / QUESTION_TIME} duration={1000} />
         </View>
         <Text style={[type.label, styles.time, { color: timeLeft <= 5 ? colors.error : colors.text }]}>
           {timeLeft}s
@@ -201,29 +194,28 @@ export default function PlayerGameScreen({ route, navigation }) {
         )}
 
         <View style={styles.options}>
-          {options.map((o) => {
-            const c = optionColors(o.value);
-            return (
-              <Pressable
-                key={String(o.value)}
-                disabled={hasAnswered || timeUp}
-                onPress={() => handleAnswer(o.value)}
-                accessibilityRole="button"
-                accessibilityState={{ selected: selected === o.value }}
-                android_ripple={{ color: colors.border }}
-                style={[styles.option, { backgroundColor: c.bg, borderColor: c.border }]}
-              >
+          {options.map((o) => (
+            <Choice
+              key={String(o.value)}
+              state={optionState(o.value)}
+              selected={selected === o.value}
+              disabled={hasAnswered || timeUp}
+              onPress={() => handleAnswer(o.value)}
+              style={styles.option}
+              leading={(icon, fg) => (
                 <View style={[styles.letter, { backgroundColor: colors.surfaceAlt }]}>
-                  {o.letter ? (
-                    <Text style={[type.label, { color: c.fg }]}>{o.letter}</Text>
-                  ) : (
-                    <Ionicons name={o.icon} size={20} color={c.fg} />
-                  )}
+                  {icon ||
+                    (o.letter ? (
+                      <Text style={[type.label, { color: fg }]}>{o.letter}</Text>
+                    ) : (
+                      <Ionicons name={o.icon} size={20} color={fg} />
+                    ))}
                 </View>
-                <Text style={[type.title, { flex: 1, color: c.fg }]}>{o.label}</Text>
-              </Pressable>
-            );
-          })}
+              )}
+            >
+              {(fg) => <Text style={[type.title, { flex: 1, color: fg }]}>{o.label}</Text>}
+            </Choice>
+          ))}
         </View>
       </ScrollView>
     </View>
@@ -249,16 +241,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   options: { gap: 12 },
-  option: {
-    minHeight: 64,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 14,
-    padding: 14,
-    borderRadius: radius.md,
-    borderWidth: 1.5,
-    overflow: "hidden",
-  },
+  option: { minHeight: 64, gap: 14, padding: 14 },
   letter: {
     width: 36,
     height: 36,

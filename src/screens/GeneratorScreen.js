@@ -132,7 +132,9 @@ export default function GeneratorScreen({ navigation }) {
         engine: aiModel,
         type: quizMode,
       });
-      showSnackbar(`“${tema.trim()}” criado com ${questions.length} questões`);
+      showSnackbar(
+        `“${tema.trim()}” criado com ${questions.length} ${questions.length === 1 ? "questão" : "questões"}`,
+      );
       navigation.navigate("Meus Quizzes");
     } catch (e) {
       Alert.alert("Não foi possível gerar o quiz", e.message);

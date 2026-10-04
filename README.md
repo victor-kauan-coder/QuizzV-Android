@@ -18,6 +18,7 @@
 - **Backup e restauração** de toda a biblioteca num único arquivo `.qv`.
 - **Exportação em PDF**: caderno de questões em duas colunas com gabarito comentado.
 - **Busca na biblioteca**, tema claro/escuro e seis cores de destaque (com contraste acessível).
+- **Animações fluidas**: confete com física (gravidade, resistência do ar e papel girando) ao mandar bem e no pódio final, alternativas que "pulam" quando certas e tremem quando erradas, vibração nas respostas, transição entre questões e botão "Criar com IA" que recolhe ao rolar. Tudo respeita a opção "reduzir movimento" do sistema.
 - **Atualização automática** do APK pelo próprio app.
 
 ## O formato `.qv`

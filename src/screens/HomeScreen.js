@@ -2,9 +2,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect, useTheme } from "@react-navigation/native";
 import * as DocumentPicker from "expo-document-picker";
 import * as Linking from "expo-linking";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Alert,
+  Animated,
+  Easing,
   FlatList,
   Modal,
   Pressable,
@@ -35,10 +37,11 @@ const ENGINE_LABEL = {
   importado: "Importado",
 };
 
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 const typeLabel = (q) => (q.type === "mc" ? "Múltipla escolha" : "V ou F");
 const metaLine = (q) =>
   [
-    `${q.questions?.length || 0} questões`,
+    plural(q.questions?.length || 0, "questão", "questões"),
     typeLabel(q),
     ENGINE_LABEL[q.engine] || (q.engine ? q.engine : null),
   ]
@@ -59,6 +62,24 @@ export default function HomeScreen({ navigation }) {
   const [selected, setSelected] = useState(null);
   const [isUpdating, setIsUpdating] = useState(false);
   const [progress, setProgress] = useState(0);
+
+  // O FAB recolhe para só o ícone ao rolar para baixo e volta ao subir
+  const fabLabel = useRef(new Animated.Value(1)).current;
+  const lastY = useRef(0);
+  const fabOpen = useRef(true);
+  const onScroll = (e) => {
+    const y = e.nativeEvent.contentOffset.y;
+    const open = y < 40 || y < lastY.current;
+    lastY.current = y;
+    if (open === fabOpen.current) return;
+    fabOpen.current = open;
+    Animated.timing(fabLabel, {
+      toValue: open ? 1 : 0,
+      duration: 200,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false, // anima largura
+    }).start();
+  };
 
   const loadQuizzes = async () => {
     setQuizzes(await getQuizzes());
@@ -340,6 +361,8 @@ export default function HomeScreen({ navigation }) {
         ListHeaderComponent={header}
         ListEmptyComponent={empty}
         keyboardShouldPersistTaps="handled"
+        onScroll={onScroll}
+        scrollEventThrottle={16}
         contentContainerStyle={[styles.list, { paddingBottom: 112 + insets.bottom }]}
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
       />
@@ -347,6 +370,7 @@ export default function HomeScreen({ navigation }) {
       <Pressable
         onPress={() => navigation.navigate("Gerador")}
         accessibilityRole="button"
+        accessibilityLabel="Criar com IA"
         android_ripple={{ color: colors.onAccent + "33" }}
         style={[
           styles.fab,
@@ -354,7 +378,18 @@ export default function HomeScreen({ navigation }) {
         ]}
       >
         <Ionicons name="sparkles" size={22} color={colors.onAccent} />
-        <Text style={[type.label, { color: colors.onAccent }]}>Criar com IA</Text>
+        <Animated.View
+          style={{
+            overflow: "hidden",
+            opacity: fabLabel,
+            maxWidth: fabLabel.interpolate({ inputRange: [0, 1], outputRange: [0, 160] }),
+            marginLeft: fabLabel.interpolate({ inputRange: [0, 1], outputRange: [0, 10] }),
+          }}
+        >
+          <Text style={[type.label, { color: colors.onAccent }]} numberOfLines={1}>
+            Criar com IA
+          </Text>
+        </Animated.View>
       </Pressable>
 
       <Sheet visible={!!selected} onClose={close}>
@@ -499,11 +534,12 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 16,
     minHeight: 56,
-    paddingHorizontal: 20,
+    minWidth: 56,
+    paddingHorizontal: 17,
     borderRadius: radius.lg,
     flexDirection: "row",
     alignItems: "center",
-    gap: 10,
+    justifyContent: "center",
     elevation: 6,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },

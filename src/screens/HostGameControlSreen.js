@@ -86,7 +86,7 @@ export default function HostGameControlScreen({ route, navigation }) {
         </View>
       </View>
       <View style={{ paddingHorizontal: 16 }}>
-        <ProgressBar value={timeLeft / QUESTION_TIME} />
+        <ProgressBar value={timeLeft / QUESTION_TIME} duration={1000} />
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>

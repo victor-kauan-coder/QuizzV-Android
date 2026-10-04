@@ -1,11 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import { Image } from "expo-image";
+import * as Haptics from "expo-haptics";
 import { useEffect, useRef, useState } from "react";
 import {
+  AccessibilityInfo,
   ActivityIndicator,
   Animated,
+  Easing,
   Modal,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -14,6 +18,46 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { radius, type } from "../theme";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+/** true quando o usuário pediu menos movimento nas configurações do sistema. */
+export function useReduceMotion() {
+  const [reduce, setReduce] = useState(false);
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduce);
+    const sub = AccessibilityInfo.addEventListener("reduceMotionChanged", setReduce);
+    return () => sub?.remove();
+  }, []);
+  return reduce;
+}
+
+/** Vibração curta: "success", "error" ou "tap". Silenciosa no navegador. */
+export const haptic = (kind) => {
+  if (Platform.OS === "web") return;
+  const run =
+    kind === "tap"
+      ? Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
+      : Haptics.notificationAsync(
+          kind === "error"
+            ? Haptics.NotificationFeedbackType.Error
+            : Haptics.NotificationFeedbackType.Success,
+        );
+  run.catch(() => {});
+};
+
+// Botões "afundam" um pouco no toque e voltam com mola
+const usePressScale = (to = 0.97) => {
+  const scale = useRef(new Animated.Value(1)).current;
+  const spring = (v) =>
+    Animated.spring(scale, {
+      toValue: v,
+      speed: 40,
+      bounciness: v === 1 ? 6 : 0,
+      useNativeDriver: true,
+    }).start();
+  return { scale, onPressIn: () => spring(to), onPressOut: () => spring(1) };
+};
 
 const LOGO = require("../../assets/images/logo.svg");
 const LOGO_DARK = require("../../assets/images/logo-dark.svg");
@@ -50,10 +94,13 @@ export function Button({
     text: { bg: "transparent", fg: tint },
   }[variant];
   const off = disabled || loading;
+  const { scale, onPressIn, onPressOut } = usePressScale();
 
   return (
-    <Pressable
+    <AnimatedPressable
       onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
       disabled={off}
       accessibilityRole="button"
       accessibilityState={{ disabled: !!off, busy: !!loading }}
@@ -64,6 +111,7 @@ export function Button({
           backgroundColor: v.bg,
           borderColor: v.border ?? "transparent",
           opacity: disabled ? 0.45 : 1,
+          transform: [{ scale }],
         },
         style,
       ]}
@@ -78,7 +126,7 @@ export function Button({
           </Text>
         </>
       )}
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
@@ -96,9 +144,21 @@ export function IconButton({ icon, onPress, color, label, size = 24 }) {
   );
 }
 
-export function ProgressBar({ value, height = 6 }) {
+/** Barra que desliza até o novo valor (`duration` em ms; 0 = instantânea). */
+export function ProgressBar({ value, height = 6, duration = 350 }) {
   const { colors } = useTheme();
   const pct = Math.round(Math.min(1, Math.max(0, value)) * 100);
+  const width = useRef(new Animated.Value(pct)).current;
+
+  useEffect(() => {
+    Animated.timing(width, {
+      toValue: pct,
+      duration,
+      easing: duration > 600 ? Easing.linear : Easing.out(Easing.cubic),
+      useNativeDriver: false, // largura não roda no driver nativo
+    }).start();
+  }, [pct, duration, width]);
+
   return (
     <View
       accessibilityRole="progressbar"
@@ -110,15 +170,85 @@ export function ProgressBar({ value, height = 6 }) {
         overflow: "hidden",
       }}
     >
-      <View
+      <Animated.View
         style={{
-          width: `${pct}%`,
+          width: width.interpolate({
+            inputRange: [0, 100],
+            outputRange: ["0%", "100%"],
+          }),
           height: "100%",
           borderRadius: height,
           backgroundColor: colors.accent,
         }}
       />
     </View>
+  );
+}
+
+/**
+ * Alternativa de resposta. `state`: idle | correct | wrong | dim.
+ * A certa dá um "pulo" e a errada escolhida treme. `children(fg)` recebe a cor do texto.
+ */
+export function Choice({ state = "idle", selected, onPress, disabled, leading, children, style }) {
+  const { colors } = useTheme();
+  const reduce = useReduceMotion();
+  const { scale, onPressIn, onPressOut } = usePressScale(0.98);
+  const shake = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (reduce) return;
+    if (state === "correct") {
+      Animated.sequence([
+        Animated.timing(scale, { toValue: 1.04, duration: 110, useNativeDriver: true }),
+        Animated.spring(scale, { toValue: 1, friction: 4, useNativeDriver: true }),
+      ]).start();
+    } else if (state === "wrong") {
+      Animated.sequence(
+        [1, -1, 0.7, -0.7, 0.3, 0].map((toValue) =>
+          Animated.timing(shake, { toValue, duration: 55, useNativeDriver: true }),
+        ),
+      ).start();
+    }
+  }, [state, reduce, scale, shake]);
+
+  const c = {
+    idle: { bg: colors.surface, border: colors.border, fg: colors.text },
+    correct: { bg: colors.successSoft, border: colors.success, fg: colors.text },
+    wrong: { bg: colors.errorSoft, border: colors.error, fg: colors.text },
+    dim: { bg: colors.surface, border: colors.border, fg: colors.textMuted },
+  }[state];
+  const icon =
+    state === "correct" ? (
+      <Ionicons name="checkmark-circle" size={22} color={colors.success} />
+    ) : state === "wrong" ? (
+      <Ionicons name="close-circle" size={22} color={colors.error} />
+    ) : null;
+
+  return (
+    <AnimatedPressable
+      onPress={onPress}
+      onPressIn={onPressIn}
+      onPressOut={onPressOut}
+      disabled={disabled}
+      accessibilityRole="button"
+      accessibilityState={{ disabled: !!disabled, selected: !!selected }}
+      android_ripple={{ color: colors.border }}
+      style={[
+        styles.choice,
+        {
+          backgroundColor: c.bg,
+          borderColor: c.border,
+          transform: [
+            { scale },
+            { translateX: shake.interpolate({ inputRange: [-1, 1], outputRange: [-8, 8] }) },
+          ],
+        },
+        style,
+      ]}
+    >
+      {leading?.(icon, c.fg)}
+      {children(c.fg)}
+    </AnimatedPressable>
   );
 }
 
@@ -361,6 +491,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
+    overflow: "hidden",
+  },
+  choice: {
+    minHeight: 56,
+    borderRadius: radius.md,
+    borderWidth: 1.5,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 12,
     overflow: "hidden",
   },
   iconButton: {

@@ -1,14 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import * as NavigationBar from "expo-navigation-bar";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AccessibilityInfo,
   Animated,
   Easing,
   Image,
   Platform,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -16,7 +15,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Button, ProgressBar } from "../components/ui";
+import Confetti from "../components/Confetti";
+import { Button, Choice, haptic, ProgressBar, useReduceMotion } from "../components/ui";
 import { recordAttempt, updateQuizProgress } from "../services/storage";
 import { radius, type } from "../theme";
 
@@ -55,6 +55,37 @@ function CountUp({ value, style }) {
   );
 }
 
+// Entra suavemente (opacidade + leve subida) ao montar
+function Reveal({ children, style }) {
+  const v = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(v, {
+      toValue: 1,
+      duration: 220,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [v]);
+  return (
+    <Animated.View
+      style={[
+        style,
+        {
+          opacity: v,
+          transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }) }],
+        },
+      ]}
+    >
+      {children}
+    </Animated.View>
+  );
+}
+
+const VF_OPTIONS = [
+  { label: "Verdadeiro", value: true, icon: "checkmark" },
+  { label: "Falso", value: false, icon: "close" },
+];
+
 const shuffled = (list) => {
   const a = [...list];
   for (let i = a.length - 1; i > 0; i--) {
@@ -79,6 +110,14 @@ export default function QuizPlayerScreen({ route, navigation }) {
   const [score, setScore] = useState(resume ? quiz.score || 0 : 0);
   const [isFinished, setIsFinished] = useState(false);
   const [isRetry, setIsRetry] = useState(false);
+  const [result, setResult] = useState(null); // { pct, isRecord, celebrate, id }
+  const best = useRef(quiz.bestPct ?? null); // recorde antes desta sessão
+  const reduce = useReduceMotion();
+
+  // Troca de questão desliza no sentido da navegação (1 = vindo da direita)
+  const slide = useRef(new Animated.Value(0)).current;
+  const lastIdx = useRef(idx);
+  const iconPop = useRef(new Animated.Value(1)).current;
 
   // Progresso salvo só vale para a ordem original e para a rodada completa
   const persist = !shuffle && !isRetry;
@@ -90,6 +129,19 @@ export default function QuizPlayerScreen({ route, navigation }) {
   useEffect(() => {
     if (persist && !isFinished) updateQuizProgress(quiz.id, idx, answers, score);
   }, [idx]);
+
+  useEffect(() => {
+    const dir = idx >= lastIdx.current ? 1 : -1;
+    lastIdx.current = idx;
+    if (reduce) return;
+    slide.setValue(dir);
+    Animated.timing(slide, {
+      toValue: 0,
+      duration: 260,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [idx, questions]);
 
   // Modo imersivo: esconde a barra de navegação do Android durante o quiz
   useEffect(() => {
@@ -144,10 +196,21 @@ export default function QuizPlayerScreen({ route, navigation }) {
     const newAnswers = { ...answers, [idx]: { userVal: choice, correct } };
     setScore(newScore);
     setAnswers(newAnswers);
+    haptic(correct ? "success" : "error");
     if (persist) updateQuizProgress(quiz.id, idx, newAnswers, newScore);
   };
 
   const finish = () => {
+    const pct = Math.round((score / Math.max(questions.length, 1)) * 100);
+    const isRecord = !isRetry && best.current !== null && pct > best.current;
+    const celebrate = pct >= 70 || isRecord;
+    if (!isRetry) best.current = Math.max(best.current ?? 0, pct);
+    setResult({ pct, isRecord, celebrate, id: Date.now() });
+    if (celebrate) haptic("success");
+    if (!reduce) {
+      iconPop.setValue(0);
+      Animated.spring(iconPop, { toValue: 1, friction: 5, useNativeDriver: true }).start();
+    }
     setIsFinished(true);
     if (!isRetry) {
       // estatísticas da rodada completa; no modo embaralhado o progresso salvo fica
@@ -181,40 +244,46 @@ export default function QuizPlayerScreen({ route, navigation }) {
     return "dim";
   };
 
-  const optionColors = (state) =>
-    ({
-      idle: { bg: colors.surface, border: colors.border, fg: colors.text },
-      correct: { bg: colors.successSoft, border: colors.success, fg: colors.text },
-      wrong: { bg: colors.errorSoft, border: colors.error, fg: colors.text },
-      dim: { bg: colors.surface, border: colors.border, fg: colors.textMuted },
-    })[state];
-
-  const stateIcon = (state) =>
-    state === "correct" ? (
-      <Ionicons name="checkmark-circle" size={22} color={colors.success} />
-    ) : state === "wrong" ? (
-      <Ionicons name="close-circle" size={22} color={colors.error} />
-    ) : null;
-
   if (isFinished) {
     const total = questions.length;
     const pct = Math.round((score / Math.max(total, 1)) * 100);
     const wrongCount = total - score;
     const verdict =
-      pct >= 70 ? "Mandou bem!" : pct >= 40 ? "Bom trabalho" : "Continue praticando";
+      pct === 100
+        ? "Perfeito!"
+        : pct >= 70
+          ? "Mandou bem!"
+          : pct >= 40
+            ? "Bom trabalho"
+            : "Continue praticando";
     const exit = () => navigation.goBack();
 
     return (
-      <ScrollView
-        style={{ backgroundColor: colors.background }}
-        contentContainerStyle={[styles.result, { paddingBottom: 16 + insets.bottom }]}
-      >
+      <View style={{ flex: 1, backgroundColor: colors.background }}>
+        <ScrollView
+          contentContainerStyle={[styles.result, { paddingBottom: 16 + insets.bottom }]}
+        >
         <View style={styles.resultHero}>
-          <Ionicons
-            name={pct >= 70 ? "trophy" : pct >= 40 ? "ribbon" : "book"}
-            size={56}
-            color={colors.primary}
-          />
+          <Animated.View
+            style={{
+              opacity: iconPop,
+              transform: [
+                { scale: iconPop.interpolate({ inputRange: [0, 1], outputRange: [0.4, 1] }) },
+                {
+                  rotate: iconPop.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ["-25deg", "0deg"],
+                  }),
+                },
+              ],
+            }}
+          >
+            <Ionicons
+              name={pct >= 70 ? "trophy" : pct >= 40 ? "ribbon" : "book"}
+              size={56}
+              color={colors.primary}
+            />
+          </Animated.View>
           <Text
             style={[type.caption, styles.center, { color: colors.textMuted, marginTop: 16 }]}
             numberOfLines={2}
@@ -244,6 +313,12 @@ export default function QuizPlayerScreen({ route, navigation }) {
               </Text>
             </View>
           </View>
+          {result?.isRecord && (
+            <View style={[styles.record, { backgroundColor: colors.accentSoft }]}>
+              <Ionicons name="sparkles" size={16} color={colors.primary} />
+              <Text style={[type.label, { color: colors.primary }]}>Novo recorde!</Text>
+            </View>
+          )}
         </View>
 
         {/* Com erros, o próximo passo de quem estuda é revisá-los */}
@@ -275,7 +350,11 @@ export default function QuizPlayerScreen({ route, navigation }) {
             </>
           )}
         </View>
-      </ScrollView>
+        </ScrollView>
+        {result?.celebrate && !reduce && (
+          <Confetti key={result.id} count={pct === 100 ? 140 : 90} />
+        )}
+      </View>
     );
   }
 
@@ -298,117 +377,112 @@ export default function QuizPlayerScreen({ route, navigation }) {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <View style={[styles.qCard, { backgroundColor: colors.surface }]}>
-          {question.imageUri && (
-            <Image
-              source={{
-                uri: question.imageUri,
-                headers: { "User-Agent": "QuizzV-App/1.0 (anam37234@gmail.com)" },
-              }}
-              style={styles.questionImage}
-              resizeMode="contain"
-              accessibilityLabel="Imagem da questão"
-            />
-          )}
-          {renderHighlightedText(question.question, [
-            styles.questionText,
-            { color: colors.text },
-          ])}
-        </View>
-
-        {isVF ? (
-          <View style={styles.vfRow}>
-            {[
-              { label: "Verdadeiro", value: true, icon: "checkmark" },
-              { label: "Falso", value: false, icon: "close" },
-            ].map((o) => {
-              const state = optionState(o.value);
-              const c = optionColors(state);
-              return (
-                <Pressable
-                  key={o.label}
-                  onPress={() => handleAnswer(o.value)}
-                  disabled={!!answer}
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled: !!answer, selected: answer?.userVal === o.value }}
-                  android_ripple={{ color: colors.border }}
-                  style={[
-                    styles.vfBtn,
-                    { backgroundColor: c.bg, borderColor: c.border },
-                  ]}
-                >
-                  {stateIcon(state) || (
-                    <Ionicons name={o.icon} size={22} color={c.fg} />
-                  )}
-                  <Text style={[type.title, { color: c.fg }]}>{o.label}</Text>
-                </Pressable>
-              );
-            })}
-          </View>
-        ) : (
-          <View style={styles.mcList}>
-            {(question.options || []).map((opt, i) => {
-              const letter = LETTERS[i] || String(i + 1);
-              const state = optionState(letter);
-              const c = optionColors(state);
-              return (
-                <Pressable
-                  key={i}
-                  onPress={() => handleAnswer(letter)}
-                  disabled={!!answer}
-                  accessibilityRole="button"
-                  accessibilityState={{ disabled: !!answer, selected: answer?.userVal === letter }}
-                  android_ripple={{ color: colors.border }}
-                  style={[
-                    styles.mcBtn,
-                    { backgroundColor: c.bg, borderColor: c.border },
-                  ]}
-                >
-                  <View
-                    style={[
-                      styles.letter,
-                      { backgroundColor: state === "idle" ? colors.surfaceAlt : "transparent" },
-                    ]}
-                  >
-                    {stateIcon(state) || (
-                      <Text style={[type.label, { color: c.fg }]}>{letter}</Text>
-                    )}
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    {renderHighlightedText(stripLetter(opt), [type.body, { color: c.fg }])}
-                  </View>
-                </Pressable>
-              );
-            })}
-          </View>
-        )}
-
-        {answer && (
-          <View
-            accessibilityLiveRegion="polite"
-            style={[
-              styles.feedback,
-              { backgroundColor: answer.correct ? colors.successSoft : colors.errorSoft },
-            ]}
-          >
-            <View style={styles.feedbackTitle}>
-              <Ionicons
-                name={answer.correct ? "checkmark-circle" : "close-circle"}
-                size={20}
-                color={answer.correct ? colors.success : colors.error}
+        <Animated.View
+          style={{
+            gap: 16,
+            opacity: slide.interpolate({ inputRange: [-1, 0, 1], outputRange: [0, 1, 0] }),
+            transform: [
+              { translateX: slide.interpolate({ inputRange: [-1, 1], outputRange: [-36, 36] }) },
+            ],
+          }}
+        >
+          <View style={[styles.qCard, { backgroundColor: colors.surface }]}>
+            {question.imageUri && (
+              <Image
+                source={{
+                  uri: question.imageUri,
+                  headers: { "User-Agent": "QuizzV-App/1.0 (anam37234@gmail.com)" },
+                }}
+                style={styles.questionImage}
+                resizeMode="contain"
+                accessibilityLabel="Imagem da questão"
               />
-              <Text style={[type.title, { color: colors.text }]}>
-                {answer.correct
-                  ? "Correto!"
-                  : `Incorreto · resposta: ${isVF ? question.answer : answerLetter(question)}`}
-              </Text>
-            </View>
-            {renderHighlightedText(question.explanation, [
-              type.body,
-              { color: colors.text, marginTop: 6 },
+            )}
+            {renderHighlightedText(question.question, [
+              styles.questionText,
+              { color: colors.text },
             ])}
           </View>
-        )}
+
+          {isVF ? (
+            <View style={styles.vfRow}>
+              {VF_OPTIONS.map((o) => (
+                <Choice
+                  key={o.label}
+                  state={optionState(o.value)}
+                  selected={answer?.userVal === o.value}
+                  onPress={() => handleAnswer(o.value)}
+                  disabled={!!answer}
+                  style={styles.vfBtn}
+                  leading={(icon, fg) => icon || <Ionicons name={o.icon} size={22} color={fg} />}
+                >
+                  {(fg) => <Text style={[type.title, { color: fg }]}>{o.label}</Text>}
+                </Choice>
+              ))}
+            </View>
+          ) : (
+            <View style={styles.mcList}>
+              {(question.options || []).map((opt, i) => {
+                const letter = LETTERS[i] || String(i + 1);
+                const state = optionState(letter);
+                return (
+                  <Choice
+                    key={i}
+                    state={state}
+                    selected={answer?.userVal === letter}
+                    onPress={() => handleAnswer(letter)}
+                    disabled={!!answer}
+                    leading={(icon, fg) => (
+                      <View
+                        style={[
+                          styles.letter,
+                          { backgroundColor: state === "idle" ? colors.surfaceAlt : "transparent" },
+                        ]}
+                      >
+                        {icon || <Text style={[type.label, { color: fg }]}>{letter}</Text>}
+                      </View>
+                    )}
+                  >
+                    {(fg) => (
+                      <View style={{ flex: 1 }}>
+                        {renderHighlightedText(stripLetter(opt), [type.body, { color: fg }])}
+                      </View>
+                    )}
+                  </Choice>
+                );
+              })}
+            </View>
+          )}
+
+          {answer && (
+            <Reveal
+              key={idx}
+              style={[
+                styles.feedback,
+                { backgroundColor: answer.correct ? colors.successSoft : colors.errorSoft },
+              ]}
+            >
+              <View accessibilityLiveRegion="polite">
+                <View style={styles.feedbackTitle}>
+                  <Ionicons
+                    name={answer.correct ? "checkmark-circle" : "close-circle"}
+                    size={20}
+                    color={answer.correct ? colors.success : colors.error}
+                  />
+                  <Text style={[type.title, { color: colors.text }]}>
+                    {answer.correct
+                      ? "Correto!"
+                      : `Incorreto · resposta: ${isVF ? question.answer : answerLetter(question)}`}
+                  </Text>
+                </View>
+                {renderHighlightedText(question.explanation, [
+                  type.body,
+                  { color: colors.text, marginTop: 6 },
+                ])}
+              </View>
+            </Reveal>
+          )}
+        </Animated.View>
       </ScrollView>
 
       <View
@@ -463,29 +537,8 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   vfRow: { flexDirection: "row", gap: 12 },
-  vfBtn: {
-    flex: 1,
-    minHeight: 64,
-    borderRadius: radius.md,
-    borderWidth: 1.5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    overflow: "hidden",
-  },
+  vfBtn: { flex: 1, minHeight: 64, justifyContent: "center", gap: 8 },
   mcList: { gap: 10 },
-  mcBtn: {
-    minHeight: 56,
-    borderRadius: radius.md,
-    borderWidth: 1.5,
-    paddingVertical: 12,
-    paddingHorizontal: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-    overflow: "hidden",
-  },
   letter: {
     width: 32,
     height: 32,
@@ -524,4 +577,13 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   resultActions: { gap: 10, marginTop: 32 },
+  record: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 16,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 999,
+  },
 });

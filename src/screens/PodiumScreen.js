@@ -11,7 +11,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Button } from "../components/ui";
+import Confetti from "../components/Confetti";
+import { Button, haptic, useReduceMotion } from "../components/ui";
 import { cleanupRoom } from "../services/roomService";
 import { supabase } from "../services/supabase";
 import { radius, type } from "../theme";
@@ -75,6 +76,7 @@ export default function PodiumScreen({ route, navigation }) {
   const [advancing, setAdvancing] = useState(false);
 
   const enter = useRef(new Animated.Value(0)).current;
+  const reduce = useReduceMotion();
 
   const playerPosition = player
     ? allPlayers.findIndex((p) => p.name === player.name) + 1
@@ -123,6 +125,13 @@ export default function PodiumScreen({ route, navigation }) {
     if (data) setAllPlayers(data);
     setLoading(false);
   };
+
+  // Fim de jogo: festa para o anfitrião e para quem subiu ao pódio
+  const celebrate =
+    isFinal && !loading && (isHost || (playerPosition > 0 && playerPosition <= 3));
+  useEffect(() => {
+    if (celebrate) haptic("success");
+  }, [celebrate]);
 
   const handleNext = async () => {
     setAdvancing(true);
@@ -239,6 +248,7 @@ export default function PodiumScreen({ route, navigation }) {
           </View>
         )}
       </View>
+      {celebrate && !reduce && <Confetti count={playerPosition === 1 ? 140 : 100} />}
     </View>
   );
 }

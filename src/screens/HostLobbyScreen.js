@@ -116,7 +116,8 @@ export default function HostLobbyScreen({ route, navigation }) {
             style={[type.body, { color: colors.textMuted, textAlign: "center" }]}
             numberOfLines={2}
           >
-            {quiz.title || "Sem título"} · {quiz.questions?.length} questões
+            {quiz.title || "Sem título"} · {quiz.questions?.length}{" "}
+            {quiz.questions?.length === 1 ? "questão" : "questões"}
           </Text>
           <Button
             variant="tonal"

@@ -69,7 +69,7 @@ function RootStack() {
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
           headerTitleStyle: type.title,
-          cardStyle: { backgroundColor: colors.background },
+          cardStyle: { flex: 1, backgroundColor: colors.background }, // flex: rolagem no web
         }}
       >
         <Stack.Screen
