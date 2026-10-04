@@ -1,0 +1,34 @@
+{
+    "title": "Portugues",
+    "questions": [
+        {
+            "question": "A crase é sempre utilizada antes de substantivos masculinos.",
+            "answer": "Falso",
+            "explanation": "A crase é a fusão de 'a' preposição com 'a' artigo ou pronome, usada antes de substantivos femininos, exceto em casos específicos."
+        },
+        {
+            "question": "A palavra 'exceção' é escrita com 'ç'.",
+            "answer": "Verdadeiro",
+            "explanation": "A grafia correta da palavra é 'exceção', com 'ç', indicando uma particularidade ou algo que foge à regra."
+        },
+        {
+            "question": "Em 'Eu gosto de chocolate', 'de chocolate' é um objeto direto.",
+            "answer": "Falso",
+            "explanation": "'De chocolate' é um objeto indireto, pois o verbo 'gostar' exige a preposição 'de' para completar seu sentido."
+        },
+        {
+            "question": "O prefixo 're-' em 'refazer' indica repetição.",
+            "answer": "Verdadeiro",
+            "explanation": "O prefixo 're-' geralmente indica repetição da ação, como em 'refazer' (fazer novamente) ou 'reler' (ler de novo)."
+        },
+        {
+            "question": "O uso de 'onde' é sempre correto para se referir a tempo.",
+            "answer": "Falso",
+            "explanation": "'Onde' refere-se a lugar. Para tempo, deve-se usar 'quando' ou outras expressões temporais adequadas."
+        }
+    ],
+    "type": "vf",
+    "engine": "gemini",
+    "exported": true,
+    "exportDate": "2026-03-31T18:18:10.256Z"
+}

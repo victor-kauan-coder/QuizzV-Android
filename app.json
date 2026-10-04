@@ -1,0 +1,107 @@
+{
+  "expo": {
+    "name": "QuizzV",
+    "slug": "QuizzV",
+    "version": "1.5.0",
+    "scheme": "quizzv",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "android": {
+      "package": "com.kauan.quizzv",
+      "permissions": [
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "REQUEST_INSTALL_PACKAGES"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "monochromeImage": "./assets/images/adaptive-monochrome.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ],
+          "data": [
+            {
+              "scheme": "content",
+              "mimeType": "application/vnd.quizzv"
+            },
+            {
+              "scheme": "file",
+              "mimeType": "application/vnd.quizzv"
+            }
+          ]
+        },
+        {
+          "action": "VIEW",
+          "category": [
+            "DEFAULT"
+          ],
+          "data": [
+            {
+              "scheme": "content",
+              "mimeType": "application/octet-stream"
+            }
+          ]
+        },
+        {
+          "action": "VIEW",
+          "category": [
+            "DEFAULT",
+            "BROWSABLE"
+          ],
+          "data": [
+            {
+              "scheme": "file",
+              "host": "*",
+              "mimeType": "*/*",
+              "pathPattern": ".*\\.qv"
+            },
+            {
+              "scheme": "file",
+              "host": "*",
+              "mimeType": "*/*",
+              "pathPattern": ".*\\..*\\.qv"
+            },
+            {
+              "scheme": "content",
+              "host": "*",
+              "mimeType": "*/*",
+              "pathPattern": ".*\\.qv"
+            },
+            {
+              "scheme": "content",
+              "host": "*",
+              "mimeType": "*/*",
+              "pathPattern": ".*\\..*\\.qv"
+            }
+          ]
+        }
+      ]
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#F8FAFC",
+          "dark": {
+            "image": "./assets/images/splash-icon-dark.png",
+            "backgroundColor": "#0F172A"
+          }
+        }
+      ],
+      "expo-asset"
+    ]
+  }
+}

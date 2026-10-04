@@ -1,0 +1,259 @@
+{
+  "title": "Direito Penal",
+  "questions": [
+    {
+      "question": "O Direito Penal pode ser compreendido epistemologicamente sob três acepções conjuntas: como Saber Penal (ciência), como Poder Punitivo (exercício de força) e como Lei Penal (ordenamento normativo).",
+      "answer": "Verdadeiro",
+      "explanation": "De acordo com a introdução à teoria do direito penal, o estudo da disciplina exige a compreensão dessas três dimensões distintas, mas interligadas. O Direito Penal se manifesta como um conhecimento estruturado, como a própria expressão da coerção estatal e como as normas legisladas."
+    },
+    {
+      "question": "A Dogmática Penal, enquanto ciência criminal, dedica-se exclusivamente à interpretação do Direito Processual Penal, relegando o Direito Penal material aos domínios da Criminologia.",
+      "answer": "Falso",
+      "explanation": "A Dogmática Penal engloba o estudo sistematizado tanto do Direito Penal (direito substantivo) quanto do Direito Processual Penal (direito adjetivo). A Criminologia e a Política Criminal formam, junto com ela, a tríade das Ciências Criminais, possuindo objetos próprios."
+    },
+    {
+      "question": "Para Edmund Mezger, o Direito Penal é conceituado como o ramo do saber jurídico que contém e reduz o poder punitivo, impulsionando o estado constitucional de direito.",
+      "answer": "Falso",
+      "explanation": "O conceito que foca na contenção e redução do poder punitivo pertence ao jurista Eugenio Raúl Zaffaroni. Edmund Mezger define o Direito Penal de maneira mais clássica, como o 'conjunto de normas jurídicas que determina infrações de natureza penal e suas sanções'."
+    },
+    {
+      "question": "Hans Welzel define o Direito Penal como a parte do ordenamento jurídico que determina as características da ação delituosa e lhe impõe penas ou medidas de segurança.",
+      "answer": "Verdadeiro",
+      "explanation": "Essa é a exata conceituação teórica de Hans Welzel, que atrela o Direito Penal à regulação da ação delituosa e às suas respectivas consequências jurídicas (penas e medidas de segurança)."
+    },
+    {
+      "question": "A Teoria da Pena dedica-se ao estudo pormenorizado dos elementos normativos, objetivos e subjetivos que compõem o delito como modelo abstrato.",
+      "answer": "Falso",
+      "explanation": "O estudo dos elementos que compõem o modelo abstrato do delito cabe à Teoria do Delito. A Teoria da Pena tem por objeto o estudo das funções atribuídas à sanção penal, englobando a Filosofia e a Sociologia do Castigo."
+    },
+    {
+      "question": "Segundo a perspectiva crítica abordada em aula, o poder punitivo não existiu em todos os estágios da humanidade; ele nasce apenas quando o soberano confisca o conflito da vítima.",
+      "answer": "Verdadeiro",
+      "explanation": "O material enfatiza que nem sempre houve um sistema penal. Historicamente, existiam modelos reparadores (coerção direta, restituição). O modelo punitivo e o Direito Penal surgem no momento histórico em que o soberano usurpa o conflito das mãos da vítima."
+    },
+    {
+      "question": "O modelo decisório punitivo destaca-se dos demais (como o reparador e o conciliador) por focar na alocação de culpa e imposição de dor, solucionando definitivamente os conflitos inter-relacionais.",
+      "answer": "Falso",
+      "explanation": "Embora o modelo punitivo foque na alocação de culpa e na imposição de dor (castigo) sem visar à reparação de danos, ele é falho na pacificação social porque não soluciona o conflito. O máximo que a imposição da pena consegue fazer é suspender o conflito temporariamente."
+    },
+    {
+      "question": "O discurso do Punitivismo, também denominado Eficientismo Penal, disputa a hegemonia dos saberes penais pleiteando a instauração de um 'direito penal máximo'.",
+      "answer": "Verdadeiro",
+      "explanation": "No campo dos saberes penais, o punitivismo ou eficientismo defende a expansão repressiva estatal, caracterizando-se pela busca de um direito penal máximo. Contrapõe-se ao garantismo/minimalismo (direito penal mínimo) e ao abolicionismo (direito penal nenhum)."
+    },
+    {
+      "question": "A aprovação de leis penais abstratas pelo parlamento corresponde à criminalização secundária, enquanto a atuação das agências policiais compreende a criminalização primária.",
+      "answer": "Falso",
+      "explanation": "Os conceitos estão invertidos. A criminalização primária é a edição da lei abstrata que tipifica condutas e comina penas (âmbito legislativo). A criminalização secundária é a aplicação dessa norma a uma pessoa concreta por meio das agências do sistema de justiça."
+    },
+    {
+      "question": "O conceito de 'cifras ocultas' demonstra que o acionamento efetivo do sistema de justiça criminal para lidar com eventos criminalizáveis é algo excepcional e raro, ficando a imensa maioria dos casos fora dos registros estatais.",
+      "answer": "Verdadeiro",
+      "explanation": "A criminologia demonstra que a esmagadora maioria das situações fáticas que poderiam ser criminalizadas não chega às instâncias de controle social. Assim, a atuação do sistema penal é estatisticamente uma exceção (cifras ocultas)."
+    },
+    {
+      "question": "A seletividade das agências penais é considerada uma disfunção acidental que poderia ser inteiramente eliminada mediante maior investimento financeiro em policiamento.",
+      "answer": "Falso",
+      "explanation": "A seletividade não é um erro acidental, mas estrutural do sistema penal. O volume de infrações tipificadas na criminalização primária (projeto faraônico) é humanamente impossível de ser integralmente processado, o que obriga o sistema a agir de modo estruturalmente seletivo."
+    },
+    {
+      "question": "De acordo com Louk Hulsman, um dos grandes defeitos do sistema é que o 'vocabulário penal' propõe a mesma solução empobrecedora para problemas sociais de natureza completamente distintas.",
+      "answer": "Verdadeiro",
+      "explanation": "O abolicionista Louk Hulsman critica o sistema penal apontando que ele enquadra conflitos extremamente diversos sob o mesmo rótulo restrito do 'crime', oferecendo uma única resposta dogmática e institucional (a pena/punição), em vez de respostas adequadas a cada tipo de problema."
+    },
+    {
+      "question": "O processo de criminalização secundária tende a focar de maneira contundente nas 'obras ilícitas trágicas', isentando historicamente os alvos que se enquadram em estereótipos de vulnerabilidade.",
+      "answer": "Falso",
+      "explanation": "A dinâmica do sistema atua no sentido oposto: a criminalização atinge de modo muito mais severo e constante as chamadas 'obras ilícitas toscas' e atua fortemente guiada por estereótipos, recaindo de maneira desproporcional sobre os grupos de maior vulnerabilidade social."
+    },
+    {
+      "question": "A criminologia midiática fomenta o chamado 'pânico moral', o que frequentemente resulta em uma falsa percepção da realidade social e impulsiona o populismo punitivo.",
+      "answer": "Verdadeiro",
+      "explanation": "A união entre mídia punitivista e 'empresários morais' atua na construção artificial do pânico moral sobre a criminalidade. Isso distorce a compreensão popular sobre a realidade e legitima o avanço de políticas penais severas (populismo punitivo)."
+    },
+    {
+      "question": "A sociologia do castigo ratifica a premissa estatal de que o aumento sistemático da repressão penal leva inevitavelmente à diminuição direta da criminalidade na sociedade.",
+      "answer": "Falso",
+      "explanation": "A disciplina demonstra que a equação dogmática '+ repressão = - criminalidade' é historicamente e empiricamente falsa. A expansão desmedida do direito penal apenas resulta em menor nível de liberdade e maior prevalência do Estado de Polícia, sem conter o crime."
+    },
+    {
+      "question": "O sistema penal subterrâneo engloba crimes executados ilegalmente por operadores das próprias agências estatais, tais como execuções policiais, torturas e mortes sob custódia prisional.",
+      "answer": "Verdadeiro",
+      "explanation": "O Estado opera simultaneamente na legalidade e na ilegalidade. O sistema penal subterrâneo corresponde a esse viés ilegal e marginal mantido pelo próprio Estado e seus operadores, envolvendo corrupção institucional, tortura e mortes no sistema prisional."
+    },
+    {
+      "question": "A 'policização', nos moldes propostos por Raúl Zaffaroni, é o processo institucional voltado à ressocialização de encarcerados através do trabalho forçado em unidades policiais.",
+      "answer": "Falso",
+      "explanation": "Zaffaroni define 'policização' como o rigoroso processo de seleção, treinamento e condicionamento institucional psicológico a que são submetidos os operadores do próprio sistema policial, moldando seu comportamento e visão de mundo dentro das corporações."
+    },
+    {
+      "question": "As universidades e a academia de pesquisa jurídica constituem agências do sistema penal, categorizadas especificamente como agências de reprodução ideológica.",
+      "answer": "Verdadeiro",
+      "explanation": "O sistema penal é vasto e não se restringe à polícia e aos juízes. Centros de pesquisa e universidades funcionam como agências de reprodução ideológica, pois formulam e propagam as teorias e discursos que irão legitimar, moldar ou criticar a atuação do sistema penal como um todo."
+    },
+    {
+      "question": "As teorias preventivas absolutas são focadas exclusivamente na intimidação coletiva (prevenção geral) e na neutralização do criminoso (prevenção especial).",
+      "answer": "Falso",
+      "explanation": "Há um erro conceitual grave na afirmação: as teorias preventivas (que envolvem a prevenção geral e especial) são as chamadas teorias 'relativas' da pena. As teorias 'absolutas' focam na retribuição pura e simples, o castigo pelo castigo."
+    },
+    {
+      "question": "A teoria agnóstica da pena, defendida por Eugenio Raúl Zaffaroni, assevera que a sanção penal carece de fundamentos jurídicos demonstráveis e se consolida apenas como um ato de poder político e coerção.",
+      "answer": "Verdadeiro",
+      "explanation": "A visão agnóstica descreve a pena de forma empírica: ela impõe dor, não repara a vítima e não cumpre com suas funções declaradas (ressocializar ou intimidar). Diante do fracasso de todas as teorias justificadoras, a sanção penal revela-se um puro exercício de violência política estatal sem fundação jurídica racional."
+    },
+    {
+      "question": "Tobias Barreto contribuiu para a crítica ao fundamento da pena ao afirmar que a busca pelo alicerce jurídico da punição assemelha-se à busca pelo fundamento jurídico da guerra.",
+      "answer": "Verdadeiro",
+      "explanation": "Essa célebre formulação de Tobias Barreto escancara a natureza bélica do poder punitivo estatal contra o indivíduo; justificar o exercício violento da pena seria tão problemático quanto tentar criar uma fundamentação jurídica moral para as atrocidades da guerra."
+    },
+    {
+      "question": "A prisão cautelar (como a preventiva) partilha das mesmas funções teóricas da prisão-pena, visando responder ao reconhecimento pretérito da culpabilidade do agente.",
+      "answer": "Falso",
+      "explanation": "As naturezas jurídicas são completamente distintas. A prisão-pena pertence ao direito penal e atua no 'passado', respondendo a um ato de culpabilidade reconhecida após o devido processo legal. Já a prisão cautelar integra o processo penal, atuando no 'futuro' para evitar lesões à instrução criminal, antes mesmo da formação da culpa."
+    },
+    {
+      "question": "Os discursos oficiais sobre a eficácia e a finalidade da pena baseiam-se frequentemente em dados sociais falsos ou puramente inventados para garantir a legitimação do sistema prisional.",
+      "answer": "Verdadeiro",
+      "explanation": "A criminologia demonstra um abismo entre o 'dever ser' (promessas oficiais da lei) e o 'ser' (realidade fática). Para se sustentar moralmente perante a sociedade, as agências políticas frequentemente invocam discursos sobre ressocialização e intimidação embasados em dados irreais que mascaram a seletividade e violência do sistema."
+    },
+    {
+      "question": "A crença na relação causal direta entre o crime e a aplicação da pena é tida como uma verdade inquestionável (dogma) que sustenta positivamente o avanço do penalismo crítico.",
+      "answer": "Falso",
+      "explanation": "A relação causal entre crime e pena não é uma verdade científica para o penalismo crítico, mas sim um de seus 'três dogmas' ilusórios (mitos) que devem ser desconstruídos, juntamente com o mito da pena inevitável e o mito da humanização das prisões modernas."
+    },
+    {
+      "question": "O 'Labeling Approach' (Teoria do Etiquetamento) defende que o crime não é uma característica biológica natural, mas sim o resultado de processos sociais estigmatizantes pautados na vulnerabilidade e expectativas das instâncias de controle.",
+      "answer": "Verdadeiro",
+      "explanation": "A teoria do Etiquetamento revoluciona a criminologia ao focar não no autor do crime, mas na reação social das agências de controle. É o sistema que cria o criminoso ao aplicar-lhe um rótulo ('etiqueta') seletivo fundamentado em vulnerabilidade social e não estritamente no dano causado."
+    },
+    {
+      "question": "O Funcionalismo teleológico de Claus Roxin prescreve que o Direito Penal tem a função sociológica de comunicar a vigência da norma às custas do sofrimento do infrator.",
+      "answer": "Falso",
+      "explanation": "Essa função comunicativa de reestabilização da confiança normativa às custas do infrator pertence ao Funcionalismo sistêmico de Günther Jakobs. Para Roxin (Funcionalismo teleológico), a finalidade é a proteção subsidiária de bens jurídicos vitais à sociedade."
+    },
+    {
+      "question": "O Funcionalismo redutor de Zaffaroni postula que o papel basilar do Direito Penal é agir como um limite semântico racional, contendo o avanço desmesurado do poder punitivo em nome do Estado de Direito.",
+      "answer": "Verdadeiro",
+      "explanation": "Em profunda oposição às teorias sistêmicas, o Funcionalismo de Zaffaroni (redutor) orienta que os juízes e doutrinadores devem usar os conceitos dogmáticos para erguer barreiras ('diques') e reduzir os danos infligidos pelo Estado de Polícia, salvaguardando garantias constitucionais."
+    },
+    {
+      "question": "O conceito de 'Direito Penal fraco', atrelado ao funcionalismo abolicionista, sugere o fortalecimento temporário e irrestrito das penas para extirpar a criminalidade urbana em definitivo.",
+      "answer": "Falso",
+      "explanation": "O 'Direito Penal fraco' assume sua própria precariedade e crueldade de base. Ele não busca expansão irrestrita, pelo contrário: ele articula à meia-luz e de forma tática para denunciar e reduzir a crueldade do Estado, agindo em prol de sua própria e eventual abolição."
+    },
+    {
+      "question": "Na perspectiva abolicionista do direito penal fraco, a pena executada pelas instituições não passa de um modelo estatal padronizado de 'causação voluntária de sofrimento desnecessário'.",
+      "answer": "Verdadeiro",
+      "explanation": "Nessa vertente crítica, define-se a grande crueldade do Estado como a inflição dolosa e calculada de dores (pena) que não solucionam litígios e não reparam as vítimas, consolidando-se apenas como um sofrimento humano totalmente desnecessário e ilegítimo."
+    },
+    {
+      "question": "Pela regra da contra-seletividade, já que as polícias operam o poder punitivo focando em grupos seletos e vulneráveis, o Direito Penal (ciência) deve neutralizar essa violência adotando a estrita seletividade para ratificar a atuação do Estado de Polícia.",
+      "answer": "Falso",
+      "explanation": "A ciência do direito penal, atuando como um filtro de contenção, não deve ratificar as ações do Estado de Polícia. Pela contra-seletividade, a dogmática e o judiciário devem operar ativamente de forma inversamente seletiva para barrar a violência estrutural imposta pelas agências persecutórias sobre os vulneráveis."
+    },
+    {
+      "question": "Segundo as teorias de Ronald Dworkin, normas classificadas como 'regras' operam pelo sistema lógico do 'tudo ou nada', não admitindo gradação na sua aplicação fática.",
+      "answer": "Verdadeiro",
+      "explanation": "No pensamento de Dworkin, o sistema normativo divide-se entre regras, que incidem integralmente se o suporte fático ocorrer (subsunção de tudo ou nada), e princípios, que orientam decisões mediante a técnica da ponderação (peso e importância) em casos de colisão de direitos básicos."
+    },
+    {
+      "question": "Ao tratar de colisões de interesses, Dworkin estipula que as 'políticas' do Estado têm como objeto primordial assegurar exclusivamente direitos individuais e básicos perante terceiros.",
+      "answer": "Falso",
+      "explanation": "Dworkin traça uma divisão estrita: os direitos individuais/básicos são resguardados pelos princípios, enquanto as questões afetas aos direitos coletivos, metas estatais ou planejamento socioeconômico são objetos das 'políticas' públicas."
+    },
+    {
+      "question": "O princípio da fragmentariedade estipula que a atuação do Direito Penal não é abrangente e universal, tutelando apenas parcelas restritas e graves dos bens jurídicos de maior relevância social.",
+      "answer": "Verdadeiro",
+      "explanation": "Diferente de áreas como o Direito Civil, o campo penal é 'fragmentário', significando que suas normas protegem não a totalidade das violações, mas apenas os ataques insuportáveis dirigidos a fragmentos essenciais de bens protegidos pelo ordenamento."
+    },
+    {
+      "question": "O princípio da máxima taxatividade (mandato de certeza) orienta o Poder Judiciário a condenar o réu em definitivo apenas quando esgotados todos os laudos periciais e testemunhais disponíveis no processo.",
+      "answer": "Falso",
+      "explanation": "A máxima taxatividade é um corolário do princípio da legalidade dirigido primeiramente ao legislador. Ele exige a proibição da indeterminação da lei penal; ou seja, a lei incriminadora deve ser clara, exaustiva e ter contornos definidos, vedando tipos abertos que propiciem o arbítrio judicial."
+    },
+    {
+      "question": "O princípio da insignificância atua na dogmática contemporânea como uma excludente de tipicidade material (ofensividade), mesmo diante da subsunção formal da conduta ao texto legal.",
+      "answer": "Verdadeiro",
+      "explanation": "Também chamado de bagatela, este limitador afasta a ocorrência de crime para ofensas ínfimas que não afetam significativamente o bem jurídico (ex: furto de objeto irrelevante). A conduta tipifica-se no texto legal formalmente, mas não atinge materialmente o bem protegido a ponto de merecer a violenta intervenção penal."
+    },
+    {
+      "question": "O postulado da intervenção mínima garante ao Estado a prerrogativa de punir antecipadamente infrações bagatelares se isso assegurar o sucesso de investigações policiais complexas.",
+      "answer": "Falso",
+      "explanation": "A intervenção mínima, ou 'ultima ratio', dita que a coerção punitiva deve ser a última barreira de defesa social. Ela não autoriza o avanço indiscriminado do Estado sobre infrações irrelevantes (bagatela); ao revés, o direito penal só pode ser legitimamente acionado quando falharem todos os demais recursos de controle estatal ou civil."
+    },
+    {
+      "question": "O Garantismo Penal de Luigi Ferrajoli estrutura-se em dez princípios basilares e diferencia claramente garantias puramente penais e garantias voltadas à esfera do processo processual.",
+      "answer": "Verdadeiro",
+      "explanation": "A arquitetura monumental de Ferrajoli distingue axiomas do direito material, como o delito e a necessidade da lei (garantias penais), daqueles próprios da persecução, como a jurisdição, imparcialidade e direito à defesa (garantias processuais), formatando um sistema integral de contenção do arbítrio."
+    },
+    {
+      "question": "No escopo do princípio da culpabilidade, estabelece-se que a responsabilidade estatal será primordialmente objetiva, respondendo o agente pelo mero resultado fortuito da conduta criminosa.",
+      "answer": "Falso",
+      "explanation": "O postulado da culpabilidade proscreve a responsabilidade puramente objetiva. A intervenção penal e as garantias dogmáticas exigem a 'responsabilidade subjetiva', vinculando o sujeito ao resultado de modo indelével apenas quando comprovada a ocorrência psíquica de dolo ou, no mínimo, culpa stricto sensu."
+    },
+    {
+      "question": "O princípio de humanidade, dada a essência cruel do poder punitivo, atua na prática como uma diretriz pela busca da desumanidade mínima tolerável no cumprimento de penas.",
+      "answer": "Verdadeiro",
+      "explanation": "O penalismo redutor argumenta que toda prisão e pena geram dor intrínseca. Portanto, o princípio constitucional de humanidade, embora nominado positivamente, consiste faticamente na limitação para o limiar de 'desumanidade mínima', obstando o vilipêndio desproporcional do detento."
+    },
+    {
+      "question": "A vedação ao duplo sancionamento (ne bis in idem) encontra-se ancorada nos pressupostos processuais de boa-fé garantista e no mandamento de que nenhum acusado deverá sofrer dupla persecução pelos mesmos fatos típicos.",
+      "answer": "Verdadeiro",
+      "explanation": "O princípio do 'ne bis in idem' impõe um limite incontornável ao afã punitivo do Estado: protege o cidadão de ser alvo de duas punições idênticas (ou dois processamentos sequenciais ou simultâneos) baseados no exato e idêntico contexto fático naturalístico do qual já se defendeu."
+    },
+    {
+      "question": "A regra de intranscendência penal, ou transcendência mínima, assevera que a gravidade das penas cominadas no judiciário jamais pode ultrapassar o teto máximo previsto abstratamente na carta constitucional.",
+      "answer": "Falso",
+      "explanation": "A intranscendência nada tem a ver com os limites temporais de condenação (teto máximo). Ela determina que as consequências corporais e o estigma da sanção penal não podem ultrapassar a pessoa física do apenado, impedindo que familiares ou herdeiros diretos cumpram pena pelos atos delituosos do falecido infrator."
+    },
+    {
+      "question": "Na formulação garantista 'A1. Nulla poena sine crimine', Ferrajoli reforça que nenhuma privação ou retribuição imposta institucionalmente pode se concretizar sem o prévio reconhecimento axiológico de que um crime de fato existiu.",
+      "answer": "Verdadeiro",
+      "explanation": "Esta é a primeira máxima do decálogo de Ferrajoli, enraizada na tradição jusiluminista. É o princípio garantista da retributividade/consequencialidade: nenhuma penalidade é legitimada se não estiver logicamente e empiricamente condicionada à subsistência anterior de um ato qualificado categoricamente como crime."
+    },
+    {
+      "question": "O postulado 'Nulla actio sine culpa' corresponde à garantia processual de jurisdição, estipulando que o Estado só pode instaurar um processo se houver flagrante no ato da culpa.",
+      "answer": "Falso",
+      "explanation": "O aforismo 'Nulla actio sine culpa' (A6) é a sexta proposição e reflete o princípio da culpabilidade material ou responsabilidade pessoal (não há ação incriminável sem dolo/culpa subjetiva do autor) e não remete à garantia puramente processual da jurisdição em caso de flagrante."
+    },
+    {
+      "question": "O princípio garantista acusatório pressupõe a segregação rigorosa entre a figura isenta do magistrado que decide e a estrutura de acusação que detém o ônus probatório sobre a autoria e os fatos.",
+      "answer": "Verdadeiro",
+      "explanation": "No oitavo princípio exposto por Ferrajoli, determina-se que não existe juízo probatório legítimo se houver simbiose entre quem acusa e quem julga. A total independência orgânica entre juiz (imparcial) e órgão ministerial de acusação é o núcleo fundamental do sistema acusatório."
+    },
+    {
+      "question": "A premissa da economia do Direito Penal (3º Princípio Garantista) advoga que os juízes devem evitar aplicar medidas alternativas para economizar os cofres públicos e reverter a receita ao sistema prisional.",
+      "answer": "Falso",
+      "explanation": "A 'economia do direito penal', atrelada ao princípio de necessidade (Nulla lex sine necessitate), versa sobre limitar a proliferação desnecessária de novas leis criminais. Significa intervir punitivamente o mínimo possível na vida do cidadão, e não um preceito de natureza financeira sobre cortes nas medidas alternativas para sustentar os presídios."
+    },
+    {
+      "question": "A materialidade e a exterioridade da ação operam como freios à discricionariedade do poder punitivo, não sendo aceitável sancionar um indivíduo unicamente por seus pensamentos imorais não externados faticamente.",
+      "answer": "Verdadeiro",
+      "explanation": "O Garantismo elenca o princípio da materialidade da ação (5º princípio). Cogitações de foro íntimo, sentimentos reprováveis ou características puramente identitárias do indivíduo (direito penal do autor) não são aptos a sofrer criminalização sem a respectiva materialização (exterioridade) lesiva ao ambiente e à sociedade."
+    },
+    {
+      "question": "A falsa percepção propagada em discursos sobre a realidade prisional configura 'o segredo mais bem guardado' pelas instâncias do sistema de controle social moderno.",
+      "answer": "Verdadeiro",
+      "explanation": "A criminologia midiática emula a falácia do encarceramento humanizado e corretivo, resguardando 'o segredo' sobre o abismo estrutural do cárcere. O populismo pune valendo-se da ocultação deliberada do colapso fático e da inviabilidade teórica do enjaulamento para ressocialização."
+    },
+    {
+      "question": "A distinção entre desvalor da conduta e desvalor do resultado não afeta o campo de incidência material do Direito Penal, sendo idênticas as sanções cominadas a todas as obras ilícitas, independentemente de ofenderem substancialmente terceiros.",
+      "answer": "Falso",
+      "explanation": "O desvalor do resultado tem impacto cabal e definitivo na limitação do Estado punitivo (ofensividade e lesividade). Em casos em que há desvalor da conduta (intenção ou imperícia), mas inexiste efetivo desvalor do resultado a um bem (lesão real a terceiros), carecerá de substrato justificador para operar os rigores seletivos do enjaulamento e da privação da liberdade imposta pelas instâncias estatais."
+    },
+    {
+      "question": "A proposição 'Nulla probatio sine defensione' estabelece como pilar processual imprescindível a participação contraditória, indicando que nenhuma prova possui valor acusatório absoluto que obste a falseabilidade perante a defesa.",
+      "answer": "Verdadeiro",
+      "explanation": "Ferrajoli erige a máxima do contraditório real como a décima garantia do seu esquema (A10). Proibir a prova imune ou infalível implica assegurar que toda imputação só adquire dignidade jurisdicional quando testada e sujeita à severa impugnação cruzada no crivo dialético patrocinado tecnicamente pela defesa."
+    },
+    {
+      "question": "No processo penal orientado por garantias e pela presunção da inocência, as instâncias de poder devem interpretar a boa-fé do réu em conjunção ao in dubio pro societate para dirimir as incertezas materiais do processo.",
+      "answer": "Falso",
+      "explanation": "O regime garantista repele categoricamente a presunção processual 'in dubio pro societate' em prol da restrição do Estado-polícia. Face a incerteza irremediável dos fatos sobre a materialidade ou autoria delitiva e a presunção de inocência como dogma (boa-fé presumida do não condenado), o único viés legalmente sustentável nos litígios processuais penais insuperáveis é sempre a absolvição, através da força do in dubio pro reo."
+    }
+  ],
+  "type": "vf",
+  "engine": "gemini",
+  "exported": true,
+  "exportDate": "2026-03-31T22:40:51.000Z"
+}

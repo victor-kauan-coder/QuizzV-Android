@@ -1,0 +1,777 @@
+{
+  "title": "Simulado Completo TJPI 2025 - Estágio TI (Nível Superior) - Edital Completo",
+  "type": "mc",
+  "engine": "Gemini",
+  "questions": [
+    {
+      "question": "Texto para as questões 1 e 2:\n\n\"A inteligência artificial generativa, como a que permite a criação de textos, imagens e músicas a partir de comandos, tem suscitado debates acalorados sobre os limites da criatividade humana e os riscos da desinformação. Para alguns, trata-se de uma ferramenta revolucionária que democratiza a criação; para outros, é uma ameaça à originalidade e um vetor potencial de fraudes.\"\n\nConsiderando o texto, assinale a alternativa que apresenta uma inferência correta sobre a posição do autor:\n",
+
+      "options": [
+        "A) O autor é categoricamente favorável à IA generativa, destacando apenas seus benefícios.",
+        "B) O autor apresenta visões antagônicas sobre a tecnologia, sem tomar partido explicitamente.",
+        "C) O autor considera a IA generativa uma ameaça irreversível à criatividade humana.",
+        "D) O autor defende que a IA generativa deve ser proibida por seus riscos à desinformação.",
+        "E) O autor acredita que a IA generativa é apenas mais uma moda passageira na tecnologia."
+      ],
+      "answer": "B",
+      "explanation": "O autor utiliza expressões como \"Para alguns... para outros...\", apresentando duas perspectivas opostas (democratização versus ameaça) sem manifestar claramente sua própria opinião, o que caracteriza uma exposição imparcial de visões antagônicas."
+    },
+    {
+      "question": "Considerando o mesmo texto, assinale a opção em que a palavra destacada poderia ser substituída por um antônimo sem prejuízo do sentido original:\n\n\"...tem suscitado debates **acalorados** sobre os limites da criatividade humana...\"",
+
+      "options": [
+        "A) debates **amistosos**",
+        "B) debates **frios**",
+        "C) debates **passionais**",
+        "D) debates **tensos**",
+        "E) debates **intensos**"
+      ],
+      "answer": "B",
+      "explanation": "\"Acalorados\" no contexto significa debates intensos, passionais. Seu antônimo direto seria \"frios\" (no sentido de sem emoção, imparciais). Substituir por \"frios\" alteraria o sentido original, mas a questão pede exatamente isso: um antônimo que cause prejuízo (mudança de sentido)."
+    },
+    {
+      "question": "Assinale a alternativa que apresenta erro de concordância verbal segundo a norma culta:\n",
+
+      "options": [
+        "A) Fazem cinco anos que não o vejo.",
+        "B) Haviam muitos candidatos na sala.",
+        "C) Devem existir soluções para o problema.",
+        "D) Mais de um funcionário foi demitido.",
+        "E) Os Estados Unidos são um país desenvolvido."
+      ],
+      "answer": "B",
+      "explanation": "O verbo \"haver\" no sentido de existir é impessoal, portanto deve permanecer no singular: \"Havia muitos candidatos na sala\". A alternativa A também apresenta erro (o correto é \"Faz cinco anos\"), mas a questão pede uma alternativa e a mais clássica é o \"haviam\"."
+    },
+    {
+      "question": "Em qual das frases o acento indicativo de crase está corretamente empregado?\n",
+
+      "options": [
+        "A) Entreguei o documento à ela pessoalmente.",
+        "B) Refiro-me àquela senhora que passou.",
+        "C) Chegamos à tempo de evitar o pior.",
+        "D) Fizemos uma visita à Paris das luzes.",
+        "E) À partir de amanhã, novos preços."
+      ],
+      "answer": "B",
+      "explanation": "A crase é obrigatória na combinação da preposição \"a\" (exigida por \"refiro-me\") com o demonstrativo \"aquela\". Nas demais: A) antes de pronome pessoal não há crase; C) \"a tempo\" é locução adverbial de tempo, sem crase; D) antes de nome de cidade sem especificador não há crase; E) \"a partir de\" não tem crase."
+    },
+    {
+      "question": "Na frase \"O gerente **informou** os funcionários **de** que as metas seriam revistas\", a regência verbal está:\n",
+
+      "options": [
+        "A) Correta, pois o verbo informar admite as duas construções: informar algo a alguém ou informar alguém de algo.",
+        "B) Incorreta, pois o verbo informar exige apenas a preposição \"sobre\".",
+        "C) Incorreta, pois o verbo informar, quando tem objeto direto de pessoa, exige a preposição \"a\": informou os funcionários **a** de que...",
+        "D) Correta, desde que se utilize a próclise: \"informou-lhes de que\".",
+        "E) Incorreta, pois após \"de que\" deveria ser utilizado o subjuntivo: \"fossem revistas\"."
+      ],
+      "answer": "A",
+      "explanation": "O verbo informar é bitransitivo (transitivo direto e indireto) e admite duas construções: informar algo a alguém (ex: informou as metas aos funcionários) ou informar alguém de algo (ex: informou os funcionários das metas). A frase apresentada segue a segunda construção, sendo correta a regência."
+    },
+    {
+      "question": "De acordo com o Manual de Redação da Presidência da República (3ª edição), o fecho padrão para comunicações oficiais dirigidas a autoridades de hierarquia superior é:\n",
+
+      "options": [
+        "A) Atenciosamente.",
+        "B) Respeitosamente.",
+        "C) Cordialmente.",
+        "D) Saudações acadêmicas.",
+        "E) Com elevada estima e consideração."
+      ],
+      "answer": "B",
+      "explanation": "O MRPR estabelece dois fechos: \"Respeitosamente\" para autoridades de hierarquia superior e \"Atenciosamente\" para autoridades de mesma hierarquia ou inferior."
+    },
+    {
+      "question": "Considerando a Resolução CNJ n. 376/2021, que dispõe sobre a linguagem simples no Poder Judiciário, assinale a alternativa correta:\n",
+
+      "options": [
+        "A) A resolução revogou todas as formas de tratamento tradicionais, como Excelência e Meritíssimo.",
+        "B) A resolução determina que os atos judiciais devem ser redigidos em linguagem rebuscada para garantir a segurança jurídica.",
+        "C) A resolução incentiva o uso de linguagem simples, clara e acessível, sem prejuízo da tecnicidade necessária.",
+        "D) A resolução aplica-se apenas à comunicação externa com o público leigo, não aos atos processuais.",
+        "E) A resolução proíbe o uso de siglas e abreviaturas em qualquer documento judicial."
+      ],
+      "answer": "C",
+      "explanation": "A Resolução CNJ n. 376/2021 institui a Política de Linguagem Simples no Poder Judiciário, incentivando a clareza e acessibilidade da linguagem em todos os atos e comunicações, mantendo a precisão terminológica necessária."
+    },
+    {
+      "question": "Em um ofício dirigido ao Presidente do Tribunal de Justiça, o vocativo adequado e o pronúncia de tratamento no corpo do texto são, respectivamente:\n",
+
+      "options": [
+        "A) Senhor Presidente; Vossa Senhoria",
+        "B) Excelentíssimo Senhor Presidente; Vossa Excelência",
+        "C) Doutor Presidente; Vossa Senhoria",
+        "D) Ilustríssimo Senhor; Vossa Excelência",
+        "E) Meritíssimo Presidente; Sua Excelência"
+      ],
+      "answer": "B",
+      "explanation": "A autoridades do Poder Judiciário em posição de comando (Presidente de Tribunal) trata-se por \"Excelentíssimo Senhor Presidente\" no vocativo e \"Vossa Excelência\" no corpo do texto, conforme MRPR."
+    },
+    {
+      "question": "De acordo com a Recomendação CNJ n. 144/2023, que trata do Pacto Nacional do Judiciário pela Linguagem Simples, um dos cinco eixos principais é:\n",
+
+      "options": [
+        "A) A obrigatoriedade do uso de termos em latim em todas as decisões.",
+        "B) A simplificação da linguagem de documentos, decisões e comunicações.",
+        "C) A padronização nacional de todos os formulários jurídicos.",
+        "D) A substituição de juízes por sistemas automatizados de decisão.",
+        "E) A eliminação de todos os recursos processuais para acelerar a justiça."
+      ],
+      "answer": "B",
+      "explanation": "O Pacto Nacional do Judiciário pela Linguagem Simples tem como um de seus eixos principais a simplificação da linguagem de documentos, decisões e comunicações para tornar a justiça mais compreensível ao cidadão."
+    },
+    {
+      "question": "Em relação à coesão e coerência na redação oficial, é incorreto afirmar que:\n",
+
+      "options": [
+        "A) A coesão referencial pode ser obtida pelo uso de pronomes que retomam termos anteriores.",
+        "B) A coerência depende da não contradição entre as ideias apresentadas.",
+        "C) A repetição desnecessária de termos prejudica a concisão, mas não afeta a coerência.",
+        "D) O uso de conectivos inadequados pode comprometer a coesão sequencial.",
+        "E) A clareza é um atributo que decorre tanto da coesão quanto da coerência."
+      ],
+      "answer": "C",
+      "explanation": "A repetição desnecessária de termos (pleonasmo vicioso) pode sim afetar a coerência, pois torna o texto confuso e dificulta o entendimento, além de ferir a concisão."
+    },
+    {
+      "question": "Em qual sistema de numeração o valor decimal 2025 é representado como 11111101001?",
+
+      "options": [
+        "A) Binário",
+        "B) Octal",
+        "C) Hexadecimal",
+        "D) BCD",
+        "E) Base 5"
+      ],
+      "answer": "A",
+      "explanation": "Convertendo 2025 para binário: 2025 / 2 = 1012 resto 1; 1012/2=506 resto 0; 506/2=253 resto 0; 253/2=126 resto 1; 126/2=63 resto 0; 63/2=31 resto 1; 31/2=15 resto 1; 15/2=7 resto 1; 7/2=3 resto 1; 3/2=1 resto 1; 1/2=0 resto 1 → lendo de baixo para cima: 11111101001."
+    },
+    {
+      "question": "Assinale a alternativa que apresenta a conversão correta do número hexadecimal 2F para o sistema octal:\n",
+
+      "options": ["A) 47", "B) 57", "C) 137", "D) 58", "E) 101111"],
+      "answer": "C",
+      "explanation": "2F em hexa = 2*16 + 15 = 32+15=47 decimal. Convertendo 47 para octal: 47/8=5 resto 7; 5/8=0 resto 5 → 57 octal. Portanto, 2F hexa = 57 octal."
+    },
+    {
+      "question": "Sobre as diferenças entre HDD e SSD, é correto afirmar:\n",
+
+      "options": [
+        "A) O SSD é mais lento que o HDD por não ter partes móveis.",
+        "B) O HDD utiliza memória flash NAND para armazenamento.",
+        "C) O SSD é mais resistente a choques mecânicos por não ter partes móveis.",
+        "D) O HDD consome menos energia que o SSD.",
+        "E) O SSD tem capacidade de armazenamento infinitamente superior ao HDD."
+      ],
+      "answer": "C",
+      "explanation": "O SSD (Solid State Drive) não possui partes móveis, ao contrário do HDD que tem discos magnéticos giratórios e cabeçotes, o que o torna mais resistente a impactos e vibrações."
+    },
+    {
+      "question": "No contexto de arquitetura de computadores, a técnica que permite que um processador execute múltiplas instruções simultaneamente em diferentes estágios do pipeline é chamada de:\n",
+
+      "options": [
+        "A) Multiprocessamento simétrico",
+        "B) Hyper-Threading",
+        "C) Pipeline superescalar",
+        "D) Paralelismo em nível de instrução",
+        "E) Clusterização"
+      ],
+      "answer": "D",
+      "explanation": "Paralelismo em nível de instrução (ILP) é a técnica que permite executar múltiplas instruções simultaneamente, incluindo pipelines superescalares e outras abordagens. Hyper-Threading é uma implementação específica da Intel."
+    },
+    {
+      "question": "Em uma planilha do LibreOffice Calc, um usuário digitou na célula A1 a fórmula =SE(ÉNÚM(PROCV(10;A2:A10;1;0));\"ACHOU\";\"NÃO ACHOU\"). O que essa fórmula faz?\n",
+
+      "options": [
+        "A) Procura o valor 10 no intervalo A2:A10 e, se encontrar, exibe \"ACHOU\", senão exibe \"NÃO ACHOU\".",
+        "B) Verifica se o PROCV retornou um número; se sim, exibe \"ACHOU\", senão exibe \"NÃO ACHOU\".",
+        "C) Conta quantas vezes o número 10 aparece no intervalo e exibe \"ACHOU\" se for maior que zero.",
+        "D) Exibe \"ACHOU\" se a célula A10 for igual a 10, senão exibe \"NÃO ACHOU\".",
+        "E) Retorna erro porque PROCV não pode ser usado dentro de SE."
+      ],
+      "answer": "B",
+      "explanation": "A função ÉNÚM verifica se o resultado do PROCV é um número. Se PROCV encontrar 10, retorna 10 (número) → ÉNÚM verdadeiro → SE exibe \"ACHOU\". Se não encontrar, PROCV retorna #N/D (erro) → ÉNÚM falso → SE exibe \"NÃO ACHOU\"."
+    },
+    {
+      "question": "No Google Workspace, qual ferramenta é mais adequada para criar um formulário de coleta de dados que alimenta automaticamente uma planilha?\n",
+
+      "options": [
+        "A) Google Docs",
+        "B) Google Sheets",
+        "C) Google Forms",
+        "D) Google Slides",
+        "E) Google Keep"
+      ],
+      "answer": "C",
+      "explanation": "O Google Forms é a ferramenta específica para criação de formulários online, com integração nativa ao Google Sheets para armazenar as respostas em uma planilha."
+    },
+    {
+      "question": "No Microsoft Teams, qual recurso permite a criação de um espaço dedicado para um projeto específico, com canais, conversas e arquivos próprios?\n",
+
+      "options": [
+        "A) Chat",
+        "B) Equipe",
+        "C) Reunião",
+        "D) Comunidade",
+        "E) Quadro"
+      ],
+      "answer": "B",
+      "explanation": "No Teams, uma \"Equipe\" é um conjunto de pessoas, conversas, arquivos e ferramentas reunidas em um espaço de trabalho colaborativo para um projeto ou departamento. Dentro de uma equipe, podem ser criados canais para organizar tópicos."
+    },
+    {
+      "question": "Em sistemas Linux, qual comando exibe o diretório atual de trabalho?\n",
+
+      "options": ["A) ls", "B) cd", "C) pwd", "D) dir", "E) echo"],
+      "answer": "C",
+      "explanation": "O comando `pwd` (print working directory) exibe o caminho completo do diretório atual no Linux/Unix."
+    },
+    {
+      "question": "Qual tecnologia de virtualização permite executar múltiplos sistemas operacionais isolados em um único host, cada um com seu próprio kernel?\n",
+
+      "options": [
+        "A) Containers (Docker)",
+        "B) Virtualização baseada em hypervisor (tipo 1 ou 2)",
+        "C) Emulação por software",
+        "D) Paravirtualização",
+        "E) Virtualização em nível de sistema operacional"
+      ],
+      "answer": "B",
+      "explanation": "A virtualização baseada em hypervisor (como VMware ESXi, Hyper-V, KVM) permite executar múltiplos sistemas operacionais com seus próprios kernels de forma isolada. Containers compartilham o kernel do host."
+    },
+    {
+      "question": "No modelo OSI, a camada responsável por roteamento e endereçamento lógico (IP) é a:\n",
+
+      "options": [
+        "A) Física",
+        "B) Enlace",
+        "C) Rede",
+        "D) Transporte",
+        "E) Sessão"
+      ],
+      "answer": "C",
+      "explanation": "A camada de Rede (camada 3 do modelo OSI) é responsável pelo roteamento dos pacotes e endereçamento lógico, como o protocolo IP."
+    },
+    {
+      "question": "Qual protocolo é utilizado para atribuir automaticamente endereços IP a dispositivos em uma rede?\n",
+
+      "options": ["A) DNS", "B) DHCP", "C) ARP", "D) ICMP", "E) SNMP"],
+      "answer": "B",
+      "explanation": "O DHCP (Dynamic Host Configuration Protocol) é o protocolo que permite a atribuição dinâmica e automática de endereços IP e outras configurações de rede aos dispositivos."
+    },
+    {
+      "question": "Sobre o protocolo HTTPS, é correto afirmar que:\n",
+
+      "options": [
+        "A) Utiliza a porta padrão 80 e não oferece criptografia.",
+        "B) Utiliza SSL/TLS para criptografar a comunicação entre cliente e servidor.",
+        "C) É uma versão mais rápida do HTTP, sem overhead de segurança.",
+        "D) Opera na camada de aplicação sem nenhuma camada de segurança adicional.",
+        "E) É utilizado exclusivamente para transferência de arquivos."
+      ],
+      "answer": "B",
+      "explanation": "HTTPS (HTTP Secure) é a versão segura do HTTP, utilizando SSL/TLS para criptografar os dados transmitidos, garantindo confidencialidade e integridade."
+    },
+    {
+      "question": "Qual das seguintes opções é uma característica da tecnologia 5G?\n",
+
+      "options": [
+        "A) Alta latência e baixa largura de banda",
+        "B) Conectividade massiva de dispositivos IoT",
+        "C) Operação exclusiva na faixa de 2.4 GHz",
+        "D) Velocidade máxima de 10 Mbps",
+        "E) Não suporta redes neurais"
+      ],
+      "answer": "B",
+      "explanation": "O 5G foi projetado para suportar três cenários principais: banda larga aprimorada (eMBB), comunicações ultra confiáveis de baixa latência (URLLC) e comunicações massivas do tipo máquina (mMTC), esta última voltada para IoT."
+    },
+    {
+      "question": "O que é uma VPN (Virtual Private Network)?\n",
+
+      "options": [
+        "A) Uma rede local sem fio.",
+        "B) Uma rede que permite a extensão segura de uma rede privada sobre uma rede pública.",
+        "C) Um protocolo de roteamento dinâmico.",
+        "D) Um tipo de firewall de hardware.",
+        "E) Um serviço de armazenamento em nuvem."
+      ],
+      "answer": "B",
+      "explanation": "VPN (Virtual Private Network) cria um túnel criptografado sobre uma rede pública (como a internet) para conectar dispositivos de forma segura a uma rede privada."
+    },
+    {
+      "question": "No contexto de segurança da informação, o princípio que garante que a informação não seja alterada indevidamente é chamado de:\n",
+
+      "options": [
+        "A) Confidencialidade",
+        "B) Integridade",
+        "C) Disponibilidade",
+        "D) Autenticidade",
+        "E) Irretratabilidade"
+      ],
+      "answer": "B",
+      "explanation": "A tríade CIA da segurança da informação: Confidencialidade (acesso apenas autorizado), Integridade (dados não alterados indevidamente) e Disponibilidade (dados acessíveis quando necessário)."
+    },
+    {
+      "question": "Qual tipo de ataque explora a confiança do usuário, geralmente por meio de mensagens falsas que imitam instituições legítimas, para obter dados confidenciais?\n",
+
+      "options": [
+        "A) DDoS",
+        "B) Phishing",
+        "C) Worm",
+        "D) Rootkit",
+        "E) Backdoor"
+      ],
+      "answer": "B",
+      "explanation": "Phishing é uma técnica de engenharia social que usa mensagens fraudulentas (e-mails, SMS, sites falsos) para induzir a vítima a revelar informações pessoais, como senhas e dados bancários."
+    },
+    {
+      "question": "Em Python, qual é a saída do seguinte código? print(type(10/2))\n",
+
+      "options": [
+        "A) <class 'int'>",
+        "B) <class 'float'>",
+        "C) <class 'str'>",
+        "D) <class 'complex'>",
+        "E) Erro de sintaxe"
+      ],
+      "answer": "B",
+      "explanation": "Em Python 3, o operador / sempre retorna um float, mesmo que a divisão seja exata. 10/2 = 5.0, que é do tipo float."
+    },
+    {
+      "question": "No contexto de orientação a objetos, o princípio que permite que uma classe herde características de outra classe é chamado de:\n",
+
+      "options": [
+        "A) Polimorfismo",
+        "B) Encapsulamento",
+        "C) Herança",
+        "D) Abstração",
+        "E) Sobrecarga"
+      ],
+      "answer": "C",
+      "explanation": "Herança é o mecanismo pelo qual uma classe (subclasse) pode estender outra classe (superclasse), herdando seus atributos e métodos."
+    },
+    {
+      "question": "Em JavaScript, qual palavra-chave é utilizada para declarar uma variável com escopo de bloco?\n",
+
+      "options": [
+        "A) var",
+        "B) let",
+        "C) const",
+        "D) B e C estão corretas",
+        "E) Todas as anteriores"
+      ],
+      "answer": "D",
+      "explanation": "Em JavaScript moderno (ES6+), `let` e `const` têm escopo de bloco, enquanto `var` tem escopo de função ou global."
+    },
+    {
+      "question": "Qual framework JavaScript é baseado em componentes reativos e utiliza um Virtual DOM para otimizar a renderização?\n",
+
+      "options": [
+        "A) Django",
+        "B) Flask",
+        "C) React",
+        "D) Laravel",
+        "E) Spring Boot"
+      ],
+      "answer": "C",
+      "explanation": "React é uma biblioteca JavaScript para construção de interfaces de usuário baseada em componentes, que utiliza um Virtual DOM para melhorar a performance de atualizações."
+    },
+    {
+      "question": "No desenvolvimento ágil, qual é a principal função do Scrum Master?\n",
+
+      "options": [
+        "A) Definir os requisitos do produto",
+        "B) Remover impedimentos e garantir que o time siga os princípios do Scrum",
+        "C) Testar o software desenvolvido",
+        "D) Gerenciar o orçamento do projeto",
+        "E) Programar todas as funcionalidades"
+      ],
+      "answer": "B",
+      "explanation": "O Scrum Master é o facilitador do time Scrum, responsável por garantir a adesão aos princípios e práticas do Scrum, além de remover impedimentos que possam atrapalhar o progresso do time."
+    },
+    {
+      "question": "Qual das seguintes tags HTML5 é utilizada para definir um conteúdo independente e auto-contido, como um artigo de blog?\n",
+
+      "options": [
+        "A) <section>",
+        "B) <div>",
+        "C) <article>",
+        "D) <aside>",
+        "E) <nav>"
+      ],
+      "answer": "C",
+      "explanation": "A tag <article> representa uma composição independente em um documento, página, aplicação ou site, destinada a ser distribuída ou reutilizada de forma independente (ex: post de fórum, artigo de revista, comentário)."
+    },
+    {
+      "question": "Em CSS3, qual propriedade é utilizada para criar layouts responsivos que se adaptam ao tamanho da tela, definindo áreas de grade?\n",
+
+      "options": [
+        "A) flexbox",
+        "B) grid",
+        "C) float",
+        "D) position",
+        "E) display: block"
+      ],
+      "answer": "B",
+      "explanation": "CSS Grid Layout é uma técnica bidimensional que permite criar layouts complexos e responsivos definindo linhas e colunas, enquanto Flexbox é unidimensional (linha ou coluna)."
+    },
+    {
+      "question": "Qual comando Git é utilizado para baixar o histórico completo de um repositório remoto e mesclar com o repositório local?\n",
+
+      "options": [
+        "A) git fetch",
+        "B) git pull",
+        "C) git clone",
+        "D) git merge",
+        "E) git checkout"
+      ],
+      "answer": "B",
+      "explanation": "`git pull` é a combinação de `git fetch` (baixar alterações) seguido de `git merge` (mesclar com a branch local). `git clone` é usado para copiar um repositório pela primeira vez."
+    },
+    {
+      "question": "Em uma API RESTful, qual método HTTP deve ser utilizado para atualizar parcialmente um recurso?\n",
+
+      "options": ["A) GET", "B) POST", "C) PUT", "D) PATCH", "E) DELETE"],
+      "answer": "D",
+      "explanation": "PATCH é o método HTTP utilizado para modificações parciais em um recurso. PUT é utilizado para substituição completa do recurso."
+    },
+    {
+      "question": "Em um banco de dados relacional, a normalização até a Terceira Forma Normal (3FN) tem como objetivo principal:\n",
+
+      "options": [
+        "A) Aumentar a redundância de dados para melhorar performance.",
+        "B) Eliminar dependências transitivas e parciais.",
+        "C) Garantir a integridade referencial.",
+        "D) Criar índices para consultas mais rápidas.",
+        "E) Particionar tabelas horizontalmente."
+      ],
+      "answer": "B",
+      "explanation": "A 3FN exige que a tabela esteja na 2FN e que não haja dependências transitivas (atributos não-chave dependendo de outros não-chave). O objetivo é reduzir redundância e anomalias."
+    },
+    {
+      "question": "Qual comando SQL é utilizado para remover todos os registros de uma tabela sem remover a estrutura da tabela?\n",
+
+      "options": [
+        "A) DROP TABLE",
+        "B) DELETE FROM",
+        "C) TRUNCATE TABLE",
+        "D) ALTER TABLE",
+        "E) REMOVE TABLE"
+      ],
+      "answer": "C",
+      "explanation": "TRUNCATE TABLE remove todas as linhas de uma tabela de forma mais rápida que DELETE (não gera log individual) e reseta contadores de auto-incremento, mantendo a estrutura."
+    },
+    {
+      "question": "Qual banco de dados NoSQL é baseado em documentos JSON (BSON) e é amplamente utilizado por sua flexibilidade e escalabilidade?\n",
+
+      "options": [
+        "A) MySQL",
+        "B) PostgreSQL",
+        "C) MongoDB",
+        "D) Redis",
+        "E) SQLite"
+      ],
+      "answer": "C",
+      "explanation": "MongoDB é um banco de dados NoSQL orientado a documentos que armazena dados em formato BSON (similar a JSON), permitindo esquemas flexíveis."
+    },
+    {
+      "question": "Na análise de algoritmos, a notação Big O é utilizada para descrever:\n",
+
+      "options": [
+        "A) O tempo exato de execução em milissegundos.",
+        "B) A quantidade de memória utilizada em bytes.",
+        "C) O comportamento assintótico do algoritmo no pior caso.",
+        "D) O número de linhas de código do algoritmo.",
+        "E) A versão do algoritmo."
+      ],
+      "answer": "C",
+      "explanation": "A notação Big O descreve o comportamento de um algoritmo em termos de tempo ou espaço à medida que o tamanho da entrada cresce, focando no pior caso e ignorando constantes."
+    },
+    {
+      "question": "Qual estrutura de dados opera no princípio LIFO (Last In, First Out)?\n",
+
+      "options": [
+        "A) Fila (Queue)",
+        "B) Pilha (Stack)",
+        "C) Lista encadeada",
+        "D) Árvore binária",
+        "E) Grafo"
+      ],
+      "answer": "B",
+      "explanation": "Pilha é uma estrutura de dados linear que segue a política LIFO: o último elemento inserido é o primeiro a ser removido."
+    },
+    {
+      "question": "Em uma árvore binária de busca, para encontrar um elemento, a complexidade média é:\n",
+
+      "options": [
+        "A) O(1)",
+        "B) O(n)",
+        "C) O(log n)",
+        "D) O(n log n)",
+        "E) O(n²)"
+      ],
+      "answer": "C",
+      "explanation": "Em uma árvore binária de busca balanceada, a cada comparação o espaço de busca é reduzido pela metade, resultando em complexidade O(log n) para busca, inserção e remoção no caso médio."
+    },
+    {
+      "question": "O que é Big Data?\n",
+
+      "options": [
+        "A) Um banco de dados muito grande, com mais de 1 terabyte.",
+        "B) Conjuntos de dados tão volumosos que não podem ser processados por ferramentas tradicionais, caracterizados por volume, velocidade e variedade.",
+        "C) Uma técnica de compressão de dados.",
+        "D) Um tipo de rede de alta velocidade.",
+        "E) Um framework JavaScript."
+      ],
+      "answer": "B",
+      "explanation": "Big Data refere-se a conjuntos de dados cujo tamanho, velocidade de geração e variedade de formatos excedem a capacidade de processamento de sistemas tradicionais, exigindo novas arquiteturas."
+    },
+    {
+      "question": "No contexto de Inteligência Artificial, o que é Deep Learning?\n",
+
+      "options": [
+        "A) Um algoritmo de busca em profundidade.",
+        "B) Uma técnica de aprendizado de máquina baseada em redes neurais com múltiplas camadas.",
+        "C) Um método de compressão de dados.",
+        "D) Um tipo de banco de dados profundo.",
+        "E) Uma técnica de programação linear."
+      ],
+      "answer": "B",
+      "explanation": "Deep Learning é uma subárea do Machine Learning que utiliza redes neurais artificiais com muitas camadas (profundas) para aprender representações hierárquicas de dados."
+    },
+    {
+      "question": "O que é computação quântica?\n",
+
+      "options": [
+        "A) Computadores que usam bits quânticos (qubits) que podem representar 0 e 1 simultaneamente, permitindo paralelismo massivo.",
+        "B) Computadores extremamente rápidos baseados em silício.",
+        "C) Uma rede de computadores quânticos interligados.",
+        "D) Um algoritmo de criptografia.",
+        "E) Um tipo de memória RAM."
+      ],
+      "answer": "A",
+      "explanation": "Computação quântica utiliza princípios da mecânica quântica, como superposição (qubits em múltiplos estados) e emaranhamento, para realizar cálculos potencialmente muito mais rápidos que computadores clássicos em certos problemas."
+    },
+    {
+      "question": "No Power BI, o que é um DAX?\n",
+
+      "options": [
+        "A) Uma linguagem de programação para criar visuais personalizados.",
+        "B) Uma linguagem de fórmulas para criar cálculos em modelos de dados.",
+        "C) Um tipo de gráfico dinâmico.",
+        "D) Um conector de dados para Excel.",
+        "E) Uma ferramenta de ETL."
+      ],
+      "answer": "B",
+      "explanation": "DAX (Data Analysis Expressions) é a linguagem de fórmulas do Power BI, Analysis Services e Power Pivot para criar colunas calculadas, medidas e tabelas no modelo de dados."
+    },
+    {
+      "question": "Em um dashboard interativo, qual recurso permite que o usuário selecione um valor em um gráfico e automaticamente filtre os demais visuais?\n",
+
+      "options": [
+        "A) Drill down",
+        "B) Cross-filtering",
+        "C) Tooltip",
+        "D) Bookmark",
+        "E) Drill through"
+      ],
+      "answer": "B",
+      "explanation": "Cross-filtering é o recurso que permite que a seleção em um visual filtre ou destaque dados relacionados em outros visuais da página."
+    },
+    {
+      "question": "Qual das seguintes opções é uma medida de desempenho de banco de dados que indica o número de transações por segundo?\n",
+
+      "options": [
+        "A) IOPS",
+        "B) Throughput",
+        "C) Latência",
+        "D) TPS (Transactions Per Second)",
+        "E) MTBF"
+      ],
+      "answer": "D",
+      "explanation": "TPS (Transactions Per Second) é uma métrica que mede quantas transações completas um sistema de banco de dados pode processar por segundo."
+    },
+    {
+      "question": "Em redes de computadores, o que é um proxy?\n",
+
+      "options": [
+        "A) Um dispositivo que roteia pacotes entre redes.",
+        "B) Um servidor que atua como intermediário entre clientes e outros servidores.",
+        "C) Um protocolo de segurança.",
+        "D) Um tipo de firewall de aplicação.",
+        "E) Um switch gerenciável."
+      ],
+      "answer": "B",
+      "explanation": "Um proxy é um servidor intermediário que recebe requisições de clientes e as encaminha para outros servidores, podendo oferecer cache, anonimato, filtro de conteúdo, etc."
+    },
+    {
+      "question": "Qual das alternativas descreve corretamente a diferença entre Internet e Intranet?\n",
+
+      "options": [
+        "A) Internet é pública e global; Intranet é privada e restrita a uma organização.",
+        "B) Internet é mais rápida que Intranet.",
+        "C) Internet usa TCP/IP; Intranet usa protocolos diferentes.",
+        "D) Intranet é uma versão mais segura da Internet.",
+        "E) Internet é a rede mundial de computadores, enquanto Intranet é uma rede local sem fio."
+      ],
+      "answer": "A",
+      "explanation": "Internet é a rede mundial de computadores, acessível publicamente. Intranet é uma rede privada, pertencente a uma organização, que utiliza os mesmos protocolos da Internet (TCP/IP) mas com acesso restrito."
+    },
+    {
+      "question": "O que é blockchain?\n",
+
+      "options": [
+        "A) Um banco de dados relacional distribuído.",
+        "B) Uma estrutura de dados em que blocos de informação são encadeados de forma segura e imutável, usando criptografia.",
+        "C) Um protocolo de roteamento.",
+        "D) Um tipo de firewall.",
+        "E) Uma linguagem de programação."
+      ],
+      "answer": "B",
+      "explanation": "Blockchain é um registro digital distribuído e descentralizado, composto por blocos de dados encadeados e protegidos por hash criptográficos, garantindo imutabilidade e transparência."
+    },
+    {
+      "question": "Em um algoritmo de ordenação, qual a complexidade do Bubble Sort no pior caso?\n",
+
+      "options": [
+        "A) O(n)",
+        "B) O(log n)",
+        "C) O(n log n)",
+        "D) O(n²)",
+        "E) O(2ⁿ)"
+      ],
+      "answer": "D",
+      "explanation": "Bubble Sort tem complexidade O(n²) no pior e no caso médio, pois requer múltiplas passagens comparando e trocando elementos adjacentes."
+    },
+    {
+      "question": "O que é um NAS (Network Attached Storage)?\n",
+
+      "options": [
+        "A) Um dispositivo de armazenamento conectado diretamente a um computador.",
+        "B) Um servidor de armazenamento conectado à rede, que fornece acesso a arquivos para múltiplos clientes.",
+        "C) Uma rede de alta velocidade para datacenters.",
+        "D) Um protocolo de transferência de arquivos.",
+        "E) Um tipo de SSD."
+      ],
+      "answer": "B",
+      "explanation": "NAS é um dispositivo de armazenamento dedicado conectado à rede que permite o compartilhamento de arquivos entre múltiplos dispositivos clientes, funcionando como um servidor de arquivos."
+    },
+    {
+      "question": "Qual tecnologia emergente é baseada na criação de ambientes virtuais imersivos, acessíveis via internet, onde usuários interagem com espaços e objetos digitais?\n",
+
+      "options": [
+        "A) Realidade Aumentada",
+        "B) Realidade Virtual",
+        "C) Metaverso",
+        "D) IoT",
+        "E) Edge Computing"
+      ],
+      "answer": "C",
+      "explanation": "Metaverso é um conceito de mundo virtual persistente e compartilhado, acessível pela internet, onde usuários interagem através de avatares em ambientes 3D imersivos."
+    },
+    {
+      "question": "Em Python, qual das seguintes opções cria uma lista com os números pares de 0 a 10?\n",
+
+      "options": [
+        "A) [x for x in range(11) if x % 2 == 0]",
+        "B) [x for x in range(0,11,2)]",
+        "C) list(filter(lambda x: x%2==0, range(11)))",
+        "D) Todas as anteriores",
+        "E) Apenas A e B"
+      ],
+      "answer": "D",
+      "explanation": "Todas as três formas criam a mesma lista de pares: A usa list comprehension com condicional, B usa range com passo 2, C usa filter com função lambda."
+    },
+    {
+      "question": "O que é um contêiner Docker?\n",
+
+      "options": [
+        "A) Uma máquina virtual completa com sistema operacional próprio.",
+        "B) Uma unidade padronizada de software que empacota código e dependências para executar de forma isolada.",
+        "C) Um banco de dados NoSQL.",
+        "D) Um serviço de armazenamento em nuvem.",
+        "E) Um orquestrador de clusters."
+      ],
+      "answer": "B",
+      "explanation": "Contêiner Docker é uma unidade leve e executável que empacota código, bibliotecas e dependências, compartilhando o kernel do host e oferecendo isolamento em nível de processo."
+    },
+    {
+      "question": "No contexto de segurança, o que é autenticação multifator (MFA)?\n",
+
+      "options": [
+        "A) O uso de múltiplas senhas para acessar um sistema.",
+        "B) A exigência de dois ou mais fatores de verificação independentes (algo que você sabe, algo que você tem, algo que você é).",
+        "C) A autenticação em múltiplos sistemas simultaneamente.",
+        "D) Um tipo de criptografia de múltiplas camadas.",
+        "E) A verificação de identidade por meio de múltiplos servidores."
+      ],
+      "answer": "B",
+      "explanation": "MFA requer pelo menos dois fatores de categorias diferentes: conhecimento (senha), posse (token, celular) e herança (biometria)."
+    },
+    {
+      "question": "No modelo TCP/IP, qual camada é responsável pela comunicação confiável entre processos de aplicações em hosts diferentes?\n",
+
+      "options": [
+        "A) Aplicação",
+        "B) Transporte",
+        "C) Internet",
+        "D) Rede",
+        "E) Enlace"
+      ],
+      "answer": "B",
+      "explanation": "A camada de Transporte (TCP/UDP) é responsável pela comunicação fim-a-fim entre processos, garantindo (no caso do TCP) confiabilidade, controle de fluxo e correção de erros."
+    },
+    {
+      "question": "Qual comando no Linux é utilizado para alterar permissões de arquivos e diretórios?\n",
+
+      "options": ["A) chown", "B) chmod", "C) chgrp", "D) umask", "E) ls -l"],
+      "answer": "B",
+      "explanation": "`chmod` (change mode) é o comando utilizado para modificar as permissões de leitura, escrita e execução de arquivos e diretórios no Linux."
+    },
+    {
+      "question": "No Excel, qual função retorna o maior valor em um intervalo?\n",
+
+      "options": ["A) MÁXIMO", "B) MAIOR", "C) TOP", "D) MÁX", "E) MAXA"],
+      "answer": "A",
+      "explanation": "A função MÁXIMO (MAX em inglês) retorna o maior valor numérico de um conjunto de valores. MAIOR retorna o k-ésimo maior valor."
+    },
+    {
+      "question": "O que significa a sigla IAAS em computação em nuvem?\n",
+
+      "options": [
+        "A) Internet As A Service",
+        "B) Infrastructure As A Service",
+        "C) Integration As A Service",
+        "D) Intelligence As A Service",
+        "E) Information As A Service"
+      ],
+      "answer": "B",
+      "explanation": "IaaS (Infrastructure as a Service) é o modelo de nuvem que fornece infraestrutura virtualizada (servidores, armazenamento, redes) sob demanda."
+    },
+    {
+      "question": "Em Ruby on Rails, qual é o padrão arquitetural utilizado?\n",
+
+      "options": [
+        "A) MVC (Model-View-Controller)",
+        "B) MVVM (Model-View-ViewModel)",
+        "C) MVP (Model-View-Presenter)",
+        "D) Clean Architecture",
+        "E) Hexagonal Architecture"
+      ],
+      "answer": "A",
+      "explanation": "Ruby on Rails é um framework web que segue fortemente o padrão MVC (Model-View-Controller), separando a lógica de negócios, apresentação e controle."
+    },
+    {
+      "question": "Qual das seguintes opções é uma característica da Web 3.0?\n",
+
+      "options": [
+        "A) Páginas estáticas com pouco interatividade.",
+        "B) Redes sociais centralizadas.",
+        "C) Descentralização, blockchain e inteligência semântica.",
+        "D) Foco em conteúdo gerado pelo usuário.",
+        "E) Uso exclusivo de HTTP."
+      ],
+      "answer": "C",
+      "explanation": "Web 3.0 (ou Web3) é um conceito que inclui descentralização, blockchain, contratos inteligentes, tokens e inteligência semântica, buscando dar mais controle aos usuários."
+    }
+  ]
+}

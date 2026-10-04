@@ -1,0 +1,823 @@
+{
+  "title": "Direito Civil III: Direito dos Contratos",
+  "type": "mc",
+  "engine": "Claude",
+  "questions": [
+    {
+      "question": "Segundo a classificação dos fatos jurídicos, o contrato se enquadra como:",
+      "options": [
+        "A) Fato natural, pois independe da vontade humana",
+        "B) Ato ilícito bilateral, pois gera dever de indenizar",
+        "C) Negócio jurídico bilateral, por envolver manifestações convergentes de vontade",
+        "D) Ato jurídico em sentido estrito, pois seus efeitos são fixados pela lei",
+        "E) Fato não jurídico, pois não tem relevância para o ordenamento"
+      ],
+      "answer": "C",
+      "explanation": "O contrato é negócio jurídico bilateral: exige pelo menos duas vontades convergentes e seus efeitos são escolhidos pelas partes dentro dos limites da lei."
+    },
+    {
+      "question": "Na Escada Ponteana, qual é a ordem correta de análise dos planos do negócio jurídico?",
+      "options": [
+        "A) Eficácia → Validade → Existência",
+        "B) Validade → Existência → Eficácia",
+        "C) Existência → Eficácia → Validade",
+        "D) Existência → Validade → Eficácia",
+        "E) Validade → Eficácia → Existência"
+      ],
+      "answer": "D",
+      "explanation": "Pontes de Miranda sistematizou: primeiro verifica-se se o negócio existe; existindo, analisa-se sua validade; válido, examina-se sua eficácia. Nunca se pode pular degraus."
+    },
+    {
+      "question": "São elementos essenciais do plano da EXISTÊNCIA do negócio jurídico:",
+      "options": [
+        "A) Capacidade, vontade livre, objeto lícito e forma prescrita",
+        "B) Agente, objeto, vontade e forma",
+        "C) Condição, termo, encargo e vontade",
+        "D) Agente capaz, objeto determinável e motivo lícito",
+        "E) Forma pública, objeto certo e ausência de dolo"
+      ],
+      "answer": "B",
+      "explanation": "Para o plano da existência são necessários: agente, objeto, vontade (expressa ou silêncio conclusivo) e forma. A ausência de qualquer desses elementos torna o negócio inexistente."
+    },
+    {
+      "question": "Um negócio jurídico inexistente:",
+      "options": [
+        "A) Pode ser convalidado pelo decurso do tempo",
+        "B) Gera efeitos relativos entre as partes",
+        "C) É nulo, podendo ser arguido por qualquer interessado",
+        "D) Não produz efeito algum e não pode ser invalidado",
+        "E) É anulável, sendo arguível apenas pelo prejudicado"
+      ],
+      "answer": "D",
+      "explanation": "O negócio inexistente simplesmente não chegou a existir — não há o que invalidar nem tornar eficaz. Não produz efeito algum."
+    },
+    {
+      "question": "A sanção pelo descumprimento dos requisitos do plano da VALIDADE é:",
+      "options": [
+        "A) A inexistência do negócio",
+        "B) A ineficácia relativa do negócio",
+        "C) A nulidade absoluta ou relativa (anulabilidade)",
+        "D) A rescisão automática do contrato",
+        "E) A resolução por onerosidade excessiva"
+      ],
+      "answer": "C",
+      "explanation": "No plano da validade, o descumprimento dos requisitos dos arts. 104 e 166 do CC gera nulidade absoluta (vício grave) ou nulidade relativa/anulabilidade (vício menos grave)."
+    },
+    {
+      "question": "Qual das seguintes hipóteses configura NULIDADE ABSOLUTA?",
+      "options": [
+        "A) Contrato celebrado por incapaz relativo",
+        "B) Contrato com vício de dolo",
+        "C) Contrato celebrado sob coação",
+        "D) Contrato com objeto ilícito",
+        "E) Contrato com erro substancial"
+      ],
+      "answer": "D",
+      "explanation": "Objeto ilícito gera nulidade absoluta (art. 166, II do CC). As demais hipóteses — incapaz relativo, erro, dolo e coação — geram anulabilidade (nulidade relativa)."
+    },
+    {
+      "question": "Sobre a diferença entre negócio NULO e ANULÁVEL, é correto afirmar que:",
+      "options": [
+        "A) O nulo pode ser arguido apenas pelo prejudicado; o anulável por qualquer interessado",
+        "B) O nulo convalesce pelo tempo; o anulável não convalesce",
+        "C) O nulo não convalesce pelo tempo; o anulável possui prazo decadencial para ser arguido",
+        "D) Ambos podem ser arguidos pelo Ministério Público",
+        "E) O nulo protege o interesse particular; o anulável contraria a ordem pública"
+      ],
+      "answer": "C",
+      "explanation": "O negócio nulo não convalesce com o tempo e pode ser arguido por qualquer interessado ou pelo MP. O anulável protege o interesse particular, convalesce pelo decurso do prazo decadencial e só pode ser arguido pelo prejudicado."
+    },
+    {
+      "question": "O art. 426 do CC, que veda o pacta corvina, proíbe:",
+      "options": [
+        "A) A cessão de crédito sem anuência do devedor",
+        "B) Contratos que tenham por objeto herança de pessoa viva",
+        "C) A venda de bem alheio sem autorização do proprietário",
+        "D) Contratos celebrados com motivo ilícito comum às partes",
+        "E) A doação que exceda a parte disponível da herança"
+      ],
+      "answer": "B",
+      "explanation": "O pacta corvina é nulo absolutamente: é o contrato que tem por objeto herança de pessoa viva (art. 426 CC). Ex.: herdeiros combinando como dividirão o patrimônio do pai ainda vivo."
+    },
+    {
+      "question": "No plano da EFICÁCIA, a condição suspensiva:",
+      "options": [
+        "A) Encerra os efeitos do negócio quando ocorre",
+        "B) É evento futuro e certo que inicia os efeitos",
+        "C) É evento futuro e incerto que suspende os efeitos até ocorrer",
+        "D) Impõe obrigação acessória a quem se beneficia",
+        "E) Fixa data futura e certa para início dos efeitos"
+      ],
+      "answer": "C",
+      "explanation": "A condição suspensiva é evento futuro e INCERTO que mantém suspensos os efeitos do negócio até sua ocorrência. Ex.: contrato só vale se o comprador obtiver financiamento."
+    },
+    {
+      "question": "A teoria do 'comportamento socialmente típico' implica que:",
+      "options": [
+        "A) Somente contratos escritos têm validade jurídica",
+        "B) O silêncio nunca pode ser interpretado como manifestação de vontade",
+        "C) Condutas reconhecíveis pela ordem social geram obrigações, mesmo sem declaração expressa",
+        "D) Apenas negócios jurídicos formais produzem deveres contratuais",
+        "E) O contrato exige sempre duas declarações expressas de vontade"
+      ],
+      "answer": "C",
+      "explanation": "O comportamento socialmente típico gera obrigações contratuais sem declaração expressa. Ex.: entrar no ônibus e sentar implica contrato de transporte formado, sem qualquer palavra."
+    },
+    {
+      "question": "O silêncio de uma parte no contrato, segundo o art. 111 do CC, importa anuência quando:",
+      "options": [
+        "A) A parte silente for incapaz relativo",
+        "B) O contrato for de execução diferida",
+        "C) As circunstâncias ou os usos o autorizarem e não for necessária declaração expressa",
+        "D) O proponente expressamente exigir manifestação de vontade",
+        "E) O contrato tiver objeto indeterminável"
+      ],
+      "answer": "C",
+      "explanation": "Art. 111 CC: o silêncio importa anuência quando as circunstâncias ou os usos o autorizarem, e não for necessária a declaração de vontade expressa. É exceção — a regra é que quem cala está negando."
+    },
+    {
+      "question": "A chamada 'constitucionalização do direito civil' refere-se a:",
+      "options": [
+        "A) A subordinação do Código Civil às normas administrativas",
+        "B) A leitura do CC/2002 em consonância com os valores da CF/88",
+        "C) A revogação dos princípios clássicos dos contratos pela Constituição",
+        "D) A transferência da competência para legislar sobre contratos ao Congresso",
+        "E) A aplicação do direito civil apenas nas relações entre o Estado e o particular"
+      ],
+      "answer": "B",
+      "explanation": "A constitucionalização do direito civil — ou direito civil-constitucional — consiste na leitura do CC/2002 à luz dos valores irradiados pela CF/88, como dignidade da pessoa humana, solidariedade e justiça social."
+    },
+    {
+      "question": "A 'funcionalização dos interesses patrimoniais aos existenciais' significa que:",
+      "options": [
+        "A) Os interesses financeiros sempre prevalecem sobre os existenciais",
+        "B) A liberdade contratual não sofre qualquer limitação constitucional",
+        "C) Os interesses patrimoniais devem estar a serviço dos interesses existenciais",
+        "D) O Estado pode intervir livremente em qualquer contrato privado",
+        "E) A função social dos contratos é mero elemento acidental"
+      ],
+      "answer": "C",
+      "explanation": "Os interesses patrimoniais (dinheiro, bens) devem estar a serviço dos interesses existenciais (dignidade, liberdade, saúde), e não o contrário."
+    },
+    {
+      "question": "A Teoria da Confiança, no âmbito dos contratos, estabelece que:",
+      "options": [
+        "A) Somente a vontade interna das partes tem relevância jurídica",
+        "B) O contrato só é válido se houver declaração expressa de ambas as partes",
+        "C) Quem cria expectativas legítimas no outro fica vinculado por elas, independentemente da vontade original",
+        "D) A boa-fé subjetiva prevalece sobre a boa-fé objetiva",
+        "E) A confiança só produz efeitos após a celebração do contrato definitivo"
+      ],
+      "answer": "C",
+      "explanation": "A teoria da confiança é moderna: a vontade importa, mas também importa a confiança legítima que uma parte deposita na outra. Quem cria expectativas legítimas fica vinculado por elas — mesmo que não fosse isso que queria originalmente."
+    },
+    {
+      "question": "O princípio clássico 'pacta sunt servanda' fundamenta-se em:",
+      "options": [
+        "A) A função social do contrato e a proteção do terceiro",
+        "B) A revisão judicial quando há desequilíbrio grave superveniente",
+        "C) A segurança jurídica e previsibilidade nas relações econômicas",
+        "D) A boa-fé objetiva como norma de conduta",
+        "E) O solidarismo constitucional e a justiça social"
+      ],
+      "answer": "C",
+      "explanation": "'Pacta sunt servanda' — o contrato faz lei entre as partes — funda-se na segurança jurídica e previsibilidade. Foi relativizado pela teoria da imprevisão e pela onerosidade excessiva."
+    },
+    {
+      "question": "O princípio da relatividade dos efeitos contratuais (res inter alios acta) foi relativizado pela função social porque:",
+      "options": [
+        "A) Passou a permitir que qualquer terceiro possa exigir o cumprimento do contrato",
+        "B) Contratos passaram a produzir efeitos perante terceiros — prejudicando-os ou beneficiando-os",
+        "C) A relatividade foi extinta pelo CC/2002",
+        "D) Somente o Estado pode invocar a relatividade dos contratos",
+        "E) A relatividade aplica-se apenas aos contratos gratuitos"
+      ],
+      "answer": "B",
+      "explanation": "A função social relativizou a res inter alios acta: contratos produzem efeitos perante terceiros — tanto os prejudicam (terceiro prejudicado) quanto os beneficiam (terceiro beneficiado)."
+    },
+    {
+      "question": "A boa-fé OBJETIVA difere da boa-fé SUBJETIVA porque:",
+      "options": [
+        "A) A boa-fé objetiva é estado interno de crença; a subjetiva é norma de conduta",
+        "B) A boa-fé objetiva é uma norma de conduta; a subjetiva é um estado interno de convicção",
+        "C) A boa-fé objetiva só se aplica após a celebração do contrato",
+        "D) A boa-fé subjetiva gera deveres de informação e lealdade",
+        "E) Ambas são normas de conduta com os mesmos efeitos jurídicos"
+      ],
+      "answer": "B",
+      "explanation": "Boa-fé subjetiva é estado de crença interna ('eu não sabia que causava dano'). Boa-fé objetiva é norma de conduta — padrão de comportamento de lealdade e honestidade, irrelevante o que a parte pensava."
+    },
+    {
+      "question": "A função LIMITATIVA da boa-fé objetiva está prevista no art. 187 do CC e trata do:",
+      "options": [
+        "A) Dever de interpretar negócios conforme a boa-fé",
+        "B) Dever de guardar boa-fé antes, durante e após o contrato",
+        "C) Abuso de direito, quando o exercício excede os limites da boa-fé",
+        "D) Venire contra factum proprium como figura parcelar",
+        "E) Dever de mitigar o próprio prejuízo"
+      ],
+      "answer": "C",
+      "explanation": "Art. 187: abuso de direito ocorre quando o titular exercita um direito excedendo os limites impostos pela boa-fé, bons costumes e fins econômicos e sociais. Gera dever de indenizar."
+    },
+    {
+      "question": "A figura parcelar da boa-fé objetiva denominada 'venire contra factum proprium' proíbe:",
+      "options": [
+        "A) O credor de cobrar juros retroativamente após anos sem cobrança",
+        "B) O comportamento contraditório que frustra expectativa legítima criada no outro",
+        "C) O devedor inadimplente de exigir a prestação do credor",
+        "D) O exercício do direito de resolução por onerosidade excessiva",
+        "E) A revisão contratual em contratos aleatórios"
+      ],
+      "answer": "B",
+      "explanation": "Venire contra factum proprium proíbe o comportamento contraditório: ninguém pode se beneficiar da própria contradição após ter criado expectativa legítima na outra parte."
+    },
+    {
+      "question": "A 'supressio' (Verwirkung) consiste em:",
+      "options": [
+        "A) Surgimento de um direito novo pela tolerância prolongada",
+        "B) Exceção contra quem age com dolo",
+        "C) Perda de um direito pelo seu não exercício prolongado que cria expectativa legítima",
+        "D) Dever de mitigar o próprio prejuízo",
+        "E) Dever de cumprir o contrato mesmo com onerosidade excessiva"
+      ],
+      "answer": "C",
+      "explanation": "Supressio é a perda de um direito pelo não exercício prolongado que cria expectativa legítima de que não seria mais exercido. Ex.: credor que nunca cobrou juros por anos não pode cobrar retroativamente."
+    },
+    {
+      "question": "Para a resolução por ONEROSIDADE EXCESSIVA (art. 478 CC), são exigidos TRÊS requisitos cumulativos:",
+      "options": [
+        "A) Culpa de uma das partes, prejuízo, e nexo causal",
+        "B) Contrato bilateral, erro substancial e evento previsível",
+        "C) Contrato de execução continuada ou diferida; evento superveniente, extraordinário e imprevisível; e prestação excessivamente onerosa com extrema vantagem para a outra parte",
+        "D) Inadimplemento, resolução extrajudicial e dano emergente",
+        "E) Motivo ilícito, onerosidade originária e vantagem para terceiro"
+      ],
+      "answer": "C",
+      "explanation": "Art. 478 CC exige cumulativamente: (1) contrato de execução continuada ou diferida; (2) evento superveniente, extraordinário e imprevisível; (3) prestação de uma parte tornando-se excessivamente onerosa, com extrema vantagem para a outra."
+    },
+    {
+      "question": "A Teoria do Adimplemento Substancial estabelece que:",
+      "options": [
+        "A) O contrato só é cumprido quando 100% das prestações são quitadas",
+        "B) Quem cumpriu quase tudo do contrato não pode ter o negócio resolvido por inadimplemento ínfimo",
+        "C) O devedor que paga substancialmente pode exigir desconto no saldo restante",
+        "D) O inadimplemento parcial nunca gera direito de resolução",
+        "E) O credor deve aceitar qualquer forma de pagamento parcial como adimplemento"
+      ],
+      "answer": "B",
+      "explanation": "A teoria do adimplemento substancial, derivada da boa-fé objetiva, impede a resolução do contrato quando o devedor cumpriu quase a integralidade da obrigação. Ex.: comprador que pagou 47 de 48 parcelas."
+    },
+    {
+      "question": "A Súmula 537 do STJ exemplifica a função social dos contratos porque:",
+      "options": [
+        "A) Permite a revisão de contratos por onerosidade excessiva",
+        "B) Veda o pacta corvina nos contratos imobiliários",
+        "C) Admite que a seguradora seja condenada solidariamente com o segurado a indenizar a vítima",
+        "D) Estabelece que contratos de adesão devem ser interpretados favoravelmente ao aderente",
+        "E) Determina que a proposta ao público vincula o fornecedor"
+      ],
+      "answer": "C",
+      "explanation": "A Súmula 537 STJ é exemplo de função social: o contrato de seguro produziu efeitos perante a vítima (terceiro), que pode cobrar diretamente da seguradora — o contrato vai além das partes."
+    },
+    {
+      "question": "A figura da 'tu quoque' na boa-fé objetiva significa que:",
+      "options": [
+        "A) O credor que nunca cobrou não pode cobrar retroativamente",
+        "B) Ninguém pode se beneficiar do próprio comportamento contraditório",
+        "C) Quem violou a norma não pode exigir que o outro a cumpra",
+        "D) O devedor deve mitigar o próprio prejuízo antes de acionar o credor",
+        "E) O terceiro cúmplice responde solidariamente pelo inadimplemento"
+      ],
+      "answer": "C",
+      "explanation": "Tu quoque: quem violou a norma não pode exigir que o outro a cumpra. Ex.: comprador inadimplente não pode exigir a entrega do bem."
+    },
+    {
+      "question": "O 'duty to mitigate the loss', derivado da boa-fé objetiva:",
+      "options": [
+        "A) Obriga o devedor a cumprir integralmente a prestação antes de exigir a do credor",
+        "B) Impede o credor de cobrar juros retroativos após prolongado silêncio",
+        "C) Obriga o credor a não agravar passivamente o dano para depois cobrar mais",
+        "D) Proíbe o comportamento contraditório do contratante",
+        "E) Permite ao credor resolver o contrato por inadimplemento mínimo"
+      ],
+      "answer": "C",
+      "explanation": "Duty to mitigate the loss (Enunciado 169 JDC): dever de mitigar o próprio prejuízo — o credor não pode agravar passivamente o dano para depois cobrar mais. É desdobramento da boa-fé objetiva."
+    },
+    {
+      "question": "O critério que distingue contratos TÍPICOS de ATÍPICOS é:",
+      "options": [
+        "A) Se o contrato é bilateral ou unilateral",
+        "B) Se o contrato tem previsão legal e regime jurídico próprio",
+        "C) Se o contrato é oneroso ou gratuito",
+        "D) Se o contrato é consensual ou real",
+        "E) Se o contrato é comutativo ou aleatório"
+      ],
+      "answer": "B",
+      "explanation": "Contrato típico tem previsão legal — dispõe de regime jurídico próprio no CC ou leis especiais. Atípico não tem regulamentação legal específica; as partes criam o regime."
+    },
+    {
+      "question": "O art. 425 do CC autoriza a celebração de contratos atípicos, desde que:",
+      "options": [
+        "A) As partes estejam representadas por advogado",
+        "B) O contrato seja celebrado por escritura pública",
+        "C) Sejam observadas as normas gerais fixadas no Código Civil",
+        "D) O objeto tenha valor superior a 30 salários mínimos",
+        "E) Haja cláusula de revisão por onerosidade excessiva"
+      ],
+      "answer": "C",
+      "explanation": "Art. 425 CC: é lícito às partes estipular contratos atípicos, observadas as normas gerais fixadas no Código."
+    },
+    {
+      "question": "Um contrato REAL se distingue do consensual porque:",
+      "options": [
+        "A) Exige forma especificada em lei além do acordo",
+        "B) Exige a tradição (entrega da coisa) além do acordo de vontades",
+        "C) Basta o acordo de vontades para sua formação",
+        "D) Seus efeitos dependem de registro público",
+        "E) Somente produz efeitos entre as partes"
+      ],
+      "answer": "B",
+      "explanation": "Contrato real exige a tradição (entrega da coisa) além do acordo. Ex.: mútuo, depósito, comodato, penhor. Sem a entrega, o contrato não se perfaz."
+    },
+    {
+      "question": "Segundo o art. 108 do CC, a escritura pública é essencial nos negócios jurídicos sobre imóveis de valor:",
+      "options": [
+        "A) Acima de 10 salários mínimos",
+        "B) Acima de 20 salários mínimos",
+        "C) Acima de 30 salários mínimos",
+        "D) Acima de 50 salários mínimos",
+        "E) Qualquer que seja o valor"
+      ],
+      "answer": "C",
+      "explanation": "Art. 108 CC: a escritura pública é essencial à validade dos negócios jurídicos sobre imóveis de valor superior a 30 salários mínimos — exceção expressa à liberdade de forma."
+    },
+    {
+      "question": "Nos contratos GRATUITOS (benéficos), em relação à responsabilidade por culpa:",
+      "options": [
+        "A) Ambas as partes respondem por culpa com igual rigor",
+        "B) Nenhuma das partes responde por culpa",
+        "C) Responde por culpa apenas o contratante a quem o contrato aproveita",
+        "D) A responsabilidade é sempre objetiva",
+        "E) Apenas o Estado pode responsabilizar o beneficiário"
+      ],
+      "answer": "C",
+      "explanation": "Art. 392 CC: nos contratos benéficos, responde por culpa apenas o contratante a quem o contrato aproveite; por dolo, o que o não favoreça. Nos onerosos, ambas as partes respondem por culpa."
+    },
+    {
+      "question": "A distinção entre contrato GRATUITO e DESINTERESSADO é:",
+      "options": [
+        "A) No gratuito, nenhuma parte perde patrimônio; no desinteressado, uma parte perde",
+        "B) No gratuito, uma parte perde patrimônio; no desinteressado, nenhuma parte perde",
+        "C) O desinteressado é espécie de contrato oneroso",
+        "D) Ambos os conceitos são sinônimos no CC/2002",
+        "E) O gratuito dispensa a manifestação de vontade do beneficiário"
+      ],
+      "answer": "B",
+      "explanation": "No contrato gratuito, uma parte experimenta diminuição patrimonial (o doador perde o bem). No desinteressado, nenhuma parte perde patrimônio — há ausência de qualquer atribuição patrimonial. Ex.: depósito gratuito."
+    },
+    {
+      "question": "O contrato BILATERAL (sinalagmático) admite a exceção de contrato não cumprido porque:",
+      "options": [
+        "A) As obrigações são independentes uma da outra",
+        "B) As obrigações são recíprocas e interdependentes — são causa uma da outra",
+        "C) O sinalagma elimina qualquer risco para as partes",
+        "D) Apenas os contratos bilaterais podem ser revisados judicialmente",
+        "E) A bilateralidade implica responsabilidade objetiva"
+      ],
+      "answer": "B",
+      "explanation": "No bilateral, as obrigações são recíprocas e interdependentes — o sinalagma significa que cada prestação é causa da outra. Por isso, art. 476: nenhuma parte pode exigir o cumprimento do outro sem antes cumprir a própria obrigação."
+    },
+    {
+      "question": "A doação com encargo é classificada como:",
+      "options": [
+        "A) Onerosa e unilateral",
+        "B) Gratuita e unilateral",
+        "C) Gratuita e bilateral",
+        "D) Onerosa e bilateral",
+        "E) Desinteressada e plurilateral"
+      ],
+      "answer": "C",
+      "explanation": "A doação com encargo é contrato gratuito (o doador experimenta diminuição patrimonial sem equivalente) e bilateral (o donatário tem obrigação — o encargo — que é contraprestação acessória)."
+    },
+    {
+      "question": "O mútuo feneratício (com juros) é classificado como:",
+      "options": [
+        "A) Gratuito e bilateral",
+        "B) Oneroso e bilateral",
+        "C) Oneroso e unilateral",
+        "D) Gratuito e unilateral",
+        "E) Real e gratuito"
+      ],
+      "answer": "C",
+      "explanation": "O mútuo feneratício é oneroso (há cobrança de juros — vantagem para o mutuante) e unilateral (após a entrega do dinheiro, só o mutuário permanece obrigado)."
+    },
+    {
+      "question": "No contrato ALEATÓRIO, em regra, NÃO se admite revisão por imprevisão porque:",
+      "options": [
+        "A) O contrato é sempre celebrado por instrumento público",
+        "B) O risco é da essência do contrato aleatório",
+        "C) A álea é elemento acidental nos contratos aleatórios",
+        "D) O CDC proíbe a revisão desse tipo de contrato",
+        "E) A imprevisão só se aplica a contratos gratuitos"
+      ],
+      "answer": "B",
+      "explanation": "Nos contratos aleatórios, uma ou ambas as prestações dependem de evento futuro e incerto (álea). O risco é da essência, por isso em regra não admite revisão — salvo se o evento estiver fora da álea assumida (Enunciado 440 JDC)."
+    },
+    {
+      "question": "O Enunciado 440 das Jornadas de Direito Civil estabelece que contratos aleatórios ADMITEM revisão quando:",
+      "options": [
+        "A) O evento gerador do desequilíbrio se relaciona diretamente com a álea assumida",
+        "B) O evento superveniente, extraordinário e imprevisível NÃO se relaciona com a álea assumida",
+        "C) Uma das partes for hipossuficiente na relação contratual",
+        "D) O contrato for de adesão e o aderente for consumidor",
+        "E) O objeto do contrato for imóvel registrado no CRI"
+      ],
+      "answer": "B",
+      "explanation": "Enunciado 440 JDC: é possível revisão em contratos aleatórios se o evento superveniente, extraordinário e imprevisível NÃO se relacione com a álea assumida. Ex.: seca em venda de safra futura é risco assumido; desastre nuclear não é."
+    },
+    {
+      "question": "Nos contratos de ADESÃO, o art. 423 do CC determina que cláusulas ambíguas ou contraditórias sejam interpretadas:",
+      "options": [
+        "A) Em favor do proponente, para garantir a previsibilidade",
+        "B) Literalmente, sem qualquer integração",
+        "C) Favoravelmente ao aderente",
+        "D) Pelo árbitro escolhido pelas partes",
+        "E) À luz do costume local, independentemente da vontade das partes"
+      ],
+      "answer": "C",
+      "explanation": "Art. 423 CC: cláusulas ambíguas ou contraditórias em contratos de adesão são interpretadas de forma mais favorável ao aderente — norma protetiva que controla o abuso do poder de estipulação."
+    },
+    {
+      "question": "No contrato de EXECUÇÃO DIFERIDA:",
+      "options": [
+        "A) A prestação é cumprida de uma só vez, desde a celebração",
+        "B) A prestação é cindida em parcelas periódicas",
+        "C) A exigibilidade é adiada — sujeita a termo inicial ou condição suspensiva",
+        "D) O contrato exige tradição para se perfazer",
+        "E) Ambas as partes cumprem simultaneamente"
+      ],
+      "answer": "C",
+      "explanation": "Execução diferida: exigibilidade adiada, sujeita a termo inicial ou condição suspensiva. Ex.: entrega futura de mercadoria. Difere da execução imediata (cumprimento instantâneo) e da execução sucessiva (parcelas periódicas)."
+    },
+    {
+      "question": "No contrato PLURILATERAL:",
+      "options": [
+        "A) Há apenas duas partes com obrigações recíprocas",
+        "B) Há mais de duas partes e pluralidade de obrigações de cada parte perante as demais",
+        "C) Apenas uma das partes assume obrigações",
+        "D) O sinalagma é substituído pela unilateralidade das prestações",
+        "E) Os efeitos são restritos às partes e nunca atingem terceiros"
+      ],
+      "answer": "B",
+      "explanation": "Contrato plurilateral: mais de duas partes — pluralidade de partes E de obrigações. Ex.: contrato de sociedade — cada sócio tem obrigações perante todos os demais sócios."
+    },
+    {
+      "question": "O acessório segue o principal (accessorium sequitur principale) implica que:",
+      "options": [
+        "A) O contrato acessório pode subsistir mesmo após a nulidade do principal",
+        "B) A nulidade do contrato principal não afeta o acessório",
+        "C) Se o contrato principal é nulo, o acessório também é nulo",
+        "D) O acessório pode ser mais amplo que o principal",
+        "E) A eficácia do principal depende da validade do acessório"
+      ],
+      "answer": "C",
+      "explanation": "Nos contratos acessórios (como a fiança), aplica-se o princípio accessorium sequitur principale: se o principal é nulo, o acessório também é. Ex.: fiança é acessório do contrato de locação (principal)."
+    },
+    {
+      "question": "A proposta de contrato, para vincular o proponente, deve ser:",
+      "options": [
+        "A) Necessariamente escrita e com firma reconhecida",
+        "B) Séria e precisa — contendo os elementos essenciais do contrato",
+        "C) Feita exclusivamente de forma presencial",
+        "D) Acompanhada de arras confirmatórias",
+        "E) Notificada ao oblato por meio judicial"
+      ],
+      "answer": "B",
+      "explanation": "A proposta deve ser: (a) séria — demonstrar intenção real de contratar; (b) precisa — conter os elementos essenciais do contrato a ser celebrado (partes, objeto, preço). Art. 427 CC."
+    },
+    {
+      "question": "A diferença entre RETIRADA e RETRATAÇÃO da proposta é que:",
+      "options": [
+        "A) Retirada ocorre após o oblato ter conhecimento; retratação, antes",
+        "B) Retirada ocorre antes de a proposta chegar ao oblato; retratação, após chegada",
+        "C) Retirada é sempre permitida; retratação é sempre proibida",
+        "D) Ambas ocorrem antes da formação do contrato e são sinônimas",
+        "E) Retirada depende de autorização judicial; retratação não"
+      ],
+      "answer": "B",
+      "explanation": "Retirada = revogação antes de a proposta chegar ao oblato (sem vinculação — pode revogar livremente). Retratação = revogação após chegar ao destinatário (a proposta já vinculou — só cabe nas hipóteses do art. 428 CC)."
+    },
+    {
+      "question": "O aceite com MODIFICAÇÕES produz o seguinte efeito jurídico:",
+      "options": [
+        "A) Forma o contrato com as modificações introduzidas pelo aceitante",
+        "B) É considerado nova proposta, invertendo os polos da relação",
+        "C) Torna a proposta original irrevogável por 30 dias",
+        "D) Sujeita o aceitante à multa por descumprimento",
+        "E) Configura adimplemento substancial da proposta original"
+      ],
+      "answer": "B",
+      "explanation": "Art. 431 CC: o aceite com modificações equivale a uma nova proposta. Os polos se invertem: quem 'aceitou' com modificações passa a ser o proponente."
+    },
+    {
+      "question": "Para contratos entre AUSENTES, o Brasil adota, como regra geral do art. 434 do CC:",
+      "options": [
+        "A) A teoria da cognição — formação quando o proponente toma conhecimento do aceite",
+        "B) A subteoria da declaração — formação quando o aceitante declara internamente",
+        "C) A subteoria da expedição (mitigada) — formação quando o aceite é enviado",
+        "D) A subteoria da recepção — formação quando o aceite chega ao proponente",
+        "E) A teoria da informação — formação quando ambas as partes estão cientes"
+      ],
+      "answer": "C",
+      "explanation": "Art. 434 CC: Brasil adota a subteoria da expedição (mitigada) — o contrato entre ausentes se forma quando a aceitação é expedida (enviada), salvo as três exceções do próprio artigo."
+    },
+    {
+      "question": "Uma das MITIGAÇÕES à subteoria da expedição (art. 434 CC) é que o contrato NÃO se forma na expedição quando:",
+      "options": [
+        "A) O aceite for enviado por meio eletrônico",
+        "B) A proposta for feita a destinatários indeterminados",
+        "C) O aceitante se retratou antes ou simultaneamente à chegada do aceite",
+        "D) O proponente for pessoa jurídica de direito público",
+        "E) O objeto do contrato for serviço de natureza personalíssima"
+      ],
+      "answer": "C",
+      "explanation": "Uma das três mitigações do art. 434: o contrato não se forma na expedição se o aceitante se retratou antes ou simultaneamente à chegada do aceite ao proponente."
+    },
+    {
+      "question": "Quanto ao LUGAR da celebração do contrato, o art. 435 do CC adota o critério:",
+      "options": [
+        "A) Do domicílio do aceitante",
+        "B) Do lugar onde o aceite foi enviado",
+        "C) Do domicílio do credor da prestação",
+        "D) Do lugar onde a proposta foi feita (proposição)",
+        "E) Do foro eleito pelas partes no instrumento contratual"
+      ],
+      "answer": "D",
+      "explanation": "Art. 435 CC: critério da proposição — o contrato se considera celebrado no lugar onde foi proposto, não onde foi aceito. Isso garante segurança jurídica para fixação de competência."
+    },
+    {
+      "question": "A responsabilidade civil pré-contratual decorre da violação da boa-fé objetiva durante as:",
+      "options": [
+        "A) Tratativas — negociações preliminares à proposta",
+        "B) Cláusulas gerais dos contratos de adesão",
+        "C) Obrigações acessórias do contrato definitivo",
+        "D) Arras penitenciais fixadas no contrato preliminar",
+        "E) Condições suspensivas do plano de eficácia"
+      ],
+      "answer": "A",
+      "explanation": "A boa-fé objetiva (art. 422 CC) deve ser observada ANTES do contrato, durante as tratativas. Quem rompe tratativas avançadas abruptamente, após criar expectativa legítima, responde pelos danos — mesmo sem contrato celebrado."
+    },
+    {
+      "question": "A oferta ao público (art. 429 CC), quando feita sem ressalva expressa:",
+      "options": [
+        "A) Não vincula o proponente, pois é mero convite ao público",
+        "B) Equivale a proposta vinculante para destinatários indeterminados",
+        "C) Só vincula nas relações de consumo reguladas pelo CDC",
+        "D) Exige aceitação formal por escrito para formar o contrato",
+        "E) É considerada proposta entre ausentes independentemente das circunstâncias"
+      ],
+      "answer": "B",
+      "explanation": "Art. 429 CC: a proposta feita a destinatários indeterminados equivale a proposta vinculante — salvo ressalva expressa. Ex.: anúncio de imóvel com preço fixo, produto exposto na vitrine."
+    },
+    {
+      "question": "O CDC art. 49 assegura ao consumidor que realizou compra pela internet:",
+      "options": [
+        "A) Prazo de 15 dias para arrependimento, contado da contratação",
+        "B) Prazo de 7 dias para arrependimento, contado da entrega do produto",
+        "C) Direito de troca imediata sem qualquer prazo",
+        "D) Revisão judicial do preço em caso de onerosidade superveniente",
+        "E) Prazo de 30 dias para devolução do produto com defeito oculto"
+      ],
+      "answer": "B",
+      "explanation": "CDC, art. 49: direito de arrependimento de 7 dias nas compras fora do estabelecimento comercial (incluindo internet) — prazo conta da entrega do produto."
+    },
+    {
+      "question": "Quanto ao tempo da formação de contratos ENTRE PRESENTES, a proposta:",
+      "options": [
+        "A) Deve ser aceita no prazo máximo de 30 dias",
+        "B) Deve ser aceita imediatamente, sob pena de caducar",
+        "C) Só pode ser aceita após análise prévia de 3 dias",
+        "D) Pode ser aceita por silêncio após 15 dias sem manifestação",
+        "E) Vincula o proponente por prazo razoável para resposta"
+      ],
+      "answer": "B",
+      "explanation": "Art. 428, I CC: para contratos entre presentes, a proposta deve ser aceita imediatamente — o proponente não fica vinculado além do momento da recusa ou do silêncio."
+    },
+    {
+      "question": "A retratação do ACEITE (art. 433 CC) é eficaz apenas quando:",
+      "options": [
+        "A) For comunicada ao proponente em até 48 horas",
+        "B) Chegar ao proponente antes ou simultaneamente ao aceite",
+        "C) For feita por instrumento escrito e registrado",
+        "D) O proponente ainda não tiver cumprido sua parte do contrato",
+        "E) For acompanhada de justificativa formal e prova de prejuízo zero"
+      ],
+      "answer": "B",
+      "explanation": "Art. 433 CC: o aceite é ineficaz se a retratação chegar ao proponente ANTES ou SIMULTANEAMENTE ao aceite. Após a chegada do aceite, o contrato já está formado."
+    },
+    {
+      "question": "Nos contratos eletrônicos, o 'clique em confirmar compra' equivale a:",
+      "options": [
+        "A) Retirada da proposta antes de chegar ao oblato",
+        "B) Expedição do aceite, marcando o momento de formação do contrato",
+        "C) Recepção do aceite pelo proponente",
+        "D) Retratação do aceite antes da chegada ao proponente",
+        "E) Declaração interna não exteriorizada do aceitante"
+      ],
+      "answer": "B",
+      "explanation": "Nos contratos eletrônicos, aplica-se analogicamente a subteoria da expedição (art. 434 CC). O clique em 'confirmar compra' equivale à expedição do aceite — momento de formação do contrato."
+    },
+    {
+      "question": "Para contratos internacionais, a LINDB adota, quanto ao lugar do contrato:",
+      "options": [
+        "A) O critério do lugar do aceite",
+        "B) O critério do domicílio do credor da prestação",
+        "C) O critério do lugar da execução da obrigação",
+        "D) O critério do domicílio do proponente",
+        "E) O critério do lugar do objeto do contrato"
+      ],
+      "answer": "D",
+      "explanation": "LINDB, art. 9º, §2º: nos contratos internacionais (elemento estrangeiro), a obrigação se reputa constituída no lugar onde o PROPONENTE tem domicílio. Exceção ao art. 435 CC (lugar da proposição)."
+    },
+    {
+      "question": "O contrato preliminar (pré-contrato) cria exclusivamente:",
+      "options": [
+        "A) A transferência imediata de propriedade do bem",
+        "B) Uma obrigação de fazer: celebrar o contrato definitivo",
+        "C) Direito real de aquisição oponível erga omnes",
+        "D) A eficácia jurídica equivalente ao contrato definitivo",
+        "E) Presunção absoluta de propriedade em favor do compromissário"
+      ],
+      "answer": "B",
+      "explanation": "O contrato preliminar NÃO conclui o negócio. Seu único efeito jurídico é criar uma obrigação de fazer: a de celebrar o contrato definitivo."
+    },
+    {
+      "question": "Qual é a FUNÇÃO CENTRAL do contrato preliminar?",
+      "options": [
+        "A) Transferir imediatamente a propriedade do imóvel",
+        "B) Evitar o pagamento de tributos sobre a transferência",
+        "C) Garantir segurança jurídica no intervalo entre o acordo e a conclusão do negócio",
+        "D) Substituir a escritura pública nos negócios imobiliários",
+        "E) Criar direitos reais de garantia sobre o bem"
+      ],
+      "answer": "C",
+      "explanation": "A função central do contrato preliminar é a segurança jurídica no intervalo entre o acordo e a conclusão do negócio. Sem ele, qualquer parte poderia desistir sem consequências."
+    },
+    {
+      "question": "Segundo o art. 462 do CC, o contrato preliminar:",
+      "options": [
+        "A) Exige a mesma forma que o contrato definitivo, mas dispensa o conteúdo essencial",
+        "B) Dispensa tanto o conteúdo essencial quanto a forma do contrato definitivo",
+        "C) Deve conter todos os requisitos essenciais ao contrato definitivo, exceto quanto à forma",
+        "D) Exige escritura pública sempre que o objeto for imóvel",
+        "E) Só é válido se registrado no Cartório de Registro de Imóveis"
+      ],
+      "answer": "C",
+      "explanation": "Art. 462 CC: o contrato preliminar, exceto quanto à FORMA, deve conter todos os requisitos essenciais ao contrato definitivo. Conteúdo é obrigatório; forma é dispensada."
+    },
+    {
+      "question": "Um contrato preliminar de compra e venda de imóvel celebrado por instrumento particular é:",
+      "options": [
+        "A) Inválido, pois imóveis exigem escritura pública",
+        "B) Inexistente, por ausência de forma solene",
+        "C) Válido, pois o art. 462 dispensa a forma do contrato definitivo",
+        "D) Anulável, por vício de forma relativo",
+        "E) Nulo, por fraude à lei imperativa"
+      ],
+      "answer": "C",
+      "explanation": "Art. 462 dispensa a forma do definitivo no preliminar. Mesmo que o definitivo exija escritura pública (imóvel > 30 SM), o preliminar pode ser celebrado por instrumento particular — válido."
+    },
+    {
+      "question": "O contrato preliminar FIRME se distingue do PRECÁRIO porque:",
+      "options": [
+        "A) No firme, há cláusula de arrependimento; no precário, não há",
+        "B) No firme, não há direito de desistir após a assinatura; no precário, a cláusula de arrependimento permite desistir",
+        "C) O firme exige registro no CRI; o precário, não",
+        "D) O firme só vincula o promitente vendedor; o precário, ambas as partes",
+        "E) O precário é contrato definitivo; o firme é contrato preliminar"
+      ],
+      "answer": "B",
+      "explanation": "Contrato FIRME: sem cláusula de arrependimento — a desistência injustificada é inadimplemento. Contrato PRECÁRIO: com cláusula de arrependimento — permite desistir sem inadimplemento, mas com o custo das arras penitenciais."
+    },
+    {
+      "question": "Pelas arras penitenciais (art. 420 CC), se o VENDEDOR desistir do contrato:",
+      "options": [
+        "A) Perde o sinal recebido",
+        "B) Devolve o sinal em dobro",
+        "C) Fica sujeito apenas a perdas e danos",
+        "D) Pode reter o sinal como indenização",
+        "E) Nada deve, pois a cláusula de arrependimento o isenta"
+      ],
+      "answer": "B",
+      "explanation": "Art. 420 CC: se quem desistiu foi quem recebeu o sinal (vendedor), deve devolver o dobro do que recebeu. Se quem desistiu foi quem pagou o sinal (comprador), perde o valor pago."
+    },
+    {
+      "question": "Diante do inadimplemento do contrato preliminar, o credor pode optar pela ADJUDICAÇÃO COMPULSÓRIA, que significa:",
+      "options": [
+        "A) Cobrar multa contratual e resolver o negócio",
+        "B) Pedir ao juiz que dissolva o contrato e fixe indenização",
+        "C) Pedir ao juiz que supra a declaração de vontade do inadimplente, com sentença que substitui o contrato definitivo",
+        "D) Registrar unilateralmente a promessa no CRI sem ação judicial",
+        "E) Exigir a devolução do sinal em dobro"
+      ],
+      "answer": "C",
+      "explanation": "Adjudicação compulsória (art. 464 CC): o credor pede ao juiz que supra a declaração de vontade do devedor inadimplente. A sentença produz os mesmos efeitos que o contrato definitivo e é registrável no CRI."
+    },
+    {
+      "question": "A alternativa à adjudicação compulsória, em caso de inadimplemento do preliminar, é:",
+      "options": [
+        "A) A anulação do contrato por vício de vontade",
+        "B) A revisão judicial por onerosidade excessiva",
+        "C) A resolução do contrato com direito a indenização por perdas e danos",
+        "D) A retomada da posse por meio de ação possessória",
+        "E) A declaração de nulidade por objeto indeterminável"
+      ],
+      "answer": "C",
+      "explanation": "O credor tem DUAS alternativas: (1) adjudicação compulsória — quer o bem; (2) resolução (art. 465 CC) + perdas e danos — não quer mais o bem. A escolha é do credor prejudicado."
+    },
+    {
+      "question": "O Enunciado 95 das Jornadas de Direito Civil estabelece que a adjudicação compulsória contra o VENDEDOR:",
+      "options": [
+        "A) Exige obrigatoriamente o registro da promessa no CRI",
+        "B) Não pode ser cumulada com perdas e danos",
+        "C) Não exige registro da promessa para a ação contra o vendedor",
+        "D) Só é cabível em contratos celebrados por escritura pública",
+        "E) Depende de prévia notificação extrajudicial do vendedor"
+      ],
+      "answer": "C",
+      "explanation": "Enunciado 95 JDC (e Súmula 239 STJ): a adjudicação compulsória contra o vendedor não exige registro da promessa. Sem registro, o comprador ainda pode acionar o vendedor — mas não terceiros."
+    },
+    {
+      "question": "Sem registro no CRI, o direito do promitente comprador na promessa de compra e venda é:",
+      "options": [
+        "A) Direito real oponível a terceiros",
+        "B) Direito real de aquisição com eficácia erga omnes",
+        "C) Direito pessoal (obrigacional) com efeito apenas inter partes",
+        "D) Direito de propriedade pleno sobre o imóvel",
+        "E) Direito de superfície registrável no CRI"
+      ],
+      "answer": "C",
+      "explanation": "SEM registro no CRI: o promitente comprador tem apenas direito pessoal (obrigacional) — vale somente entre as partes. O remédio em caso de descumprimento é perdas e danos (em regra)."
+    },
+    {
+      "question": "COM registro no CRI, a promessa de compra e venda confere ao promitente comprador:",
+      "options": [
+        "A) Apenas o direito de receber perdas e danos do vendedor",
+        "B) Direito real de aquisição com oponibilidade erga omnes",
+        "C) Direito pessoal com eficácia limitada ao vendedor",
+        "D) Direito de propriedade plena, dispensando escritura definitiva",
+        "E) Direito de retenção sobre o imóvel enquanto durar a construção"
+      ],
+      "answer": "B",
+      "explanation": "COM registro no CRI: surge direito real de aquisição (arts. 1.417, 1.418 e 1.225, VII CC) — oponível erga omnes. O promitente comprador pode perseguir o imóvel onde quer que esteja, inclusive em mãos de terceiros."
+    },
+    {
+      "question": "A Súmula 308 do STJ estabelece que a hipoteca firmada pela construtora com o agente financeiro:",
+      "options": [
+        "A) Prevalece sobre a promessa de compra e venda, se anterior a ela",
+        "B) Tem eficácia plena perante todos, inclusive os adquirentes de boa-fé",
+        "C) Não tem eficácia perante os adquirentes do imóvel, independentemente de ser anterior ou posterior à promessa",
+        "D) Só é ineficaz se o comprador tiver registrado a promessa no CRI",
+        "E) Vincula o adquirente apenas se ele tiver ciência da hipoteca"
+      ],
+      "answer": "C",
+      "explanation": "Súmula 308 STJ: a hipoteca entre construtora e agente financeiro, anterior ou posterior à promessa, NÃO tem eficácia perante os adquirentes do imóvel. O banco sabia que as unidades seriam vendidas — o risco é do credor hipotecário."
+    },
+    {
+      "question": "O Enunciado 30 das Jornadas de Direito Civil esclarece que o registro da promessa de compra e venda é fator de:",
+      "options": [
+        "A) Validade — sem registro, a promessa é nula",
+        "B) Existência — sem registro, a promessa é inexistente",
+        "C) Eficácia perante terceiros — sem registro, o contrato é válido mas inoponível a terceiros",
+        "D) Publicidade formal, sem nenhuma consequência jurídica adicional",
+        "E) Prescrição — sem registro, o prazo prescricional começa a correr"
+      ],
+      "answer": "C",
+      "explanation": "Enunciado 30 JDC: o registro é fator de EFICÁCIA perante terceiros, não de validade. Sem registro: o contrato é válido entre as partes. Com registro: adquire oponibilidade erga omnes."
+    },
+    {
+      "question": "A promessa de PERMUTA de imóveis, segundo o Enunciado 435 das Jornadas de Direito Civil:",
+      "options": [
+        "A) Não é registrável, pois apenas a compra e venda admite registro",
+        "B) É título registrável, com os mesmos efeitos dos arts. 1.417 e 1.418 CC",
+        "C) Só produz efeitos entre as partes, sem possibilidade de registro",
+        "D) Exige escritura pública para ter eficácia perante terceiros",
+        "E) É inválida por ausência de previsão legal específica no CC"
+      ],
+      "answer": "B",
+      "explanation": "Enunciado 435 JDC: a promessa de permuta de imóveis também é título registrável. Os efeitos dos arts. 1.417 e 1.418 CC estendem-se à promessa de troca."
+    },
+    {
+      "question": "Na promessa de compra e venda, o promitente VENDEDOR se distingue do vendedor definitivo porque:",
+      "options": [
+        "A) Já transferiu a propriedade do bem ao promitente comprador",
+        "B) Comprometeu-se a alienar o bem — ainda não o vendeu",
+        "C) Pode vender o bem a terceiro enquanto durar o prazo de arrependimento",
+        "D) Tem sua obrigação extinta com o registro do contrato no CRI",
+        "E) Responde apenas por perdas e danos em caso de inadimplemento"
+      ],
+      "answer": "B",
+      "explanation": "O 'promitente' vendedor comprometeu-se a alienar o bem — ainda não vendeu. O prefixo 'promitente' indica que as partes ainda não realizaram o negócio definitivo; apenas comprometeram-se a fazê-lo."
+    }
+  ]
+}
