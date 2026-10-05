@@ -2,13 +2,13 @@
   "expo": {
     "name": "QuizzV",
     "slug": "QuizzV",
-    "version": "1.8.0",
+    "version": "1.8.1",
     "scheme": "quizzv",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "com.kauan.quizzv",
-      "buildNumber": "6",
+      "buildNumber": "7",
       "supportsTablet": true,
       "infoPlist": {
         "CFBundleDocumentTypes": [
@@ -117,7 +117,7 @@
           ]
         }
       ],
-      "versionCode": 6
+      "versionCode": 7
     },
     "web": {
       "favicon": "./assets/images/favicon.png"
