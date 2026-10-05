@@ -8,6 +8,7 @@ import {
   Animated,
   Easing,
   FlatList,
+  LayoutAnimation,
   Modal,
   Pressable,
   StyleSheet,
@@ -26,7 +27,6 @@ import {
   FolderEditor,
   FolderTile,
   MoveSheet,
-  NewFolderTile,
 } from "../components/folders";
 import {
   Button,
@@ -37,6 +37,7 @@ import {
   ProgressBar,
   Sheet,
   showSnackbar,
+  useReduceMotion,
 } from "../components/ui";
 import { exportToPdf } from "../services/pdfService";
 import {
@@ -103,6 +104,15 @@ export default function HomeScreen({ navigation, route }) {
   const rects = useRef([]);
   const measuredAt = useRef(0);
   const ghost = useRef(new Animated.ValueXY()).current;
+  const ghostScale = useRef(new Animated.Value(1)).current;
+  const ghostOpacity = useRef(new Animated.Value(1)).current;
+  const dockIn = useRef(new Animated.Value(0)).current;
+  const ghostSize = useRef({ width: 0, height: 0 });
+  const origin = useRef(null); // onde o card fantasma nasceu (janela e tela)
+  const hoverRect = useRef(null);
+  const dropping = useRef(false); // animação de soltar em andamento
+  const [landed, setLanded] = useState(null); // { id, at }: pasta que acabou de receber um quiz
+  const reduce = useReduceMotion();
   const dragQuiz = useRef(null);
   const dragActive = useRef(false); // o toque que solta o card não abre o quiz
   const hoverRef = useRef(undefined);
@@ -127,8 +137,14 @@ export default function HomeScreen({ navigation, route }) {
     }).start();
   };
 
-  const loadQuizzes = async () => {
+  // animate: a lista se reacomoda suavemente (quiz movido, pasta criada ou apagada)
+  const loadQuizzes = async (animate = false) => {
     const [list, dirs] = await Promise.all([getQuizzes(), getFolders()]);
+    if (animate && !reduce) {
+      LayoutAnimation.configureNext(
+        LayoutAnimation.create(240, LayoutAnimation.Types.easeInEaseOut, LayoutAnimation.Properties.opacity),
+      );
+    }
     setQuizzes(list);
     setFolders(dirs);
     setLoading(false);
@@ -293,7 +309,7 @@ export default function HomeScreen({ navigation, route }) {
           onPress: async () => {
             await deleteQuiz(quiz.id);
             showSnackbar("Quiz excluído");
-            loadQuizzes();
+            loadQuizzes(true);
           },
         },
       ],
@@ -312,7 +328,7 @@ export default function HomeScreen({ navigation, route }) {
     await moveQuiz(quiz.id, targetId);
     const name = folders.find((f) => f.id === targetId)?.name;
     showSnackbar(name ? `Movido para “${name}”` : "Movido para fora das pastas");
-    loadQuizzes();
+    loadQuizzes(true);
   };
 
   const saveFolder = async ({ name, color }) => {
@@ -330,7 +346,7 @@ export default function HomeScreen({ navigation, route }) {
     }
     setEditing(null);
     setMoveAfterCreate(null);
-    loadQuizzes();
+    loadQuizzes(true);
   };
 
   const confirmDeleteFolder = () => {
@@ -353,7 +369,7 @@ export default function HomeScreen({ navigation, route }) {
             await deleteFolder(target.id);
             showSnackbar("Pasta excluída");
             if (folderId === target.id) navigation.goBack();
-            else loadQuizzes();
+            else loadQuizzes(true);
           },
         },
       ],
@@ -382,10 +398,23 @@ export default function HomeScreen({ navigation, route }) {
     dragQuiz.current = quiz;
     haptic("tap");
     ghost.setValue({ x: 0, y: 0 });
-    // o card fantasma nasce exatamente onde o card estava
-    containerRef.current?.measureInWindow((cx, cy) =>
-      setDrag({ quiz, left: e.absoluteX - e.x - cx, top: e.absoluteY - e.y - cy }),
-    );
+    ghostOpacity.setValue(1);
+    ghostScale.setValue(1);
+    dockIn.setValue(0);
+    // o card fantasma nasce exatamente onde o card estava e "descola" da lista
+    containerRef.current?.measureInWindow((cx, cy) => {
+      const left = e.absoluteX - e.x - cx;
+      const top = e.absoluteY - e.y - cy;
+      origin.current = { cx, cy, left, top };
+      setDrag({ quiz, left, top });
+      if (!reduce) Animated.spring(ghostScale, { toValue: 1.04, friction: 6, tension: 160, useNativeDriver: true }).start();
+      Animated.timing(dockIn, {
+        toValue: 1,
+        duration: 200,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
+    });
     measureTargets();
   };
 
@@ -395,27 +424,100 @@ export default function HomeScreen({ navigation, route }) {
     const hit = rects.current.find(
       (r) => e.absoluteX >= r.x && e.absoluteX <= r.x + r.w && e.absoluteY >= r.y && e.absoluteY <= r.y + r.h,
     );
+    hoverRect.current = hit ?? null;
     const id = hit ? hit.id.replace(/^dock:/, "") : undefined;
     if (id === hoverRef.current) return;
     hoverRef.current = id;
     setHover(id);
     if (id) haptic("tap");
+    // em cima de uma pasta o card encolhe, como se fosse entrar nela
+    if (!reduce) {
+      Animated.spring(ghostScale, {
+        toValue: id ? 0.9 : 1.04,
+        friction: 7,
+        tension: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const cleanupDrag = () => {
+    dropping.current = false;
+    setDrag(null);
+    setHover(undefined);
+    hoverRef.current = undefined;
+    hoverRect.current = null;
+    rects.current = [];
+    setTimeout(() => (dragActive.current = false), 150);
   };
 
   const endDrag = (e) => {
     const quiz = dragQuiz.current;
     const target = hoverRef.current;
-    if (target) doMove(quiz, target === ROOT ? null : target);
-    // segurou e soltou sem arrastar: abre a lista de pastas, como antes
-    else if (Math.hypot(e.translationX, e.translationY) < 12) openMove(quiz);
+    const rect = hoverRect.current;
+    const o = origin.current;
+
+    if (target && rect && o) {
+      // Soltou numa pasta: o card voa até o centro dela e some lá dentro
+      dropping.current = true;
+      const land = () => {
+        haptic("success");
+        setLanded({ id: target, at: Date.now() });
+        cleanupDrag();
+        doMove(quiz, target === ROOT ? null : target);
+      };
+      if (reduce) {
+        Animated.timing(ghostOpacity, { toValue: 0, duration: 120, useNativeDriver: true }).start(land);
+        return;
+      }
+      const { width: w, height: h } = ghostSize.current;
+      const centerX = o.cx + o.left + w / 2 + e.translationX;
+      const centerY = o.cy + o.top + h / 2 + e.translationY;
+      Animated.parallel([
+        Animated.timing(ghost, {
+          toValue: {
+            x: e.translationX + rect.x + rect.w / 2 - centerX,
+            y: e.translationY + rect.y + rect.h / 2 - centerY,
+          },
+          duration: 300,
+          easing: Easing.inOut(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(ghostScale, {
+          toValue: 0.12,
+          duration: 300,
+          easing: Easing.in(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(ghostOpacity, {
+          toValue: 0,
+          duration: 160,
+          delay: 140,
+          useNativeDriver: true,
+        }),
+      ]).start(land);
+    } else if (Math.hypot(e.translationX, e.translationY) < 12) {
+      // segurou e soltou sem arrastar: abre a lista de pastas, como antes
+      cleanupDrag();
+      openMove(quiz);
+    } else if (!reduce) {
+      // soltou fora de uma pasta: o card volta para o lugar dele
+      dropping.current = true;
+      Animated.parallel([
+        Animated.timing(ghost, {
+          toValue: { x: 0, y: 0 },
+          duration: 240,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(ghostScale, { toValue: 1, duration: 240, useNativeDriver: true }),
+      ]).start(cleanupDrag);
+    }
   };
 
+  // fim do gesto (inclusive cancelado): limpa, a não ser que uma animação de soltar cuide disso
   const finishDrag = () => {
-    setDrag(null);
-    setHover(undefined);
-    hoverRef.current = undefined;
-    rects.current = [];
-    setTimeout(() => (dragActive.current = false), 150);
+    if (!dropping.current) cleanupDrag();
   };
 
   const dragGesture = (quiz) =>
@@ -572,31 +674,50 @@ export default function HomeScreen({ navigation, route }) {
       )}
 
       {showFolders && (
-        <>
-          <Text style={[type.label, styles.sectionTitle, { color: colors.textMuted }]}>
-            {folderId ? "Subpastas" : "Pastas"}
-            {subfolders.length ? ` · ${subfolders.length}` : ""}
-          </Text>
-          <View style={styles.folderGrid}>
-            {subfolders.map((f) => (
-              <FolderTile
-                key={f.id}
-                innerRef={setTargetRef(f.id)}
-                active={hover === f.id}
-                folder={f}
-                count={counts[f.id] || 0}
-                subCount={childFolders(folders, f.id).length}
-                width={tileWidth}
-                onPress={() => navigation.push("Pasta", { folderId: f.id })}
-                onLongPress={() => {
-                  haptic("tap");
-                  setEditing(f);
-                }}
-              />
-            ))}
-            <NewFolderTile width={tileWidth} sub={!!folderId} onPress={() => setEditing("new")} />
+        <View style={styles.folderSection}>
+          <View style={styles.sectionRow}>
+            <Text style={[type.label, { flex: 1, color: colors.textMuted }]} numberOfLines={1}>
+              {subfolders.length
+                ? `${folderId ? "Subpastas" : "Pastas"} · ${subfolders.length}`
+                : folderId
+                  ? "Nenhuma subpasta"
+                  : "Nenhuma pasta ainda"}
+            </Text>
+            <Pressable
+              onPress={() => setEditing("new")}
+              accessibilityRole="button"
+              hitSlop={6}
+              android_ripple={{ color: colors.border }}
+              style={styles.newFolder}
+            >
+              <Ionicons name="add" size={18} color={colors.primary} />
+              <Text style={[type.label, { color: colors.primary }]}>
+                {folderId ? "Nova subpasta" : "Nova pasta"}
+              </Text>
+            </Pressable>
           </View>
-        </>
+          {subfolders.length > 0 && (
+            <View style={styles.folderGrid}>
+              {subfolders.map((f) => (
+                <FolderTile
+                  key={f.id}
+                  innerRef={setTargetRef(f.id)}
+                  active={hover === f.id}
+                  landed={landed?.id === f.id ? landed.at : undefined}
+                  folder={f}
+                  count={counts[f.id] || 0}
+                  subCount={childFolders(folders, f.id).length}
+                  width={tileWidth}
+                  onPress={() => navigation.push("Pasta", { folderId: f.id })}
+                  onLongPress={() => {
+                    haptic("tap");
+                    setEditing(f);
+                  }}
+                />
+              ))}
+            </View>
+          )}
+        </View>
       )}
 
       {(filtered.length > 0 || searching) && (inScope > 0 || folderId) && (
@@ -670,9 +791,19 @@ export default function HomeScreen({ navigation, route }) {
       />
 
       {drag && dockTargets.length > 0 && (
-        <View
+        <Animated.View
           pointerEvents="none"
-          style={[styles.dock, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          style={[
+            styles.dock,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              opacity: dockIn,
+              transform: reduce
+                ? []
+                : [{ translateY: dockIn.interpolate({ inputRange: [0, 1], outputRange: [-12, 0] }) }],
+            },
+          ]}
         >
           <Text style={[type.caption, { color: colors.textMuted }]}>Solte numa pasta para mover</Text>
           <View style={styles.dockRow}>
@@ -707,12 +838,13 @@ export default function HomeScreen({ navigation, route }) {
               );
             })}
           </View>
-        </View>
+        </Animated.View>
       )}
 
       {drag && (
         <Animated.View
           pointerEvents="none"
+          onLayout={(e) => (ghostSize.current = e.nativeEvent.layout)}
           style={[
             styles.card,
             styles.ghost,
@@ -722,11 +854,8 @@ export default function HomeScreen({ navigation, route }) {
               width: width - 32,
               backgroundColor: colors.surface,
               borderColor: hover ? colors.accent : colors.border,
-              transform: [
-                ...ghost.getTranslateTransform(),
-                { scale: hover ? 0.92 : 1.03 },
-                { rotate: "-1.5deg" },
-              ],
+              opacity: ghostOpacity,
+              transform: [...ghost.getTranslateTransform(), { scale: ghostScale }, { rotate: "-1.5deg" }],
             },
           ]}
         >
@@ -916,6 +1045,18 @@ const styles = StyleSheet.create({
   },
   searchInput: { flex: 1, paddingVertical: 10 },
   sectionTitle: { marginTop: 4 },
+  folderSection: { gap: 10, marginTop: 4 },
+  sectionRow: { flexDirection: "row", alignItems: "center", gap: 12, minHeight: 36 },
+  newFolder: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    minHeight: 36,
+    paddingHorizontal: 10,
+    marginRight: -10, // o texto alinha com a borda do grid; a área de toque continua grande
+    borderRadius: radius.sm,
+    overflow: "hidden",
+  },
   folderGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
   card: {
     borderRadius: radius.lg,

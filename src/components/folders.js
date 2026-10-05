@@ -1,10 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { radius, readable, type } from "../theme";
-import { Button, Field, ListItem, Sheet } from "./ui";
+import { Button, Field, ListItem, Sheet, useReduceMotion } from "./ui";
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export const FOLDER_COLORS = [
   "#F97316", // laranja
@@ -53,16 +55,38 @@ export const useFolderTint = (hex) => {
   return readable(hex || FOLDER_COLORS[0], 3, colors.surface);
 };
 
-/** `active`: um quiz arrastado está em cima desta pasta. */
-export function FolderTile({ folder, count, subCount = 0, width, active, innerRef, onPress, onLongPress }) {
+/**
+ * `active`: um quiz arrastado está em cima (a pasta se abre).
+ * `landed`: muda a cada quiz que cai aqui (a pasta "engole" o quiz).
+ */
+export function FolderTile({ folder, count, subCount = 0, width, active, landed, innerRef, onPress, onLongPress }) {
   const { colors } = useTheme();
   const tint = useFolderTint(folder.color);
+  const reduce = useReduceMotion();
+  const scale = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    if (reduce) return;
+    Animated.spring(scale, {
+      toValue: active ? 1.05 : 1,
+      friction: 7,
+      tension: 180,
+      useNativeDriver: true,
+    }).start();
+  }, [active, reduce]);
+
+  useEffect(() => {
+    if (!landed || reduce) return;
+    scale.setValue(0.9); // engole e volta com um leve balanço
+    Animated.spring(scale, { toValue: 1, friction: 5, tension: 170, useNativeDriver: true }).start();
+  }, [landed]);
+
   const summary =
     [subCount ? plural(subCount, "pasta", "pastas") : null, count ? plural(count, "quiz", "quizzes") : null]
       .filter(Boolean)
       .join(" · ") || "Vazia";
   return (
-    <Pressable
+    <AnimatedPressable
       ref={innerRef}
       collapsable={false}
       onPress={onPress}
@@ -77,12 +101,12 @@ export function FolderTile({ folder, count, subCount = 0, width, active, innerRe
           width,
           backgroundColor: active ? colors.accentSoft : colors.surface,
           borderColor: active ? colors.accent : "transparent",
-          transform: [{ scale: active ? 1.04 : 1 }],
+          transform: [{ scale }],
         },
       ]}
     >
       <View style={[styles.tileIcon, { backgroundColor: (folder.color || FOLDER_COLORS[0]) + "24" }]}>
-        <Ionicons name="folder" size={22} color={tint} />
+        <Ionicons name={active ? "folder-open" : "folder"} size={22} color={tint} />
       </View>
       <Text style={[type.title, { color: colors.text }]} numberOfLines={2}>
         {folder.name}
@@ -90,29 +114,7 @@ export function FolderTile({ folder, count, subCount = 0, width, active, innerRe
       <Text style={[type.caption, { color: colors.textMuted }]} numberOfLines={1}>
         {summary}
       </Text>
-    </Pressable>
-  );
-}
-
-export function NewFolderTile({ width, sub, onPress }) {
-  const { colors } = useTheme();
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      android_ripple={{ color: colors.border }}
-      style={[styles.tile, styles.newTile, { width, borderColor: colors.border }]}
-    >
-      <View style={[styles.tileIcon, { backgroundColor: colors.tonal }]}>
-        <Ionicons name="add" size={24} color={colors.primary} />
-      </View>
-      <Text style={[type.title, { color: colors.primary }]}>
-        {sub ? "Nova subpasta" : "Nova pasta"}
-      </Text>
-      <Text style={[type.caption, { color: colors.textMuted }]}>
-        {sub ? "Separe por assunto" : "Organize por matéria"}
-      </Text>
-    </Pressable>
+    </AnimatedPressable>
   );
 }
 
@@ -245,7 +247,6 @@ const styles = StyleSheet.create({
     minHeight: 112,
     overflow: "hidden",
   },
-  newTile: { borderWidth: 1.5, borderStyle: "dashed", backgroundColor: "transparent" },
   tileIcon: {
     width: 40,
     height: 40,
