@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
+  KeyboardAvoidingView,
   Modal,
   Platform,
   Pressable,
@@ -363,7 +364,10 @@ export function Sheet({ visible, onClose, children }) {
       onRequestClose={onClose}
       statusBarTranslucent
     >
-      <View style={styles.sheetRoot}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.sheetRoot}
+      >
         <Pressable
           style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }]}
           onPress={onClose}
@@ -389,24 +393,25 @@ export function Sheet({ visible, onClose, children }) {
           <View style={[styles.handle, { backgroundColor: colors.border }]} />
           {children}
         </Animated.View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }
 
 /** Linha de lista com ícone, usada nas ações do bottom sheet e nas configurações. */
-export function ListItem({ icon, title, subtitle, onPress, color, trailing }) {
+export function ListItem({ icon, iconColor, title, subtitle, onPress, onLongPress, color, trailing }) {
   const { colors } = useTheme();
   return (
     <Pressable
       onPress={onPress}
+      onLongPress={onLongPress}
       disabled={!onPress}
       accessibilityRole={onPress ? "button" : undefined}
       android_ripple={{ color: colors.border }}
       style={styles.listItem}
     >
       {icon && (
-        <Ionicons name={icon} size={22} color={color ?? colors.textMuted} />
+        <Ionicons name={icon} size={22} color={iconColor ?? color ?? colors.textMuted} />
       )}
       <View style={{ flex: 1 }}>
         <Text style={[type.body, { color: color ?? colors.text }]}>{title}</Text>

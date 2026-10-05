@@ -56,7 +56,7 @@ const mix = (hex, target, t) => {
 
 // Aproxima a cor do branco (fundos escuros) ou do preto (fundos claros)
 // até atingir o contraste mínimo com todos os fundos informados.
-const readable = (hex, min, ...bgs) => {
+export const readable = (hex, min, ...bgs) => {
   const target = luminance(bgs[0]) < 0.5 ? "#FFFFFF" : "#000000";
   const worst = (c) => Math.min(...bgs.map((bg) => contrast(c, bg)));
   let out = hex;

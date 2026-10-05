@@ -95,6 +95,11 @@ function RootStack() {
           })}
         />
         <Stack.Screen
+          name="Pasta"
+          component={HomeScreen}
+          options={{ title: "" }}
+        />
+        <Stack.Screen
           name="Gerador"
           component={GeneratorScreen}
           options={{ title: "Criar quiz" }}

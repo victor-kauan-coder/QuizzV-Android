@@ -7,6 +7,7 @@ import { decodeQv, encodeQv, QV_MIME } from "./qvCodec";
 
 const LEGACY_QUIZZES_KEY = "@quizzv_quizzes";
 const SETTINGS_KEY = "@quizzv_settings";
+const FOLDERS_KEY = "@quizzv_folders";
 const LIBRARY_FILE = FileSystem.documentDirectory + "quizzes.json";
 
 // --- CONFIGURAÇÕES (Settings) ---
@@ -137,6 +138,64 @@ export const recordAttempt = (id, score, total, resetProgress = true) =>
     }),
   ).catch((e) => console.error("Erro ao salvar a partida:", e));
 
+// --- PASTAS ---
+// Poucos dados: ficam no AsyncStorage. Cada quiz guarda o `folderId`.
+export const getFolders = async () => {
+  try {
+    return JSON.parse((await AsyncStorage.getItem(FOLDERS_KEY)) || "[]");
+  } catch {
+    return [];
+  }
+};
+
+const saveFolders = (list) =>
+  AsyncStorage.setItem(FOLDERS_KEY, JSON.stringify(list));
+
+export const createFolder = async ({ name, color }) => {
+  const folder = {
+    id: newId(),
+    name: name.trim(),
+    color,
+    createdAt: new Date().toISOString(),
+  };
+  await saveFolders([...(await getFolders()), folder]);
+  return folder;
+};
+
+export const updateFolder = async (id, changes) =>
+  saveFolders((await getFolders()).map((f) => (f.id === id ? { ...f, ...changes } : f)));
+
+/** Exclui a pasta; os quizzes dela voltam para a biblioteca (não são apagados). */
+export const deleteFolder = async (id) => {
+  await saveFolders((await getFolders()).filter((f) => f.id !== id));
+  await mutate((list) =>
+    list.map((q) => (q.folderId === id ? { ...q, folderId: null } : q)),
+  );
+};
+
+export const moveQuiz = (quizId, folderId) =>
+  mutate((list) =>
+    list.map((q) => (q.id === quizId ? { ...q, folderId: folderId ?? null } : q)),
+  );
+
+// Pastas vindas de um backup: reaproveita as de mesmo nome, cria as que faltam
+const mergeFolders = async (incoming = []) => {
+  const all = await getFolders();
+  const map = {};
+  for (const f of incoming) {
+    const name = String(f?.name || "").trim();
+    if (!name) continue;
+    let target = all.find((e) => e.name.toLowerCase() === name.toLowerCase());
+    if (!target) {
+      target = { id: newId(), name, color: f.color, createdAt: new Date().toISOString() };
+      all.push(target);
+    }
+    map[f.id] = target.id;
+  }
+  await saveFolders(all);
+  return map;
+};
+
 // --- IMAGENS ---
 const downloadAndConvertToBase64 = async (url) => {
   try {
@@ -258,17 +317,20 @@ export const readQuizFile = async (uri) => {
 
 /**
  * Importa um quiz ou um backup de biblioteca. Retorna os títulos importados.
+ * `folderId` coloca tudo numa pasta; backups trazem as próprias pastas.
  * Lança Error com mensagem pronta para o usuário.
  */
-export const importQuizFile = async (uri, fileName) => {
+export const importQuizFile = async (uri, fileName, folderId = null) => {
   const data = await readQuizFile(uri);
   const incoming = Array.isArray(data?.quizzes) ? data.quizzes : [data];
+  const folderMap = Array.isArray(data?.folders) ? await mergeFolders(data.folders) : {};
   const quizzes = [];
   for (const item of incoming) {
     const quiz = assertValid(normalizeQuiz(item, fileBaseName(fileName)));
     quizzes.push({
       ...(await processQuizImages(quiz)),
       id: newId(),
+      folderId: folderId ?? folderMap[item?.folderId] ?? null,
       imported: true,
       importDate: new Date().toISOString(),
     });
@@ -328,7 +390,10 @@ export const exportLibrary = async () => {
   if (!quizzes.length) throw new Error("Sua biblioteca está vazia.");
   const stamp = new Date().toISOString().slice(0, 10);
   await shareQv(
-    { quizzes: quizzes.map(portable) },
+    {
+      quizzes: quizzes.map((q) => ({ ...portable(q), folderId: q.folderId ?? null })),
+      folders: await getFolders(),
+    },
     `QuizzV_backup_${stamp}`,
     "Salvar backup da biblioteca",
   );

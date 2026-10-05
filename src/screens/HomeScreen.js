@@ -13,12 +13,16 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { FolderEditor, FolderTile, MoveSheet, NewFolderTile } from "../components/folders";
 import {
   Button,
+  haptic,
+  IconButton,
   ListItem,
   Logo,
   ProgressBar,
@@ -26,7 +30,17 @@ import {
   showSnackbar,
 } from "../components/ui";
 import { exportToPdf } from "../services/pdfService";
-import { deleteQuiz, exportQuiz, getQuizzes, importQuizFile } from "../services/storage";
+import {
+  createFolder,
+  deleteFolder,
+  deleteQuiz,
+  exportQuiz,
+  getFolders,
+  getQuizzes,
+  importQuizFile,
+  moveQuiz,
+  updateFolder,
+} from "../services/storage";
 import { checkForUpdates, downloadAndInstall } from "../services/UpdateService";
 import { radius, type } from "../theme";
 
@@ -48,15 +62,23 @@ const metaLine = (q) =>
     .filter(Boolean)
     .join(" · ");
 
-const importedMessage = (titles) =>
+const importedMessage = (titles, where = "à biblioteca") =>
   titles.length === 1
-    ? `“${titles[0]}” foi adicionado à biblioteca`
-    : `${titles.length} quizzes adicionados à biblioteca`;
+    ? `“${titles[0]}” foi adicionado ${where}`
+    : `${titles.length} quizzes adicionados ${where}`;
 
-export default function HomeScreen({ navigation }) {
+// A mesma tela mostra a biblioteca (raiz) ou o conteúdo de uma pasta
+export default function HomeScreen({ navigation, route }) {
+  const folderId = route.params?.folderId ?? null;
   const { colors, dark } = useTheme();
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const tileWidth = (width - 32 - 12) / 2;
   const [quizzes, setQuizzes] = useState([]);
+  const [folders, setFolders] = useState([]);
+  const [editing, setEditing] = useState(null); // null | "new" | pasta
+  const [moving, setMoving] = useState(null); // quiz sendo movido
+  const [moveAfterCreate, setMoveAfterCreate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
@@ -82,9 +104,31 @@ export default function HomeScreen({ navigation }) {
   };
 
   const loadQuizzes = async () => {
-    setQuizzes(await getQuizzes());
+    const [list, dirs] = await Promise.all([getQuizzes(), getFolders()]);
+    setQuizzes(list);
+    setFolders(dirs);
     setLoading(false);
   };
+
+  const folder = folders.find((f) => f.id === folderId);
+
+  useEffect(() => {
+    if (!folderId) return;
+    navigation.setOptions({
+      title: folder?.name ?? "",
+      headerRight: () =>
+        folder && (
+          <View style={{ marginRight: 4 }}>
+            <IconButton
+              icon="ellipsis-vertical"
+              label="Editar pasta"
+              color={colors.text}
+              onPress={() => setEditing(folder)}
+            />
+          </View>
+        ),
+    });
+  }, [folderId, folder, colors.text]);
 
   useFocusEffect(
     useCallback(() => {
@@ -105,6 +149,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   useEffect(() => {
+    if (folderId) return; // só a biblioteca principal cuida disso
     const runUpdateCheck = async () => {
       const data = await checkForUpdates();
       if (!data?.hasUpdate) return;
@@ -159,18 +204,33 @@ export default function HomeScreen({ navigation }) {
       return;
     }
     try {
-      const titles = await importQuizFile(uri, name);
-      showSnackbar(importedMessage(titles));
+      const titles = await importQuizFile(uri, name, folderId);
+      showSnackbar(importedMessage(titles, folder ? `a “${folder.name}”` : undefined));
       loadQuizzes();
     } catch (err) {
       Alert.alert("Não foi possível importar", err.message);
     }
   };
 
+  const folderIds = useMemo(() => new Set(folders.map((f) => f.id)), [folders]);
+  const counts = useMemo(() => {
+    const c = {};
+    for (const q of quizzes) if (q.folderId) c[q.folderId] = (c[q.folderId] || 0) + 1;
+    return c;
+  }, [quizzes]);
+  const searching = query.trim().length > 0;
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return q ? quizzes.filter((i) => i.title.toLowerCase().includes(q)) : quizzes;
-  }, [quizzes, query]);
+    if (folderId) {
+      return quizzes.filter(
+        (i) => i.folderId === folderId && (!q || i.title.toLowerCase().includes(q)),
+      );
+    }
+    // na raiz, a busca procura em todas as pastas
+    if (q) return quizzes.filter((i) => i.title.toLowerCase().includes(q));
+    return quizzes.filter((i) => !folderIds.has(i.folderId)); // soltos
+  }, [quizzes, query, folderId, folderIds]);
+  const inScope = folderId ? counts[folderId] || 0 : quizzes.length;
 
   // --- Ações do bottom sheet ---
   const close = () => setSelected(null);
@@ -209,14 +269,73 @@ export default function HomeScreen({ navigation }) {
     );
   };
 
+  // --- Pastas ---
+  const openMove = (quiz) => {
+    haptic("tap");
+    setMoving(quiz);
+  };
+
+  const doMove = async (quiz, targetId) => {
+    setMoving(null);
+    if ((quiz.folderId ?? null) === targetId) return;
+    await moveQuiz(quiz.id, targetId);
+    const name = folders.find((f) => f.id === targetId)?.name;
+    showSnackbar(name ? `Movido para “${name}”` : "Movido para fora das pastas");
+    loadQuizzes();
+  };
+
+  const saveFolder = async ({ name, color }) => {
+    if (editing && editing !== "new") {
+      await updateFolder(editing.id, { name, color });
+      showSnackbar("Pasta atualizada");
+    } else {
+      const created = await createFolder({ name, color });
+      if (moveAfterCreate) {
+        await moveQuiz(moveAfterCreate.id, created.id);
+        showSnackbar(`Movido para “${created.name}”`);
+      } else {
+        showSnackbar(`Pasta “${created.name}” criada`);
+      }
+    }
+    setEditing(null);
+    setMoveAfterCreate(null);
+    loadQuizzes();
+  };
+
+  const confirmDeleteFolder = () => {
+    const target = editing;
+    setEditing(null);
+    const n = counts[target.id] || 0;
+    Alert.alert(
+      "Excluir pasta?",
+      n === 0
+        ? `“${target.name}” está vazia.`
+        : `${n === 1 ? "O quiz" : `Os ${n} quizzes`} de “${target.name}” ${n === 1 ? "volta" : "voltam"} para a biblioteca. Nenhum quiz é apagado.`,
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          style: "destructive",
+          onPress: async () => {
+            await deleteFolder(target.id);
+            showSnackbar("Pasta excluída");
+            if (folderId === target.id) navigation.goBack();
+            else loadQuizzes();
+          },
+        },
+      ],
+    );
+  };
+
   const renderItem = ({ item }) => {
     const total = item.questions?.length || 1;
     const inProgress = item.lastIndex > 0;
     return (
       <Pressable
         onPress={() => setSelected(item)}
+        onLongPress={() => openMove(item)}
         accessibilityRole="button"
-        accessibilityHint="Abre as opções do quiz"
+        accessibilityHint="Abre as opções do quiz. Segure para mover de pasta."
         android_ripple={{ color: colors.border }}
         style={[styles.card, { backgroundColor: colors.surface }]}
       >
@@ -240,7 +359,9 @@ export default function HomeScreen({ navigation }) {
               style={[type.caption, { color: colors.textMuted, marginTop: 2 }]}
               numberOfLines={1}
             >
-              {metaLine(item)}
+              {searching && !folderId && folders.find((f) => f.id === item.folderId)
+                ? `${folders.find((f) => f.id === item.folderId).name} · ${metaLine(item)}`
+                : metaLine(item)}
             </Text>
           </View>
           <Ionicons name="chevron-forward" size={20} color={colors.textMuted} />
@@ -269,57 +390,93 @@ export default function HomeScreen({ navigation }) {
     );
   };
 
+  const showFolders = !folderId && !searching && (quizzes.length > 0 || folders.length > 0);
+  const listTitle = searching
+    ? `Resultados · ${filtered.length}`
+    : folderId
+      ? plural(filtered.length, "quiz", "quizzes")
+      : folders.length
+        ? `Sem pasta · ${filtered.length}`
+        : `Biblioteca · ${quizzes.length}`;
+
   const header = (
     <View style={styles.header}>
       <View style={styles.actions}>
         <Button
           variant="tonal"
           icon="download-outline"
-          title="Importar"
+          title={folderId ? "Importar para esta pasta" : "Importar"}
           onPress={handleImport}
           style={{ flex: 1 }}
         />
-        <Button
-          variant="tonal"
-          icon="people-outline"
-          title="Entrar em sala"
-          onPress={() => navigation.navigate("JoinRoom")}
-          style={{ flex: 1 }}
-        />
+        {!folderId && (
+          <Button
+            variant="tonal"
+            icon="people-outline"
+            title="Entrar em sala"
+            onPress={() => navigation.navigate("JoinRoom")}
+            style={{ flex: 1 }}
+          />
+        )}
       </View>
 
-      {quizzes.length > 0 && (
+      {inScope > 0 && (
+        <View
+          style={[
+            styles.search,
+            { backgroundColor: colors.surface, borderColor: colors.border },
+          ]}
+        >
+          <Ionicons name="search" size={20} color={colors.textMuted} />
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder={folder ? `Buscar em ${folder.name}` : "Buscar em todas as pastas"}
+            placeholderTextColor={colors.textMuted}
+            accessibilityLabel="Buscar quizzes"
+            returnKeyType="search"
+            style={[type.body, styles.searchInput, { color: colors.text }]}
+          />
+          {query.length > 0 && (
+            <Pressable
+              onPress={() => setQuery("")}
+              accessibilityLabel="Limpar busca"
+              hitSlop={12}
+            >
+              <Ionicons name="close-circle" size={20} color={colors.textMuted} />
+            </Pressable>
+          )}
+        </View>
+      )}
+
+      {showFolders && (
         <>
-          <View
-            style={[
-              styles.search,
-              { backgroundColor: colors.surface, borderColor: colors.border },
-            ]}
-          >
-            <Ionicons name="search" size={20} color={colors.textMuted} />
-            <TextInput
-              value={query}
-              onChangeText={setQuery}
-              placeholder="Buscar na biblioteca"
-              placeholderTextColor={colors.textMuted}
-              accessibilityLabel="Buscar na biblioteca"
-              returnKeyType="search"
-              style={[type.body, styles.searchInput, { color: colors.text }]}
-            />
-            {query.length > 0 && (
-              <Pressable
-                onPress={() => setQuery("")}
-                accessibilityLabel="Limpar busca"
-                hitSlop={12}
-              >
-                <Ionicons name="close-circle" size={20} color={colors.textMuted} />
-              </Pressable>
-            )}
-          </View>
           <Text style={[type.label, styles.sectionTitle, { color: colors.textMuted }]}>
-            Biblioteca · {quizzes.length}
+            Pastas{folders.length ? ` · ${folders.length}` : ""}
           </Text>
+          <View style={styles.folderGrid}>
+            {folders.map((f) => (
+              <FolderTile
+                key={f.id}
+                folder={f}
+                count={counts[f.id] || 0}
+                width={tileWidth}
+                onPress={() => navigation.push("Pasta", { folderId: f.id })}
+                onLongPress={() => {
+                  haptic("tap");
+                  setEditing(f);
+                }}
+              />
+            ))}
+            <NewFolderTile width={tileWidth} onPress={() => setEditing("new")} />
+          </View>
         </>
+      )}
+
+      {(filtered.length > 0 || searching) && (inScope > 0 || folderId) && (
+        <Text style={[type.label, styles.sectionTitle, { color: colors.textMuted }]}>
+          {listTitle}
+        </Text>
       )}
     </View>
   );
@@ -337,7 +494,18 @@ export default function HomeScreen({ navigation }) {
     <Text style={[type.body, styles.noResults, { color: colors.textMuted }]}>
       Nenhum quiz com “{query.trim()}”.
     </Text>
-  ) : (
+  ) : folderId ? (
+    <View style={styles.emptyContainer}>
+      <Ionicons name="folder-open-outline" size={56} color={colors.textMuted} />
+      <Text style={[type.headline, { color: colors.text, marginTop: 16 }]}>
+        Pasta vazia
+      </Text>
+      <Text style={[type.body, styles.emptySub, { color: colors.textMuted }]}>
+        Crie um quiz com IA aqui, importe um arquivo ou segure um quiz da
+        biblioteca para movê-lo para esta pasta.
+      </Text>
+    </View>
+  ) : folders.length > 0 ? null : (
     <View style={styles.emptyContainer}>
       <Logo size={72} />
       <Text style={[type.headline, { color: colors.text, marginTop: 20 }]}>
@@ -368,7 +536,7 @@ export default function HomeScreen({ navigation }) {
       />
 
       <Pressable
-        onPress={() => navigation.navigate("Gerador")}
+        onPress={() => navigation.navigate("Gerador", { folderId })}
         accessibilityRole="button"
         accessibilityLabel="Criar com IA"
         android_ripple={{ color: colors.onAccent + "33" }}
@@ -446,6 +614,15 @@ export default function HomeScreen({ navigation }) {
 
             <View style={[styles.divider, { backgroundColor: colors.border }]} />
             <ListItem
+              icon="folder-open-outline"
+              title="Mover para pasta"
+              subtitle={folders.find((f) => f.id === selected.folderId)?.name ?? "Sem pasta"}
+              onPress={() => {
+                close();
+                setMoving(selected);
+              }}
+            />
+            <ListItem
               icon="share-social-outline"
               title="Compartilhar arquivo .qv"
               subtitle="Criptografado: só abre no QuizzV"
@@ -466,6 +643,30 @@ export default function HomeScreen({ navigation }) {
           </>
         )}
       </Sheet>
+
+      <MoveSheet
+        visible={!!moving}
+        quiz={moving}
+        folders={folders}
+        onClose={() => setMoving(null)}
+        onMove={(target) => doMove(moving, target)}
+        onNewFolder={() => {
+          setMoveAfterCreate(moving);
+          setMoving(null);
+          setEditing("new");
+        }}
+      />
+
+      <FolderEditor
+        visible={!!editing}
+        folder={editing === "new" ? null : editing}
+        onClose={() => {
+          setEditing(null);
+          setMoveAfterCreate(null);
+        }}
+        onSave={saveFolder}
+        onDelete={confirmDeleteFolder}
+      />
 
       <Modal visible={isUpdating} transparent animationType="fade">
         <View
@@ -506,6 +707,7 @@ const styles = StyleSheet.create({
   },
   searchInput: { flex: 1, paddingVertical: 10 },
   sectionTitle: { marginTop: 4 },
+  folderGrid: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
   card: {
     borderRadius: radius.lg,
     padding: 16,

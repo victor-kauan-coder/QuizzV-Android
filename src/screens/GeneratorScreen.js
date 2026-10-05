@@ -29,7 +29,8 @@ const MAX_Q = 50;
 const isDocx = (f) => f.name.toLowerCase().endsWith(".docx");
 const isPdf = (f) => f.name.toLowerCase().endsWith(".pdf");
 
-export default function GeneratorScreen({ navigation }) {
+export default function GeneratorScreen({ navigation, route }) {
+  const folderId = route.params?.folderId ?? null;
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { aiModel } = useContext(ThemeContext);
@@ -131,11 +132,12 @@ export default function GeneratorScreen({ navigation }) {
         questions,
         engine: aiModel,
         type: quizMode,
+        folderId,
       });
       showSnackbar(
         `“${tema.trim()}” criado com ${questions.length} ${questions.length === 1 ? "questão" : "questões"}`,
       );
-      navigation.navigate("Meus Quizzes");
+      navigation.goBack(); // volta para a biblioteca ou para a pasta
     } catch (e) {
       Alert.alert("Não foi possível gerar o quiz", e.message);
     } finally {
