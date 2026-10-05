@@ -4,6 +4,18 @@ import { Buffer } from "node:buffer";
 import { existsSync, readFileSync } from "node:fs";
 
 process.env.EXPO_PUBLIC_QV_KEY ||= "11".repeat(32);
+
+// Simula o Hermes (Android): sem Symbol.species para Buffer e sem
+// DataView.setBigUint64. Foi assim que "undefined is not a function" escapou.
+// (o Node reimplementa Buffer#subarray, então trocamos pelo do Uint8Array)
+Object.defineProperty(Buffer, Symbol.species, { get: () => Uint8Array });
+Buffer.prototype.subarray = function (start, end) {
+  const view = new Uint8Array(this.buffer, this.byteOffset, this.byteLength);
+  return view.subarray(start, end);
+};
+delete DataView.prototype.setBigUint64;
+assert.ok(!("equals" in Buffer.from("ab").subarray(0, 1)), "simulação do Hermes ativa");
+
 const { decodeQv, encodeQv } = await import("../src/services/qvCodec.js");
 
 const quiz = {

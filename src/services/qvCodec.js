@@ -8,6 +8,22 @@ export const QV_MIME = "application/vnd.quizzv";
 const MAGIC = Buffer.from("QZV2", "ascii");
 const LEGACY_XOR_KEY = 44; // formato v1 (base64 + XOR), só leitura
 
+// O Hermes (motor JS do Android) não tem Symbol.species: subarray/map de um
+// Buffer devolvem Uint8Array puro, sem .equals/.toString(encoding). Por isso
+// comparamos bytes à mão e sempre reembrulhamos com Buffer.from.
+const hasMagic = (buf) =>
+  buf.length >= MAGIC.length && MAGIC.every((b, i) => buf[i] === b);
+
+// Poly1305 usa DataView.setBigUint64; garante a função caso o motor não tenha
+if (typeof DataView.prototype.setBigUint64 !== "function") {
+  DataView.prototype.setBigUint64 = function (offset, value, littleEndian) {
+    const hi = Number((value >> BigInt(32)) & BigInt(0xffffffff));
+    const lo = Number(value & BigInt(0xffffffff));
+    this.setUint32(offset + (littleEndian ? 4 : 0), hi, littleEndian);
+    this.setUint32(offset + (littleEndian ? 0 : 4), lo, littleEndian);
+  };
+}
+
 // A chave vem do build (.env.local / variável do EAS) e nunca fica no repositório.
 const getKey = () => {
   const hex = process.env.EXPO_PUBLIC_QV_KEY;
@@ -44,7 +60,7 @@ const parseLegacy = (text) => {
 /** Bytes de um .qv (v2 ou legado) ou .json -> objeto JS. */
 export const decodeQv = (bytes) => {
   const buf = Buffer.from(bytes);
-  if (buf.subarray(0, MAGIC.length).equals(MAGIC)) {
+  if (hasMagic(buf)) {
     let plain;
     try {
       plain = cipher().decrypt(Uint8Array.from(buf.subarray(MAGIC.length)));
