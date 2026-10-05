@@ -48,9 +48,10 @@ Responda APENAS com um array JSON puro. PROIBIDO texto adicional ou markdown.
 Formato:
 ${
   quizMode === "vf"
-    ? '[{"question":"","answer":"Verdadeiro","explanation":""}]'
-    : '[{"question":"","options":["A) ","B) ","C) ","D) ","E) "],"answer":"B","explanation":""}]'
-}`;
+    ? '[{"question":"","answer":"Verdadeiro","explanation":"","topic":""}]'
+    : '[{"question":"","options":["A) ","B) ","C) ","D) ","E) "],"answer":"B","explanation":"","topic":""}]'
+}
+"topic" é o subtema da questão em 1 a 4 palavras; questões do mesmo subtema usam o mesmo nome.`;
 
   const promptUsuario = `TEMA: "${topic}"
 QUANTIDADE: Gere EXATAMENTE ${numQuestions} questões.

@@ -3,6 +3,59 @@ import * as FileSystem from "expo-file-system/legacy";
 
 const MAX_TPM = 240000;
 
+// Os "-latest" sempre apontam para o lançamento mais novo, então não envelhecem
+export const DEFAULT_GEMINI_MODEL = "gemini-flash-latest";
+export const GEMINI_MODELS = [
+  { id: "gemini-flash-latest", label: "Flash (mais recente)", hint: "Recomendado · rápido e com cota gratuita" },
+  { id: "gemini-flash-lite-latest", label: "Flash-Lite (mais recente)", hint: "O mais rápido, com a maior cota gratuita" },
+  { id: "gemini-3.8-flash", label: "Gemini 3.8 Flash", hint: "Versão fixa · cota gratuita" },
+  { id: "gemini-3.1-pro-preview", label: "Gemini 3.1 Pro (preview)", hint: "Raciocínio avançado · exige plano pago" },
+];
+export const geminiModelLabel = (id = DEFAULT_GEMINI_MODEL) =>
+  GEMINI_MODELS.find((m) => m.id === id)?.label ?? id;
+
+// Voz, imagem, vídeo, embeddings etc. não geram quiz
+const NOT_TEXT = /tts|live|image|embed|transcri|audio|omni|robotics|computer|native|aqa/i;
+
+/** Modelos de texto liberados para a chave, com os recomendados no topo. */
+export const listGeminiModels = async (apiKey) => {
+  const res = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000",
+    { headers: { "x-goog-api-key": apiKey } },
+  );
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const { models = [] } = await res.json();
+  const available = models
+    .filter(
+      (m) =>
+        m.name.startsWith("models/gemini-") &&
+        m.supportedGenerationMethods?.includes("generateContent") &&
+        !NOT_TEXT.test(m.name),
+    )
+    .map((m) => ({ id: m.name.slice(7), label: m.displayName || m.name.slice(7) }));
+  const ids = new Set(available.map((m) => m.id));
+  return [
+    ...GEMINI_MODELS.filter((m) => m.id.endsWith("-latest") || ids.has(m.id)),
+    ...available
+      .filter((m) => !GEMINI_MODELS.some((c) => c.id === m.id))
+      .map((m) => ({ ...m, hint: m.id }))
+      .sort((a, b) => b.id.localeCompare(a.id, undefined, { numeric: true })),
+  ];
+};
+
+// Erros da API que não adianta repetir: viram uma mensagem que diz o que fazer
+const apiErrorMessage = (error, model) => {
+  const status = error.status; // GoogleGenerativeAIFetchError traz o HTTP status
+  if (status === 404)
+    return `O modelo "${model}" não está disponível para a sua chave. Escolha outro em Configurações › Modelo do Gemini.`;
+  if (status === 429)
+    return `A cota do modelo "${model}" acabou (ou ele não tem cota gratuita). Espere um minuto ou troque o modelo nas Configurações.`;
+  if (status === 400 && /api key/i.test(error.message))
+    return "A chave do Gemini é inválida. Confira nas Configurações.";
+  if (status === 403) return `Sua chave não tem permissão para usar o modelo "${model}".`;
+  return null;
+};
+
 /**
  * REPARO AVANÇADO: Remove caracteres problemáticos e corrige estruturas JSON
  */
@@ -80,13 +133,14 @@ export const generateQuizFromIA = async (
   files = [],
   quizMode = "vf",
   maxRetries = 3,
+  { model: modelName = DEFAULT_GEMINI_MODEL, context = "" } = {},
 ) => {
   const genAI = new GoogleGenerativeAI(apiKey);
 
-  // Usando gemini-1.5-flash (modelo estável e gratuito)
   const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash",
+    model: modelName,
     generationConfig: {
+      responseMimeType: "application/json",
       temperature: 0.7,
       topP: 0.8,
       topK: 40,
@@ -95,7 +149,7 @@ export const generateQuizFromIA = async (
   });
 
   // Processa arquivos
-  let estimatedTokens = topic.length / 4;
+  let estimatedTokens = (topic.length + context.length) / 4;
   const fileParts = await Promise.all(
     files.map(async (file) => {
       const base64 = await FileSystem.readAsStringAsync(file.uri, {
@@ -151,7 +205,7 @@ export const generateQuizFromIA = async (
 TEMA: "${topic}"
 QUANTIDADE: ${numQuestions} questões (GERE EXATAMENTE ${numQuestions})
 MODO: ${quizMode === "vf" ? "Verdadeiro ou Falso" : "Múltipla Escolha"}
-
+${context ? `\nCONTEXTO (base para as questões):\n${context}\n` : ""}
 REGRAS OBRIGATÓRIAS:
 1. Retorne APENAS um array JSON válido, SEM texto adicional
 2. NÃO use markdown, NÃO use \`\`\`json
@@ -165,12 +219,13 @@ REGRAS OBRIGATÓRIAS:
       : 'Campo "answer": "A", "B", "C", "D" ou "E"'
   }
 8. ⚠️ CRÍTICO: Complete TODAS as ${numQuestions} questões. Se faltar alguma, o sistema falhará!
+9. Campo "topic": o subtema específico da questão, em 1 a 4 palavras (ex.: "Acoplamento", "Padrões estruturais"). Questões do mesmo subtema usam exatamente o mesmo nome
 
 FORMATO COMPACTO (economize tokens):
 ${
   quizMode === "vf"
-    ? `[{"question":"Pergunta direta?","answer":"Verdadeiro","explanation":"Explicação objetiva em até 120 chars."}]`
-    : `[{"question":"Pergunta?","options":["A) Op1","B) Op2","C) Op3","D) Op4", "E) Op5"],"answer":"B","explanation":"Explicação."}]`
+    ? `[{"question":"Pergunta direta?","answer":"Verdadeiro","explanation":"Explicação objetiva em até 120 chars.","topic":"Subtema"}]`
+    : `[{"question":"Pergunta?","options":["A) Op1","B) Op2","C) Op3","D) Op4", "E) Op5"],"answer":"B","explanation":"Explicação.","topic":"Subtema"}]`
 }
 
 INICIE O ARRAY JSON COM AS ${numQuestions} QUESTÕES AGORA:`;
@@ -220,6 +275,8 @@ INICIE O ARRAY JSON COM AS ${numQuestions} QUESTÕES AGORA:`;
     } catch (error) {
       lastError = error;
       console.warn(`⚠️ Tentativa ${attempt} falhou:`, error.message);
+      const friendly = apiErrorMessage(error, modelName);
+      if (friendly) throw new Error(friendly);
 
       if (error instanceof SyntaxError) {
         console.error(

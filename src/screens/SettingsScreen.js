@@ -24,9 +24,15 @@ import {
   Logo,
   ProgressBar,
   Segmented,
+  Sheet,
   showSnackbar,
 } from "../components/ui";
 import { ThemeContext } from "../context/ThemeContext";
+import {
+  GEMINI_MODELS,
+  geminiModelLabel,
+  listGeminiModels,
+} from "../services/geminiService";
 import {
   convertJsonToQv,
   exportLibrary,
@@ -75,8 +81,15 @@ function Section({ title, children }) {
 export default function SettingsScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const { isDarkMode, themeColor, aiModel, updateTheme, updateAiModel } =
-    useContext(ThemeContext);
+  const {
+    isDarkMode,
+    themeColor,
+    aiModel,
+    geminiModel,
+    updateTheme,
+    updateAiModel,
+    updateGeminiModel,
+  } = useContext(ThemeContext);
 
   const [geminiKey, setGeminiKey] = useState("");
   const [deepKey, setDeepKey] = useState("");
@@ -84,6 +97,9 @@ export default function SettingsScreen() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [progress, setProgress] = useState(0);
   const [busy, setBusy] = useState(null); // ação de arquivo em andamento
+  const [modelSheet, setModelSheet] = useState(false);
+  const [models, setModels] = useState(GEMINI_MODELS);
+  const [loadingModels, setLoadingModels] = useState(false);
 
   useEffect(() => {
     getSettings().then((s) => {
@@ -124,6 +140,26 @@ export default function SettingsScreen() {
     } else {
       showSnackbar("Você já está na versão mais recente");
     }
+  };
+
+  // Com a chave, a lista vem da API e já inclui os modelos lançados depois do app
+  const openModels = async () => {
+    setModelSheet(true);
+    if (!geminiKey.trim()) return;
+    setLoadingModels(true);
+    try {
+      setModels(await listGeminiModels(geminiKey.trim()));
+    } catch {
+      // sem rede ou chave inválida: fica a lista recomendada
+    } finally {
+      setLoadingModels(false);
+    }
+  };
+
+  const chooseModel = (m) => {
+    updateGeminiModel(m.id);
+    setModelSheet(false);
+    showSnackbar(`Modelo: ${m.label}`);
   };
 
   const saveKeys = async () => {
@@ -237,6 +273,18 @@ export default function SettingsScreen() {
             { value: "ollama", label: "Ollama" },
           ]}
         />
+        {aiModel === "gemini" && (
+          <View style={{ marginTop: 8 }}>
+            <ListItem
+              icon="sparkles-outline"
+              iconColor={colors.primary}
+              title="Modelo do Gemini"
+              subtitle={geminiModelLabel(geminiModel)}
+              onPress={openModels}
+              trailing={<Ionicons name="chevron-forward" size={20} color={colors.textMuted} />}
+            />
+          </View>
+        )}
         <View style={{ gap: 16, marginTop: 20 }}>
           <Field
             label="Chave do Google Gemini"
@@ -335,6 +383,33 @@ export default function SettingsScreen() {
         QuizzV v{Constants.expoConfig.version} • VICTRO
       </Text>
 
+      <Sheet visible={modelSheet} onClose={() => setModelSheet(false)}>
+        <Text style={[type.headline, { color: colors.text }]}>Modelo do Gemini</Text>
+        <Text style={[type.caption, { color: colors.textMuted, marginTop: 4 }]}>
+          {geminiKey.trim()
+            ? "Modelos de texto liberados para a sua chave"
+            : "Salve sua chave para ver todos os modelos disponíveis"}
+        </Text>
+        {loadingModels && (
+          <ActivityIndicator color={colors.primary} style={{ marginTop: 12 }} />
+        )}
+        <ScrollView style={styles.modelList} accessibilityRole="radiogroup">
+          {models.map((m) => {
+            const active = m.id === geminiModel;
+            return (
+              <ListItem
+                key={m.id}
+                icon={active ? "radio-button-on" : "radio-button-off"}
+                iconColor={active ? colors.primary : colors.textMuted}
+                title={m.label}
+                subtitle={m.hint}
+                onPress={() => chooseModel(m)}
+              />
+            );
+          })}
+        </ScrollView>
+      </Sheet>
+
       <Modal visible={isUpdating} transparent animationType="fade">
         <View
           style={[
@@ -388,6 +463,7 @@ const styles = StyleSheet.create({
   dev: { flexDirection: "row", alignItems: "center", gap: 14, paddingVertical: 8 },
   socialRow: { flexDirection: "row", gap: 8, paddingVertical: 8 },
   footerText: { textAlign: "center" },
+  modelList: { maxHeight: 420, marginTop: 8 },
   updateModal: {
     flex: 1,
     justifyContent: "center",

@@ -17,10 +17,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button, Field, IconButton, Segmented, showSnackbar } from "../components/ui";
 import { ThemeContext } from "../context/ThemeContext";
-import { generateQuizFromDeepSeek } from "../services/deepseekService";
-import { generateQuizFromIA } from "../services/geminiService";
-import { generateQuizFromOllamaUnified } from "../services/ollamaService";
-import { getSettings, saveQuiz } from "../services/storage";
+import { generateQuestions } from "../services/ai";
+import { geminiModelLabel } from "../services/geminiService";
+import { saveQuiz } from "../services/storage";
 import { radius, type } from "../theme";
 
 const ENGINE = { gemini: "Gemini", deepseek: "DeepSeek", ollama: "Ollama" };
@@ -33,7 +32,7 @@ export default function GeneratorScreen({ navigation, route }) {
   const folderId = route.params?.folderId ?? null;
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const { aiModel } = useContext(ThemeContext);
+  const { aiModel, geminiModel } = useContext(ThemeContext);
   const [tema, setTema] = useState("");
   const [qtd, setQtd] = useState(10);
   const [quizMode, setQuizMode] = useState("vf"); // 'vf' ou 'mc'
@@ -82,7 +81,6 @@ export default function GeneratorScreen({ navigation, route }) {
 
     setLoading(true);
     try {
-      const s = (await getSettings()) || {};
       let allTextContent = "";
       const allImagesBase64 = [];
 
@@ -96,35 +94,15 @@ export default function GeneratorScreen({ navigation, route }) {
         }
       }
 
-      let questions;
-      if (aiModel === "gemini") {
-        if (!s.api_key) throw new Error("Cadastre sua chave do Gemini nas configurações.");
-        // O Gemini não aceita DOCX como anexo: o texto extraído vai no prompt
-        const topic = allTextContent
-          ? `${tema}\n\nMaterial de apoio:${allTextContent}`
-          : tema;
-        questions = await generateQuizFromIA(
-          topic,
-          qtd,
-          s.api_key,
-          files.filter((f) => !isDocx(f)),
-          quizMode,
-        );
-      } else if (aiModel === "ollama") {
-        if (!s.ollama_url) throw new Error("Configure a URL do servidor Ollama.");
-        const resultData = await generateQuizFromOllamaUnified(
-          tema,
-          qtd,
-          s.ollama_url,
-          allTextContent,
-          allImagesBase64,
-          quizMode,
-        );
-        questions = resultData.questions;
-      } else {
-        if (!s.deepseek_key) throw new Error("Cadastre sua chave do DeepSeek nas configurações.");
-        questions = await generateQuizFromDeepSeek(tema, qtd, s.deepseek_key, [], quizMode);
-      }
+      const questions = await generateQuestions(aiModel, {
+        tema,
+        qtd,
+        mode: quizMode,
+        // DOCX não vai como anexo: o texto extraído entra no prompt
+        context: allTextContent && `Material de apoio:${allTextContent}`,
+        files: files.filter((f) => !isDocx(f)),
+        images: allImagesBase64,
+      });
 
       await saveQuiz({
         id: Date.now(),
@@ -154,12 +132,15 @@ export default function GeneratorScreen({ navigation, route }) {
         <Pressable
           onPress={() => navigation.navigate("Configurações")}
           accessibilityRole="button"
-          accessibilityHint="Abre as configurações para trocar o motor de IA"
+          accessibilityHint="Abre as configurações para trocar o motor ou o modelo de IA"
           style={[styles.engine, { backgroundColor: colors.tonal }]}
         >
           <Ionicons name="hardware-chip-outline" size={16} color={colors.primary} />
           <Text style={[type.caption, { color: colors.primary }]}>
-            Motor: {ENGINE[aiModel] || aiModel} · trocar
+            Motor: {aiModel === "gemini"
+              ? `Gemini · ${geminiModelLabel(geminiModel)}`
+              : ENGINE[aiModel] || aiModel}{" "}
+            · trocar
           </Text>
         </Pressable>
 

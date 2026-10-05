@@ -1,5 +1,6 @@
 import { createContext, useEffect, useMemo, useState } from "react";
 import { Appearance } from "react-native";
+import { DEFAULT_GEMINI_MODEL } from "../services/geminiService";
 import { getSettings, saveSettings } from "../services/storage";
 import { buildColors } from "../theme";
 
@@ -12,6 +13,7 @@ export const ThemeProvider = ({ children }) => {
   );
   const [themeColor, setThemeColor] = useState("#F97316"); // Laranja Sunset
   const [aiModel, setAiModel] = useState("gemini");
+  const [geminiModel, setGeminiModel] = useState(DEFAULT_GEMINI_MODEL);
 
   useEffect(() => {
     (async () => {
@@ -20,6 +22,7 @@ export const ThemeProvider = ({ children }) => {
       if (s.isDarkMode !== undefined) setIsDarkMode(s.isDarkMode);
       setThemeColor(s.themeColor ?? "#F97316");
       setAiModel(s.aiModel ?? "gemini");
+      setGeminiModel(s.geminiModel ?? DEFAULT_GEMINI_MODEL);
     })();
   }, []);
 
@@ -39,6 +42,11 @@ export const ThemeProvider = ({ children }) => {
     await saveSettings({ aiModel: model });
   };
 
+  const updateGeminiModel = async (model) => {
+    setGeminiModel(model);
+    await saveSettings({ geminiModel: model });
+  };
+
   return (
     <ThemeContext.Provider
       value={{
@@ -48,6 +56,8 @@ export const ThemeProvider = ({ children }) => {
         aiModel,
         updateTheme,
         updateAiModel,
+        geminiModel,
+        updateGeminiModel,
       }}
     >
       {children}

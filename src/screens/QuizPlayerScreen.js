@@ -1,9 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import * as NavigationBar from "expo-navigation-bar";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
   AccessibilityInfo,
+  Alert,
   Animated,
   Easing,
   Image,
@@ -16,8 +17,17 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Confetti from "../components/Confetti";
-import { Button, Choice, haptic, ProgressBar, useReduceMotion } from "../components/ui";
-import { recordAttempt, updateQuizProgress } from "../services/storage";
+import {
+  Button,
+  Choice,
+  haptic,
+  ProgressBar,
+  showSnackbar,
+  useReduceMotion,
+} from "../components/ui";
+import { ThemeContext } from "../context/ThemeContext";
+import { generateQuestions } from "../services/ai";
+import { recordAttempt, saveQuiz, updateQuizProgress } from "../services/storage";
 import { radius, type } from "../theme";
 
 const LETTERS = "ABCDE";
@@ -26,6 +36,39 @@ const stripLetter = (opt) =>
 const answerLetter = (q) => String(q.answer).trim().charAt(0).toUpperCase();
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+
+// Assuntos com erro, do que mais errou para o que menos errou
+const weakTopics = (questions, answers) => {
+  const byTopic = {};
+  questions.forEach((q, i) => {
+    if (!q.topic) return;
+    const t = (byTopic[q.topic] = byTopic[q.topic] || { topic: q.topic, wrong: 0, total: 0 });
+    t.total += 1;
+    if (!answers[i]?.correct) t.wrong += 1;
+  });
+  return Object.values(byTopic)
+    .filter((t) => t.wrong)
+    .sort((a, b) => b.wrong - a.wrong || b.wrong / b.total - a.wrong / a.total);
+};
+
+const correctText = (q) =>
+  q.options
+    ? stripLetter(q.options[LETTERS.indexOf(answerLetter(q))] ?? q.answer)
+    : q.answer;
+
+// O que a IA precisa saber para atacar os erros sem repetir as mesmas questões
+const reinforceContext = (title, wrong, topics) =>
+  `O aluno acabou de errar as questões abaixo do quiz "${title}". Crie questões NOVAS (não repita estas) que trabalhem os mesmos conceitos por outros ângulos` +
+  (topics.length
+    ? `, com mais questões para os assuntos com mais erros, nesta ordem: ${topics.join(", ")}. No campo "topic", use esses mesmos nomes de assunto.`
+    : ".") +
+  `\nQuestões erradas:\n` +
+  wrong
+    .map(
+      (q, i) =>
+        `${i + 1}. ${q.topic ? `[${q.topic}] ` : ""}${String(q.question).replace(/\*\*/g, "")} (resposta correta: ${correctText(q)})`,
+    )
+    .join("\n");
 
 // O momento da partida: a porcentagem sobe até o resultado (instantâneo se o
 // sistema pede menos movimento)
@@ -98,6 +141,7 @@ const shuffled = (list) => {
 export default function QuizPlayerScreen({ route, navigation }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
+  const { aiModel } = useContext(ThemeContext);
   const { quiz, resume = false, shuffle = false } = route.params;
 
   const fullRun = useMemo(
@@ -111,6 +155,7 @@ export default function QuizPlayerScreen({ route, navigation }) {
   const [isFinished, setIsFinished] = useState(false);
   const [isRetry, setIsRetry] = useState(false);
   const [result, setResult] = useState(null); // { pct, isRecord, celebrate, id }
+  const [reinforcing, setReinforcing] = useState(false);
   const best = useRef(quiz.bestPct ?? null); // recorde antes desta sessão
   const reduce = useReduceMotion();
 
@@ -227,6 +272,36 @@ export default function QuizPlayerScreen({ route, navigation }) {
     setIsFinished(false);
   };
 
+  // Novo quiz feito pela IA com foco nos assuntos que a pessoa mais errou
+  const reinforce = async (weak, qtd) => {
+    setReinforcing(true);
+    try {
+      const wrong = questions.filter((_, i) => !answers[i]?.correct);
+      const topics = weak.map((t) => t.topic);
+      const baseTitle = quiz.title.replace(/^Reforço · /, "");
+      const generated = await generateQuestions(aiModel, {
+        tema: topics.length ? `${baseTitle}: ${topics.slice(0, 5).join(", ")}` : baseTitle,
+        qtd,
+        mode: isVF ? "vf" : "mc",
+        context: reinforceContext(baseTitle, wrong, topics),
+      });
+      const reforco = {
+        id: Date.now(),
+        title: `Reforço · ${baseTitle}`,
+        questions: generated,
+        engine: aiModel,
+        type: isVF ? "vf" : "mc",
+        folderId: quiz.folderId ?? null,
+      };
+      await saveQuiz(reforco);
+      showSnackbar(`Reforço criado com ${plural(generated.length, "questão", "questões")}`);
+      navigation.replace("Quiz", { quiz: reforco });
+    } catch (e) {
+      Alert.alert("Não foi possível gerar o reforço", e.message);
+      setReinforcing(false);
+    }
+  };
+
   const playAgain = () => {
     setQuestions(shuffle ? shuffled(quiz.questions) : quiz.questions);
     setIdx(0);
@@ -248,6 +323,8 @@ export default function QuizPlayerScreen({ route, navigation }) {
     const total = questions.length;
     const pct = Math.round((score / Math.max(total, 1)) * 100);
     const wrongCount = total - score;
+    const weak = weakTopics(questions, answers);
+    const reinforceQtd = Math.min(15, Math.max(5, wrongCount * 2));
     const verdict =
       pct === 100
         ? "Perfeito!"
@@ -321,6 +398,50 @@ export default function QuizPlayerScreen({ route, navigation }) {
           )}
         </View>
 
+        {wrongCount > 0 && (
+          <View style={[styles.weakCard, { backgroundColor: colors.surface }]}>
+            <Text style={[type.title, { color: colors.text }]}>
+              {weak.length ? "Onde você mais errou" : "Reforce o que você errou"}
+            </Text>
+            {weak.slice(0, 5).map((t) => (
+              <View
+                key={t.topic}
+                accessible
+                accessibilityLabel={`${t.topic}: ${t.wrong} de ${t.total} erradas`}
+                style={styles.weakRow}
+              >
+                <View style={styles.weakHead}>
+                  <Text style={[type.body, { flex: 1, color: colors.text }]} numberOfLines={1}>
+                    {t.topic}
+                  </Text>
+                  <Text style={[type.caption, styles.tabular, { color: colors.textMuted }]}>
+                    {t.wrong} de {t.total}
+                  </Text>
+                </View>
+                <View style={[styles.weakTrack, { backgroundColor: colors.errorSoft }]}>
+                  <View
+                    style={[
+                      styles.weakFill,
+                      { backgroundColor: colors.error, width: `${(t.wrong / t.total) * 100}%` },
+                    ]}
+                  />
+                </View>
+              </View>
+            ))}
+            <Text style={[type.caption, { color: colors.textMuted }]}>
+              A IA cria {plural(reinforceQtd, "questão nova", "questões novas")}{" "}
+              {weak.length ? "focadas nesses assuntos" : "sobre o que você errou"}.
+            </Text>
+            <Button
+              variant="tonal"
+              icon="sparkles"
+              title={reinforcing ? "Gerando reforço…" : "Gerar questões de reforço"}
+              loading={reinforcing}
+              onPress={() => reinforce(weak, reinforceQtd)}
+            />
+          </View>
+        )}
+
         {/* Com erros, o próximo passo de quem estuda é revisá-los */}
         <View style={styles.resultActions}>
           {wrongCount > 0 ? (
@@ -387,6 +508,14 @@ export default function QuizPlayerScreen({ route, navigation }) {
           }}
         >
           <View style={[styles.qCard, { backgroundColor: colors.surface }]}>
+            {question.topic ? (
+              <Text
+                style={[type.caption, styles.topic, { color: colors.primary }]}
+                numberOfLines={1}
+              >
+                {question.topic}
+              </Text>
+            ) : null}
             {question.imageUri && (
               <Image
                 source={{
@@ -529,6 +658,7 @@ const styles = StyleSheet.create({
   },
   scroll: { paddingHorizontal: 16, paddingBottom: 24, gap: 16 },
   qCard: { padding: 20, borderRadius: radius.lg },
+  topic: { textTransform: "uppercase", letterSpacing: 0.6, marginBottom: 8 },
   questionText: { fontSize: 18, lineHeight: 27, fontWeight: "500" },
   questionImage: {
     width: "100%",
@@ -576,7 +706,13 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: radius.md,
   },
-  resultActions: { gap: 10, marginTop: 32 },
+  resultActions: { gap: 10, marginTop: 24 },
+  weakCard: { marginTop: 32, padding: 16, borderRadius: radius.lg, gap: 12 },
+  weakRow: { gap: 6 },
+  weakHead: { flexDirection: "row", alignItems: "center", gap: 12 },
+  tabular: { fontVariant: ["tabular-nums"] },
+  weakTrack: { height: 6, borderRadius: 3, overflow: "hidden" },
+  weakFill: { height: "100%", borderRadius: 3 },
   record: {
     flexDirection: "row",
     alignItems: "center",

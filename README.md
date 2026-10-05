@@ -10,7 +10,8 @@
 
 ## Funcionalidades
 
-- **Gerador com IA**: cria quizzes de V ou F ou múltipla escolha a partir de um tema, PDF, DOCX ou fotos (Gemini, DeepSeek via GitHub Models ou Ollama).
+- **Gerador com IA**: cria quizzes de V ou F ou múltipla escolha a partir de um tema, PDF, DOCX ou fotos (Gemini, DeepSeek via GitHub Models ou Ollama). O modelo do Gemini (Flash, Flash-Lite, Pro…) é escolhido nas configurações, com a lista de modelos liberados para a sua chave.
+- **Assuntos e reforço com IA**: cada questão tem um assunto; no resultado o app mostra onde você mais errou e gera um quiz de reforço focado nesses assuntos, sem repetir as questões erradas.
 - **Modo solo**: progresso salvo automaticamente, retomada de onde parou, modo embaralhado, revisão só das questões erradas e histórico de melhor resultado.
 - **Multiplayer em tempo real**: o anfitrião cria uma sala, os amigos entram com um código e o ranking é atualizado a cada pergunta (Supabase Realtime). Mostra quem está online, quantos já responderam e fecha a pergunta quando todos respondem; o anfitrião pode remover jogadores.
 - **Pastas** para organizar os simulados por matéria, com cor própria.
