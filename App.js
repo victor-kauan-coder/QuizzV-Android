@@ -127,7 +127,7 @@ function RootStack() {
         <Stack.Screen
           name="PlayerLobby"
           component={PlayerLobbyScreen}
-          options={locked("Na sala")}
+          options={{ title: "Na sala" }}
         />
         <Stack.Screen
           name="HostGameControl"

@@ -2,7 +2,7 @@
   "expo": {
     "name": "QuizzV",
     "slug": "QuizzV",
-    "version": "1.5.1",
+    "version": "1.6.0",
     "scheme": "quizzv",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
@@ -82,7 +82,7 @@
           ]
         }
       ],
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

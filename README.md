@@ -12,7 +12,8 @@
 
 - **Gerador com IA**: cria quizzes de V ou F ou múltipla escolha a partir de um tema, PDF, DOCX ou fotos (Gemini, DeepSeek via GitHub Models ou Ollama).
 - **Modo solo**: progresso salvo automaticamente, retomada de onde parou, modo embaralhado, revisão só das questões erradas e histórico de melhor resultado.
-- **Multiplayer em tempo real**: o anfitrião cria uma sala, os amigos entram com um código e o ranking é atualizado a cada pergunta (Supabase Realtime).
+- **Multiplayer em tempo real**: o anfitrião cria uma sala, os amigos entram com um código e o ranking é atualizado a cada pergunta (Supabase Realtime). Mostra quem está online, quantos já responderam e fecha a pergunta quando todos respondem; o anfitrião pode remover jogadores.
+- **Pastas** para organizar os simulados por matéria, com cor própria.
 - **Arquivos `.qv` criptografados**: compartilhe pelo WhatsApp; o arquivo só pode ser aberto pelo QuizzV.
 - **Conversor JSON → `.qv`** e importação direta de `.json`.
 - **Backup e restauração** de toda a biblioteca num único arquivo `.qv`.
@@ -77,6 +78,12 @@ O JSON aceito pode ser `{ "title", "type", "questions": [...] }` ou só a lista 
 ```
 
 Para V ou F, use `"type": "vf"` e `"answer": "Verdadeiro"` ou `"Falso"`.
+
+## Servidor do multiplayer (Supabase)
+
+O banco (tabelas, permissões, tempo real e funções) está em `supabase/schema.sql`. Para montar um projeto novo, cole o arquivo no SQL Editor do Supabase e rode; ele pode ser executado de novo sem apagar nada. Depois, atualize a URL e a chave pública em `src/services/supabase.js`.
+
+As telas da partida não dependem só dos eventos em tempo real: cada uma também confere o estado da sala ao conectar, periodicamente e ao voltar para o app (`src/services/roomSync.js`), então ninguém fica preso se um evento se perder.
 
 ## Rodando o projeto
 

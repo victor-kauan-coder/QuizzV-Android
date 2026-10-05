@@ -41,6 +41,7 @@ import {
   moveQuiz,
   updateFolder,
 } from "../services/storage";
+import { pingServer } from "../services/roomService";
 import { checkForUpdates, downloadAndInstall } from "../services/UpdateService";
 import { radius, type } from "../theme";
 
@@ -150,6 +151,7 @@ export default function HomeScreen({ navigation, route }) {
 
   useEffect(() => {
     if (folderId) return; // só a biblioteca principal cuida disso
+    pingServer(); // mantém o servidor do multiplayer ativo e limpa salas velhas
     const runUpdateCheck = async () => {
       const data = await checkForUpdates();
       if (!data?.hasUpdate) return;

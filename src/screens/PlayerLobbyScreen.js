@@ -1,72 +1,71 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
-import { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
+import { useEffect, useRef } from "react";
+import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 
-import { supabase } from "../services/supabase";
+import { haptic } from "../components/ui";
+import { removePlayer } from "../services/roomService";
+import {
+  enterPresence,
+  leavePresence,
+  useLeaveGuard,
+  useOnline,
+  usePlayers,
+  useRoom,
+} from "../services/roomSync";
 import { radius, type } from "../theme";
 
 export default function PlayerLobbyScreen({ route, navigation }) {
   const { colors } = useTheme();
-  // Dados da sala e do jogador vindos da tela de entrada
-  const { room, player } = route.params;
+  const { room, player } = route.params; // vindos da tela de entrar
+  const done = useRef(false); // evita reagir duas vezes (evento + conferência)
 
-  const [players, setPlayers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const players = usePlayers(room.id);
+  const online = useOnline(room.id);
 
   useEffect(() => {
-    // 1. Quem já está na sala
-    supabase
-      .from("players")
-      .select("*")
-      .eq("room_id", room.id)
-      .then(({ data }) => {
-        if (data) setPlayers(data);
-        setLoading(false);
-      });
+    enterPresence(room.id, player.id);
+  }, [room.id, player.id]);
 
-    // 2. Novos jogadores e início do jogo pelo anfitrião
-    const lobbySubscription = supabase
-      .channel(`player_lobby_${room.id}`)
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "players" },
-        (payload) => {
-          if (payload.new.room_id === room.id) {
-            setPlayers((current) =>
-              current.some((p) => p.id === payload.new.id)
-                ? current
-                : [...current, payload.new],
-            );
-          }
-        },
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "rooms",
-          filter: `id=eq.${room.id}`,
-        },
-        (payload) => {
-          if (payload.new.status === "playing") {
-            navigation.navigate("PlayerGame", { room, player });
-          }
-        },
-      )
-      .subscribe();
+  const exit = (title, message) => {
+    if (done.current) return;
+    done.current = true;
+    leavePresence();
+    if (title) Alert.alert(title, message);
+    navigation.popToTop();
+  };
 
-    return () => {
-      supabase.removeChannel(lobbySubscription);
-    };
-  }, []);
+  useRoom(room.id, (current) => {
+    if (done.current) return;
+    if (!current || current.status === "finished") {
+      exit("Sala encerrada", "O anfitrião fechou a sala.");
+    } else if (current.status === "playing") {
+      done.current = true;
+      haptic("success");
+      navigation.replace("PlayerGame", { room: current, player });
+    }
+  });
+
+  // Removido pelo anfitrião: some da lista de jogadores
+  useEffect(() => {
+    if (players && !players.some((p) => p.id === player.id)) {
+      exit("Você saiu da sala", "O anfitrião removeu você desta partida.");
+    }
+  }, [players]);
+
+  useLeaveGuard(navigation, {
+    enabled: true,
+    title: "Sair da sala?",
+    message: "Você vai precisar do código para entrar de novo.",
+    onConfirm: async () => {
+      done.current = true;
+      leavePresence();
+      await removePlayer(player.id);
+    },
+  });
+
+  const list = players || [];
+  const hostOnline = !online || online.has("host");
 
   return (
     <ScrollView
@@ -79,19 +78,22 @@ export default function PlayerLobbyScreen({ route, navigation }) {
           Você está na sala {room.code}
         </Text>
         <Text style={[type.body, styles.center, { color: colors.textMuted }]}>
-          O jogo começa quando o anfitrião der a largada.
+          {hostOnline
+            ? "O jogo começa quando o anfitrião der a largada."
+            : "O anfitrião está desconectado. Aguarde ele voltar."}
         </Text>
       </View>
 
       <Text style={[type.label, styles.sectionTitle, { color: colors.textMuted }]}>
-        Participantes · {players.length}
+        Participantes · {list.length}
       </Text>
-      {loading ? (
+      {!players ? (
         <ActivityIndicator color={colors.primary} />
       ) : (
         <View style={styles.chips}>
-          {players.map((item) => {
+          {list.map((item) => {
             const me = item.id === player.id;
+            const isOnline = !online || online.has(item.id);
             return (
               <View
                 key={item.id}
@@ -103,11 +105,16 @@ export default function PlayerLobbyScreen({ route, navigation }) {
                   },
                 ]}
               >
-                <Ionicons
-                  name={me ? "person" : "person-outline"}
-                  size={14}
-                  color={me ? colors.primary : colors.textMuted}
-                />
+                {me ? (
+                  <Ionicons name="person" size={14} color={colors.primary} />
+                ) : (
+                  <View
+                    style={[
+                      styles.dot,
+                      { backgroundColor: isOnline ? colors.success : colors.textMuted },
+                    ]}
+                  />
+                )}
                 <Text style={[type.label, { color: me ? colors.primary : colors.text }]}>
                   {item.name}
                   {me ? " (você)" : ""}
@@ -135,10 +142,11 @@ const styles = StyleSheet.create({
   chip: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 6,
+    gap: 8,
     minHeight: 40,
     paddingHorizontal: 14,
     borderRadius: 999,
     borderWidth: 1,
   },
+  dot: { width: 8, height: 8, borderRadius: 4 },
 });

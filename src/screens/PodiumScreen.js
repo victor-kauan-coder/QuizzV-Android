@@ -3,6 +3,7 @@ import { useTheme } from "@react-navigation/native";
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Animated,
   ScrollView,
   StyleSheet,
@@ -13,8 +14,14 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Confetti from "../components/Confetti";
 import { Button, haptic, useReduceMotion } from "../components/ui";
-import { cleanupRoom } from "../services/roomService";
-import { supabase } from "../services/supabase";
+import { cleanupRoom, nextQuestion, removePlayer } from "../services/roomService";
+import {
+  leavePresence,
+  useLeaveGuard,
+  useOnline,
+  usePlayers,
+  useRoom,
+} from "../services/roomSync";
 import { radius, type } from "../theme";
 
 const MEDALS = [
@@ -71,60 +78,79 @@ export default function PodiumScreen({ route, navigation }) {
   const insets = useSafeAreaInsets();
   const { room, quiz, currentIdx, isFinal, isHost, player } = route.params;
 
-  const [allPlayers, setAllPlayers] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
+  const done = useRef(false);
 
   const enter = useRef(new Animated.Value(0)).current;
   const reduce = useReduceMotion();
 
-  const playerPosition = player
-    ? allPlayers.findIndex((p) => p.name === player.name) + 1
-    : 0;
+  // Placar ao vivo: quem respondeu no último segundo entra na conta
+  const live = usePlayers(room.id);
+  const loading = live === null;
+  // depois do fim a sala é apagada e os jogadores somem do banco: o ranking
+  // final fica congelado na tela de quem ainda está olhando
+  // (os jogadores somem um a um; guardamos sempre a lista mais completa)
+  const lastBoard = useRef([]);
+  if (live && live.length >= lastBoard.current.length) lastBoard.current = live;
+  const board = isFinal && live && live.length < lastBoard.current.length ? lastBoard.current : live;
+  const allPlayers = (board || [])
+    .slice()
+    .sort((a, b) => b.score - a.score || a.created_at.localeCompare(b.created_at));
+  const online = useOnline(room.id);
+  const hostOnline = !online || online.has("host");
+
+  const playerPosition = player ? allPlayers.findIndex((p) => p.id === player.id) + 1 : 0;
   const top5 = allPlayers.slice(0, 5);
 
   useEffect(() => {
-    fetchScores();
-
-    const podiumSub = supabase
-      .channel(`podium_${room.id}_q${currentIdx}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "UPDATE",
-          schema: "public",
-          table: "rooms",
-          filter: `id=eq.${room.id}`,
-        },
-        (payload) => {
-          if (payload.new.status === "finished" && !isFinal) {
-            navigation.navigate("Meus Quizzes");
-          }
-          if (!isHost && payload.new.current_question_index !== currentIdx) {
-            navigation.replace("PlayerGame", { room: payload.new, player });
-          }
-        },
-      )
-      .subscribe();
-
     Animated.timing(enter, {
       toValue: 1,
       duration: 320,
       useNativeDriver: true,
     }).start();
-
-    return () => supabase.removeChannel(podiumSub);
   }, []);
 
-  const fetchScores = async () => {
-    const { data } = await supabase
-      .from("players")
-      .select("name, score")
-      .eq("room_id", room.id)
-      .order("score", { ascending: false });
-    if (data) setAllPlayers(data);
-    setLoading(false);
+  const goHome = () => {
+    if (done.current) return;
+    done.current = true;
+    leavePresence();
+    navigation.popToTop();
   };
+
+  // Jogador acompanha o anfitrião: próxima questão, fim da partida ou sala apagada
+  useRoom(isHost ? null : room.id, (current) => {
+    if (done.current) return;
+    if (!current || current.status === "finished") {
+      // na classificação final o jogador fica para ver o ranking e sai quando quiser
+      if (!isFinal) {
+        done.current = true;
+        leavePresence();
+        Alert.alert("Partida encerrada", "O anfitrião encerrou a partida.");
+        navigation.popToTop();
+      }
+      return;
+    }
+    if (current.current_question_index > currentIdx) {
+      done.current = true;
+      navigation.replace("PlayerGame", { room: current, player });
+    }
+  });
+
+  useLeaveGuard(navigation, {
+    enabled: !isFinal,
+    title: isHost ? "Encerrar a partida?" : "Sair da partida?",
+    message: isHost
+      ? "Todos os jogadores serão desconectados."
+      : "Você sai do ranking e não volta para esta sala.",
+    confirmText: isHost ? "Encerrar" : "Sair",
+    toTop: true,
+    onConfirm: async () => {
+      done.current = true;
+      leavePresence();
+      if (isHost) cleanupRoom(room.id);
+      else await removePlayer(player.id);
+    },
+  });
 
   // Fim de jogo: festa para o anfitrião e para quem subiu ao pódio
   const celebrate =
@@ -137,14 +163,17 @@ export default function PodiumScreen({ route, navigation }) {
     setAdvancing(true);
     const nextIdx = currentIdx + 1;
     if (nextIdx < quiz.questions.length) {
-      await supabase
-        .from("rooms")
-        .update({ current_question_index: nextIdx, show_results: false })
-        .eq("id", room.id);
-      navigation.replace("HostGameControl", { room, quiz, currentIdx: nextIdx });
+      try {
+        await nextQuestion(room.id, nextIdx);
+        done.current = true;
+        navigation.replace("HostGameControl", { room, quiz, currentIdx: nextIdx });
+      } catch (error) {
+        setAdvancing(false);
+        Alert.alert("Não foi possível avançar", error.message);
+      }
     } else {
-      navigation.navigate("Meus Quizzes");
-      cleanupRoom(room.id);
+      cleanupRoom(room.id); // jogadores veem a classificação final e saem quando quiserem
+      goHome();
     }
   };
 
@@ -171,6 +200,15 @@ export default function PodiumScreen({ route, navigation }) {
             Questão {currentIdx + 1} de {quiz?.questions?.length}
           </Text>
         </View>
+
+        {!isHost && !isFinal && !hostOnline && (
+          <View style={[styles.banner, { backgroundColor: colors.errorSoft }]}>
+            <Ionicons name="cloud-offline-outline" size={18} color={colors.error} />
+            <Text style={[type.caption, { color: colors.text, flex: 1 }]}>
+              O anfitrião desconectou. A partida continua quando ele voltar.
+            </Text>
+          </View>
+        )}
 
         {!isHost && playerPosition > 0 && (
           <Animated.View style={[styles.myCard, { backgroundColor: colors.accent }, rise]}>
@@ -200,10 +238,10 @@ export default function PodiumScreen({ route, navigation }) {
           <Animated.View style={[{ gap: 8 }, rise]}>
             {top5.map((item, index) => (
               <Row
-                key={`${item.name}-${index}`}
+                key={item.id}
                 item={item}
                 position={index + 1}
-                me={!!player && item.name === player.name}
+                me={!!player && item.id === player.id}
               />
             ))}
             {!isHost && player && playerPosition > 5 && (
@@ -239,11 +277,13 @@ export default function PodiumScreen({ route, navigation }) {
             onPress={handleNext}
             loading={advancing}
           />
+        ) : isFinal ? (
+          <Button icon="home-outline" title="Voltar à biblioteca" onPress={goHome} />
         ) : (
           <View style={styles.waiting}>
             <ActivityIndicator size="small" color={colors.textMuted} />
             <Text style={[type.body, { color: colors.textMuted }]}>
-              Aguardando o anfitrião…
+              Aguardando a próxima pergunta…
             </Text>
           </View>
         )}
@@ -265,6 +305,13 @@ const styles = StyleSheet.create({
   },
   myPosition: { fontSize: 30, fontWeight: "800", fontVariant: ["tabular-nums"] },
   sectionTitle: { paddingHorizontal: 4, marginTop: 8 },
+  banner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    padding: 12,
+    borderRadius: radius.md,
+  },
   row: {
     flexDirection: "row",
     alignItems: "center",
