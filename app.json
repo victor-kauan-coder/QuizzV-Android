@@ -2,10 +2,45 @@
   "expo": {
     "name": "QuizzV",
     "slug": "QuizzV",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "scheme": "quizzv",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.kauan.quizzv",
+      "buildNumber": "6",
+      "supportsTablet": true,
+      "infoPlist": {
+        "CFBundleDocumentTypes": [
+          {
+            "CFBundleTypeName": "Quiz do QuizzV",
+            "CFBundleTypeRole": "Viewer",
+            "LSHandlerRank": "Owner",
+            "LSItemContentTypes": [
+              "com.kauan.quizzv.qv"
+            ]
+          }
+        ],
+        "UTExportedTypeDeclarations": [
+          {
+            "UTTypeIdentifier": "com.kauan.quizzv.qv",
+            "UTTypeDescription": "Quiz do QuizzV",
+            "UTTypeConformsTo": [
+              "public.data"
+            ],
+            "UTTypeTagSpecification": {
+              "public.filename-extension": [
+                "qv"
+              ],
+              "public.mime-type": [
+                "application/vnd.quizzv"
+              ]
+            }
+          }
+        ],
+        "LSSupportsOpeningDocumentsInPlace": false
+      }
+    },
     "android": {
       "package": "com.kauan.quizzv",
       "permissions": [
@@ -82,7 +117,7 @@
           ]
         }
       ],
-      "versionCode": 5
+      "versionCode": 6
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

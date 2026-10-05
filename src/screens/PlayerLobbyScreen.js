@@ -42,7 +42,12 @@ export default function PlayerLobbyScreen({ route, navigation }) {
     } else if (current.status === "playing") {
       done.current = true;
       haptic("success");
-      navigation.replace("PlayerGame", { room: current, player });
+      // o quiz vem da sala lida ao entrar: o evento de início pode chegar sem ele
+      navigation.replace("PlayerGame", {
+        room: current,
+        quiz: current.quiz_data ?? room.quiz_data,
+        player,
+      });
     }
   });
 

@@ -16,7 +16,7 @@ const stripLetter = (opt) =>
 export default function PlayerGameScreen({ route, navigation }) {
   const { colors } = useTheme();
   const { room, player } = route.params;
-  const quiz = room.quiz_data;
+  const quiz = route.params.quiz ?? room.quiz_data; // o quiz não muda durante a partida
   const total = quiz?.questions?.length || 0;
 
   const [currentIdx, setCurrentIdx] = useState(room.current_question_index ?? 0);

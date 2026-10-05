@@ -76,6 +76,11 @@ export function Logo({ size = 32 }) {
 }
 
 /** Botão Material: filled (ação principal), tonal, outlined ou text. */
+// Último toque aceito num Button. Um toque duplo não pode acionar o botão que
+// acabou de aparecer no mesmo lugar (ex.: "Ver resultado" -> "Voltar à
+// biblioteca"); tocar várias vezes no MESMO botão (ex.: "Pular") continua valendo.
+let lastPress = { at: 0, id: null };
+
 export function Button({
   title,
   icon,
@@ -96,10 +101,19 @@ export function Button({
   }[variant];
   const off = disabled || loading;
   const { scale, onPressIn, onPressOut } = usePressScale();
+  const id = useRef({}).current;
+  const shownAt = useRef(Date.now()).current;
+  const press = (e) => {
+    const now = Date.now();
+    // só o toque que cai num botão recém-aparecido logo depois de tocar em outro
+    if (lastPress.id !== id && now - lastPress.at < 400 && now - shownAt < 400) return;
+    lastPress = { at: now, id };
+    onPress?.(e);
+  };
 
   return (
     <AnimatedPressable
-      onPress={onPress}
+      onPress={press}
       onPressIn={onPressIn}
       onPressOut={onPressOut}
       disabled={off}

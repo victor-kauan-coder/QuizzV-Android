@@ -132,7 +132,7 @@ export default function PodiumScreen({ route, navigation }) {
     }
     if (current.current_question_index > currentIdx) {
       done.current = true;
-      navigation.replace("PlayerGame", { room: current, player });
+      navigation.replace("PlayerGame", { room: current, quiz, player });
     }
   });
 

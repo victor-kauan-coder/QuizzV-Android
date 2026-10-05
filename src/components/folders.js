@@ -19,24 +19,67 @@ export const FOLDER_COLORS = [
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 
+// As pastas formam uma árvore pelo parentId; sem pai (ou com o pai apagado) = raiz
+export const childFolders = (folders, parentId = null) => {
+  const ids = new Set(folders.map((f) => f.id));
+  return folders.filter((f) => (ids.has(f.parentId) ? f.parentId : null) === parentId);
+};
+
+/** A pasta e todas as que estão dentro dela, em qualquer nível. */
+export const descendantIds = (folders, id) => {
+  const ids = new Set([id]);
+  for (let grew = true; grew; ) {
+    grew = false;
+    for (const f of folders) {
+      if (ids.has(f.parentId) && !ids.has(f.id)) {
+        ids.add(f.id);
+        grew = true;
+      }
+    }
+  }
+  return ids;
+};
+
+/** Pastas em ordem de árvore, com a profundidade de cada uma. */
+export const folderTree = (folders, parentId = null, depth = 0) =>
+  childFolders(folders, parentId).flatMap((folder) => [
+    { folder, depth },
+    ...folderTree(folders, folder.id, depth + 1),
+  ]);
+
 // Cor da pasta legível (3:1) sobre a superfície do tema atual
 export const useFolderTint = (hex) => {
   const { colors } = useTheme();
   return readable(hex || FOLDER_COLORS[0], 3, colors.surface);
 };
 
-export function FolderTile({ folder, count, width, onPress, onLongPress }) {
+/** `active`: um quiz arrastado está em cima desta pasta. */
+export function FolderTile({ folder, count, subCount = 0, width, active, innerRef, onPress, onLongPress }) {
   const { colors } = useTheme();
   const tint = useFolderTint(folder.color);
+  const summary =
+    [subCount ? plural(subCount, "pasta", "pastas") : null, count ? plural(count, "quiz", "quizzes") : null]
+      .filter(Boolean)
+      .join(" · ") || "Vazia";
   return (
     <Pressable
+      ref={innerRef}
+      collapsable={false}
       onPress={onPress}
       onLongPress={onLongPress}
       accessibilityRole="button"
-      accessibilityLabel={`Pasta ${folder.name}, ${plural(count, "quiz", "quizzes")}`}
+      accessibilityLabel={`Pasta ${folder.name}, ${summary}`}
       accessibilityHint="Abre a pasta. Segure para editar."
       android_ripple={{ color: colors.border }}
-      style={[styles.tile, { width, backgroundColor: colors.surface }]}
+      style={[
+        styles.tile,
+        {
+          width,
+          backgroundColor: active ? colors.accentSoft : colors.surface,
+          borderColor: active ? colors.accent : "transparent",
+          transform: [{ scale: active ? 1.04 : 1 }],
+        },
+      ]}
     >
       <View style={[styles.tileIcon, { backgroundColor: (folder.color || FOLDER_COLORS[0]) + "24" }]}>
         <Ionicons name="folder" size={22} color={tint} />
@@ -44,14 +87,14 @@ export function FolderTile({ folder, count, width, onPress, onLongPress }) {
       <Text style={[type.title, { color: colors.text }]} numberOfLines={2}>
         {folder.name}
       </Text>
-      <Text style={[type.caption, { color: colors.textMuted }]}>
-        {count ? plural(count, "quiz", "quizzes") : "Vazia"}
+      <Text style={[type.caption, { color: colors.textMuted }]} numberOfLines={1}>
+        {summary}
       </Text>
     </Pressable>
   );
 }
 
-export function NewFolderTile({ width, onPress }) {
+export function NewFolderTile({ width, sub, onPress }) {
   const { colors } = useTheme();
   return (
     <Pressable
@@ -63,14 +106,18 @@ export function NewFolderTile({ width, onPress }) {
       <View style={[styles.tileIcon, { backgroundColor: colors.tonal }]}>
         <Ionicons name="add" size={24} color={colors.primary} />
       </View>
-      <Text style={[type.title, { color: colors.primary }]}>Nova pasta</Text>
-      <Text style={[type.caption, { color: colors.textMuted }]}>Organize por matéria</Text>
+      <Text style={[type.title, { color: colors.primary }]}>
+        {sub ? "Nova subpasta" : "Nova pasta"}
+      </Text>
+      <Text style={[type.caption, { color: colors.textMuted }]}>
+        {sub ? "Separe por assunto" : "Organize por matéria"}
+      </Text>
     </Pressable>
   );
 }
 
 /** Criar ou editar uma pasta: nome + cor (e excluir, ao editar). */
-export function FolderEditor({ visible, folder, onClose, onSave, onDelete }) {
+export function FolderEditor({ visible, folder, parentName, onClose, onSave, onDelete }) {
   const { colors } = useTheme();
   const [name, setName] = useState("");
   const [color, setColor] = useState(FOLDER_COLORS[0]);
@@ -86,8 +133,13 @@ export function FolderEditor({ visible, folder, onClose, onSave, onDelete }) {
   return (
     <Sheet visible={visible} onClose={onClose}>
       <Text style={[type.headline, { color: colors.text }]}>
-        {folder ? "Editar pasta" : "Nova pasta"}
+        {folder ? "Editar pasta" : parentName ? "Nova subpasta" : "Nova pasta"}
       </Text>
+      {!folder && parentName && (
+        <Text style={[type.caption, { color: colors.textMuted, marginTop: 4 }]} numberOfLines={1}>
+          Dentro de “{parentName}”
+        </Text>
+      )}
       <Field
         label="Nome"
         value={name}
@@ -172,8 +224,10 @@ export function MoveSheet({ visible, quiz, folders, onClose, onMove, onNewFolder
           onPress={() => onMove(null)}
           trailing={current === null && <Ionicons name="checkmark" size={20} color={colors.primary} />}
         />
-        {folders.map((f) => (
-          <FolderRow key={f.id} folder={f} active={current === f.id} onPress={() => onMove(f.id)} />
+        {folderTree(folders).map(({ folder: f, depth }) => (
+          <View key={f.id} style={{ paddingLeft: depth * 20 }}>
+            <FolderRow folder={f} active={current === f.id} onPress={() => onMove(f.id)} />
+          </View>
         ))}
       </ScrollView>
       <View style={[styles.divider, { backgroundColor: colors.border }]} />
@@ -185,6 +239,7 @@ export function MoveSheet({ visible, quiz, folders, onClose, onMove, onNewFolder
 const styles = StyleSheet.create({
   tile: {
     borderRadius: radius.lg,
+    borderWidth: 2,
     padding: 14,
     gap: 4,
     minHeight: 112,

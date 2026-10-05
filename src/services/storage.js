@@ -151,11 +151,12 @@ export const getFolders = async () => {
 const saveFolders = (list) =>
   AsyncStorage.setItem(FOLDERS_KEY, JSON.stringify(list));
 
-export const createFolder = async ({ name, color }) => {
+export const createFolder = async ({ name, color, parentId = null }) => {
   const folder = {
     id: newId(),
     name: name.trim(),
     color,
+    parentId, // null = na raiz; senão, subpasta
     createdAt: new Date().toISOString(),
   };
   await saveFolders([...(await getFolders()), folder]);
@@ -165,11 +166,15 @@ export const createFolder = async ({ name, color }) => {
 export const updateFolder = async (id, changes) =>
   saveFolders((await getFolders()).map((f) => (f.id === id ? { ...f, ...changes } : f)));
 
-/** Exclui a pasta; os quizzes dela voltam para a biblioteca (não são apagados). */
+/** Exclui a pasta; quizzes e subpastas dela sobem para a pasta de cima (nada é apagado). */
 export const deleteFolder = async (id) => {
-  await saveFolders((await getFolders()).filter((f) => f.id !== id));
+  const all = await getFolders();
+  const parentId = all.find((f) => f.id === id)?.parentId ?? null;
+  await saveFolders(
+    all.filter((f) => f.id !== id).map((f) => (f.parentId === id ? { ...f, parentId } : f)),
+  );
   await mutate((list) =>
-    list.map((q) => (q.folderId === id ? { ...q, folderId: null } : q)),
+    list.map((q) => (q.folderId === id ? { ...q, folderId: parentId } : q)),
   );
 };
 
@@ -178,16 +183,22 @@ export const moveQuiz = (quizId, folderId) =>
     list.map((q) => (q.id === quizId ? { ...q, folderId: folderId ?? null } : q)),
   );
 
-// Pastas vindas de um backup: reaproveita as de mesmo nome, cria as que faltam
+// Pastas vindas de um backup: reaproveita as de mesmo nome no mesmo lugar, cria
+// as que faltam e mantém cada subpasta dentro da pasta certa (pais primeiro)
 const mergeFolders = async (incoming = []) => {
   const all = await getFolders();
+  const valid = incoming.filter((f) => String(f?.name || "").trim());
+  const byId = Object.fromEntries(valid.map((f) => [f.id, f]));
+  const depth = (f, n = 0) => (byId[f.parentId] && n < 50 ? depth(byId[f.parentId], n + 1) : n);
   const map = {};
-  for (const f of incoming) {
-    const name = String(f?.name || "").trim();
-    if (!name) continue;
-    let target = all.find((e) => e.name.toLowerCase() === name.toLowerCase());
+  for (const f of [...valid].sort((a, b) => depth(a) - depth(b))) {
+    const name = String(f.name).trim();
+    const parentId = map[f.parentId] ?? null;
+    let target = all.find(
+      (e) => e.name.toLowerCase() === name.toLowerCase() && (e.parentId ?? null) === parentId,
+    );
     if (!target) {
-      target = { id: newId(), name, color: f.color, createdAt: new Date().toISOString() };
+      target = { id: newId(), name, color: f.color, parentId, createdAt: new Date().toISOString() };
       all.push(target);
     }
     map[f.id] = target.id;
@@ -359,7 +370,7 @@ const shareQv = async (data, name, dialogTitle) => {
   await Sharing.shareAsync(fileUri, {
     mimeType: QV_MIME,
     dialogTitle,
-    UTI: "public.data",
+    UTI: "com.kauan.quizzv.qv", // tipo declarado no app.json: o iPhone oferece abrir no QuizzV
   });
 };
 

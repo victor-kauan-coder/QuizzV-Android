@@ -14,7 +14,7 @@
 - **Assuntos e reforço com IA**: cada questão tem um assunto; no resultado o app mostra onde você mais errou e gera um quiz de reforço focado nesses assuntos, sem repetir as questões erradas.
 - **Modo solo**: progresso salvo automaticamente, retomada de onde parou, modo embaralhado, revisão só das questões erradas e histórico de melhor resultado.
 - **Multiplayer em tempo real**: o anfitrião cria uma sala, os amigos entram com um código e o ranking é atualizado a cada pergunta (Supabase Realtime). Mostra quem está online, quantos já responderam e fecha a pergunta quando todos respondem; o anfitrião pode remover jogadores.
-- **Pastas** para organizar os simulados por matéria, com cor própria.
+- **Pastas e subpastas** para organizar os simulados por matéria e assunto, com cor própria. Segure um quiz e arraste até uma pasta para movê-lo.
 - **Arquivos `.qv` criptografados**: compartilhe pelo WhatsApp; o arquivo só pode ser aberto pelo QuizzV.
 - **Conversor JSON → `.qv`** e importação direta de `.json`.
 - **Backup e restauração** de toda a biblioteca num único arquivo `.qv`.
@@ -22,6 +22,7 @@
 - **Busca na biblioteca**, tema claro/escuro e seis cores de destaque (com contraste acessível).
 - **Animações fluidas**: confete com física (gravidade, resistência do ar e papel girando) ao mandar bem e no pódio final, alternativas que "pulam" quando certas e tremem quando erradas, vibração nas respostas, transição entre questões e botão "Criar com IA" que recolhe ao rolar. Tudo respeita a opção "reduzir movimento" do sistema.
 - **Atualização automática** do APK pelo próprio app.
+- **iPhone**: o mesmo app compila para iOS; o `.qv` recebido no WhatsApp ou no app Arquivos abre direto no QuizzV.
 
 ## O formato `.qv`
 
@@ -84,7 +85,13 @@ Para V ou F, use `"type": "vf"` e `"answer": "Verdadeiro"` ou `"Falso"`.
 
 O banco (tabelas, permissões, tempo real e funções) está em `supabase/schema.sql`. Para montar um projeto novo, cole o arquivo no SQL Editor do Supabase e rode; ele pode ser executado de novo sem apagar nada. Depois, atualize a URL e a chave pública em `src/services/supabase.js`.
 
-As telas da partida não dependem só dos eventos em tempo real: cada uma também confere o estado da sala ao conectar, periodicamente e ao voltar para o app (`src/services/roomSync.js`), então ninguém fica preso se um evento se perder.
+As telas da partida não dependem só dos eventos em tempo real: cada uma também confere o estado da sala ao conectar, periodicamente e ao voltar para o app (`src/services/roomSync.js`), então ninguém fica preso se um evento se perder. Os eventos de atualização da sala chegam sem o `quiz_data` quando o quiz é grande (o Postgres guarda a coluna à parte), por isso o quiz é lido ao entrar na sala e acompanha o jogador de tela em tela.
+
+## iPhone
+
+O `.ipa` é gerado pelo GitHub Actions num Mac (`.github/workflows/ios.yml`): a cada release publicada ele é anexado automaticamente, ou rode o workflow "iPhone (.ipa)" na aba Actions. O repositório precisa do segredo `EXPO_PUBLIC_QV_KEY` (a mesma chave do `.env.local`).
+
+O arquivo sai sem assinatura. Para instalar sem pagar a conta de desenvolvedor da Apple, use o [Sideloadly](https://sideloadly.io) (Windows/Mac) ou o [AltStore](https://altstore.io) com o seu Apple ID; com Apple ID gratuito o app precisa ser reinstalado a cada 7 dias (o AltStore renova sozinho). Com a conta paga da Apple (US$ 99/ano) dá para assinar por 1 ano ou publicar via TestFlight.
 
 ## Rodando o projeto
 

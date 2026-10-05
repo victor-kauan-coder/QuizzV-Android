@@ -1,0 +1,62 @@
+# Gera o QuizzV para iPhone (.ipa) num Mac do GitHub. O .ipa sai sem assinatura:
+# instale com Sideloadly/AltStore usando seu Apple ID (veja o README).
+name: iPhone (.ipa)
+
+on:
+  release:
+    types: [published] # cada release do Android ganha o .ipa junto
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  ipa:
+    runs-on: macos-15
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Chave dos arquivos .qv
+        env:
+          QV_KEY: ${{ secrets.EXPO_PUBLIC_QV_KEY }}
+        run: |
+          # sem a mesma chave do Android, o app não abriria os .qv
+          test -n "$QV_KEY" || { echo "::error::Defina o segredo EXPO_PUBLIC_QV_KEY no repositório"; exit 1; }
+          echo "EXPO_PUBLIC_QV_KEY=$QV_KEY" > .env.local
+
+      - name: Projeto iOS
+        run: |
+          npx expo prebuild --platform ios --no-install
+          cd ios && pod install
+
+      - name: Compilar (sem assinatura)
+        run: |
+          xcodebuild -quiet -workspace ios/QuizzV.xcworkspace -scheme QuizzV \
+            -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/QuizzV.xcarchive" archive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+
+      - name: Empacotar .ipa
+        run: |
+          mkdir -p "$RUNNER_TEMP/ipa/Payload"
+          cp -R "$RUNNER_TEMP"/QuizzV.xcarchive/Products/Applications/*.app "$RUNNER_TEMP/ipa/Payload/"
+          cd "$RUNNER_TEMP/ipa" && zip -qry QuizzV.ipa Payload && ls -lh QuizzV.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: QuizzV-ipa
+          path: ${{ runner.temp }}/ipa/QuizzV.ipa
+
+      - name: Anexar à release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "$RUNNER_TEMP/ipa/QuizzV.ipa" --clobber --repo "${{ github.repository }}"

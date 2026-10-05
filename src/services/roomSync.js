@@ -53,6 +53,7 @@ export function useRoom(roomId, onRoom) {
   handler.current = onRoom;
   const last = useRef(-1);
   const gone = useRef(false);
+  const row = useRef(null);
 
   const emit = (room) => {
     if (gone.current) return;
@@ -61,6 +62,10 @@ export function useRoom(roomId, onRoom) {
       handler.current(null);
       return;
     }
+    // O UPDATE do tempo real não traz colunas grandes que não mudaram (o
+    // quiz_data fica guardado à parte no Postgres): completa com a última sala lida
+    room = { ...row.current, ...room };
+    row.current = room;
     const p = progress(room);
     if (p <= last.current) return;
     last.current = p;

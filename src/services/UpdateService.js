@@ -1,6 +1,10 @@
 import Constants from "expo-constants";
 import * as FileSystem from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
+import { Linking, Platform } from "react-native";
+
+// iPhone não instala APK: a versão nova (.ipa) fica na página de releases
+const RELEASES_URL = "https://github.com/victor-kauan-coder/QuizzV-Android/releases/latest";
 
 // URL SEM o hash do commit para pegar sempre o mais recente
 const VERSION_URL =
@@ -41,6 +45,7 @@ export const checkForUpdates = async () => {
 };
 
 export const downloadAndInstall = async (url, onProgress) => {
+  if (Platform.OS === "ios") return Linking.openURL(RELEASES_URL);
   try {
     const fileUri = `${FileSystem.cacheDirectory}quizzv_update.apk`;
 
