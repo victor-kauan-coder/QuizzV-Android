@@ -22,6 +22,7 @@ import PlayerLobbyScreen from "./src/screens/PlayerLobbyScreen";
 import PodiumScreen from "./src/screens/PodiumScreen";
 import QuizPlayerScreen from "./src/screens/QuizPlayerScreen";
 import SettingsScreen from "./src/screens/SettingsScreen";
+import VcallScreen from "./src/screens/VcallScreen";
 import { type } from "./src/theme";
 
 const Stack = createStackNavigator();
@@ -114,6 +115,11 @@ function RootStack() {
           name="Configurações"
           component={SettingsScreen}
           options={{ title: "Configurações" }}
+        />
+        <Stack.Screen
+          name="Vcall"
+          component={VcallScreen}
+          options={{ title: "Quiz no Vcall" }}
         />
         <Stack.Screen
           name="JoinRoom"

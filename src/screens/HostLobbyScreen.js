@@ -13,7 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button, haptic, showSnackbar } from "../components/ui";
-import { createRoom, leaveRoom, removePlayer, startGame } from "../services/roomService";
+import { createRoom, kickPlayer, leaveRoom, startGame } from "../services/roomService";
 import {
   enterPresence,
   leavePresence,
@@ -80,7 +80,7 @@ export default function HostLobbyScreen({ route, navigation }) {
         text: "Remover",
         style: "destructive",
         onPress: async () => {
-          await removePlayer(player.id);
+          await kickPlayer(room.id, player.id);
           showSnackbar(`${player.name} foi removido`);
         },
       },

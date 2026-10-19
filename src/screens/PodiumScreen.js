@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import Confetti from "../components/Confetti";
 import { Button, haptic, useReduceMotion } from "../components/ui";
-import { cleanupRoom, nextQuestion, removePlayer } from "../services/roomService";
+import { cleanupRoom, nextQuestion, removePlayer, syncClock } from "../services/roomService";
 import {
   leavePresence,
   useLeaveGuard,
@@ -76,10 +76,39 @@ function Row({ item, position, me }) {
 export default function PodiumScreen({ route, navigation }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const { room, quiz, currentIdx, isFinal, isHost, player } = route.params;
+  const { room, quiz, currentIdx, isFinal, isHost, player, escolha } = route.params;
 
   const [advancing, setAdvancing] = useState(false);
   const done = useRef(false);
+  // Sem o anfitrião, depois de 30 s no ranking, qualquer jogador pode seguir
+  const [podeSeguir, setPodeSeguir] = useState(false);
+  useEffect(() => {
+    if (isHost || isFinal) return;
+    syncClock();
+    const t = setTimeout(() => setPodeSeguir(true), 31_000);
+    return () => clearTimeout(t);
+  }, []);
+
+  // Acertou? Só dá para saber agora, com o gabarito publicado pelo banco.
+  const acertei =
+    escolha != null &&
+    String(escolha).trim().toUpperCase() === String(room.revealed?.[currentIdx] ?? "").trim().toUpperCase();
+  useEffect(() => {
+    if (!isHost && escolha != null && room.revealed?.[currentIdx] != null) haptic(acertei ? "success" : "error");
+  }, []);
+
+  // A resposta certa desta questão: o banco só a publica quando a questão fecha
+  const certa = (() => {
+    const g = isHost ? quiz.questions?.[currentIdx]?.answer : room.revealed?.[currentIdx];
+    if (g == null) return null;
+    const q = quiz.questions?.[currentIdx];
+    const letra = String(g).trim().charAt(0).toUpperCase();
+    if (q?.options?.length) {
+      const opt = q.options["ABCDE".indexOf(letra)];
+      return opt ? String(opt).replace(/\*\*/g, "") : String(g);
+    }
+    return String(g);
+  })();
 
   const enter = useRef(new Animated.Value(0)).current;
   const reduce = useReduceMotion();
@@ -199,6 +228,19 @@ export default function PodiumScreen({ route, navigation }) {
           <Text style={[type.body, { color: colors.textMuted }]}>
             Questão {currentIdx + 1} de {quiz?.questions?.length}
           </Text>
+          {!isHost && room.revealed?.[currentIdx] != null && (
+            <Text
+              accessibilityLiveRegion="polite"
+              style={[type.title, { color: escolha != null && acertei ? colors.success : colors.error, marginTop: 8 }]}
+            >
+              {escolha == null ? "Você não respondeu" : acertei ? "Você acertou!" : "Não foi dessa vez"}
+            </Text>
+          )}
+          {certa && (
+            <Text style={[type.label, { color: colors.success, marginTop: 6, textAlign: "center" }]}>
+              Resposta certa: {certa}
+            </Text>
+          )}
         </View>
 
         {!isHost && !isFinal && !hostOnline && (
@@ -279,6 +321,21 @@ export default function PodiumScreen({ route, navigation }) {
           />
         ) : isFinal ? (
           <Button icon="home-outline" title="Voltar à biblioteca" onPress={goHome} />
+        ) : !hostOnline && podeSeguir ? (
+          <Button
+            icon="play-skip-forward"
+            title="Seguir sem o anfitrião"
+            loading={advancing}
+            onPress={async () => {
+              setAdvancing(true);
+              try {
+                await nextQuestion(room.id, currentIdx + 1, player.id);
+              } catch (error) {
+                Alert.alert("Ainda não dá para seguir", error.message);
+              }
+              setAdvancing(false);
+            }}
+          />
         ) : (
           <View style={styles.waiting}>
             <ActivityIndicator size="small" color={colors.textMuted} />
