@@ -176,8 +176,13 @@ export default function HomeScreen({ navigation, route }) {
     }, []),
   );
 
-  // Arquivo .qv aberto pelo WhatsApp / gerenciador de arquivos
+  // Arquivo .qv aberto pelo WhatsApp / gerenciador de arquivos, ou o link
+  // quizzv://vcall?... que conecta o celular a uma chamada do Vcall
   const handleDeepLink = async (url) => {
+    if (/^quizzv:\/\/vcall/i.test(url ?? "")) {
+      navigation.navigate("Vcall", { link: url });
+      return;
+    }
     if (!/^(content|file):\/\//.test(url ?? "")) return; // ignora links do Expo
     try {
       const titles = await importQuizFile(url, "Quiz recebido");
@@ -642,6 +647,14 @@ export default function HomeScreen({ navigation, route }) {
             style={{ flex: 1 }}
           />
         )}
+        {!folderId && (
+          <Button
+            variant="tonal"
+            icon="videocam-outline"
+            title="Vcall"
+            onPress={() => navigation.navigate("Vcall")}
+          />
+        )}
       </View>
 
       {inScope > 0 && (
@@ -947,6 +960,15 @@ export default function HomeScreen({ navigation, route }) {
                   style={{ flex: 1 }}
                 />
               </View>
+              <Button
+                variant="tonal"
+                icon="videocam"
+                title="Jogar numa chamada do Vcall"
+                onPress={() => {
+                  close();
+                  navigation.navigate("Vcall", { quiz: selected });
+                }}
+              />
             </View>
 
             <View style={[styles.divider, { backgroundColor: colors.border }]} />

@@ -14,6 +14,7 @@
 - **Assuntos e reforço com IA**: cada questão tem um assunto; no resultado o app mostra onde você mais errou e gera um quiz de reforço focado nesses assuntos, sem repetir as questões erradas.
 - **Modo solo**: progresso salvo automaticamente, retomada de onde parou, modo embaralhado, revisão só das questões erradas e histórico de melhor resultado.
 - **Multiplayer em tempo real**: o anfitrião cria uma sala, os amigos entram com um código e o ranking é atualizado a cada pergunta (Supabase Realtime). Mostra quem está online, quantos já responderam e fecha a pergunta quando todos respondem; o anfitrião pode remover jogadores.
+- **Quiz numa chamada do Vcall**: leia o QR do Quiz do [Vcall](https://github.com/victor-kauan-coder/Vcall) (ou abra o link) e o celular vira o controle: escolha um quiz da biblioteca, o tempo e a ordem, e as perguntas aparecem para todos na chamada. Cada um responde pelo computador ou pelo celular. A conexão vai direto ao servidor da chamada, sem passar pelo Supabase.
 - **Pastas e subpastas** para organizar os simulados por matéria e assunto, com cor própria. Segure um quiz e arraste até uma pasta para movê-lo.
 - **Arquivos `.qv` criptografados**: compartilhe pelo WhatsApp; o arquivo só pode ser aberto pelo QuizzV.
 - **Conversor JSON → `.qv`** e importação direta de `.json`.
@@ -84,6 +85,8 @@ Para V ou F, use `"type": "vf"` e `"answer": "Verdadeiro"` ou `"Falso"`.
 ## Servidor do multiplayer (Supabase)
 
 O banco (tabelas, permissões, tempo real e funções) está em `supabase/schema.sql`. Para montar um projeto novo, cole o arquivo no SQL Editor do Supabase e rode; ele pode ser executado de novo sem apagar nada. Depois, atualize a URL e a chave pública em `src/services/supabase.js`.
+
+**A partir da 1.9.0 o multiplayer usa a versão 2 do banco.** O app só lê as tabelas; toda escrita passa por funções que conferem um segredo do anfitrião ou do jogador (guardado só na memória do aparelho). O gabarito e o código da sala ficam numa tabela que ninguém lê; a resposta não diz na hora se acertou, e os pontos — calculados pelo relógio do banco — entram no placar quando a questão fecha. Criar sala tem limite por endereço. Rode o `schema.sql` novo junto com a publicação da 1.9.0: as versões 1.8.x e anteriores não conseguem mais jogar no multiplayer depois disso.
 
 As telas da partida não dependem só dos eventos em tempo real: cada uma também confere o estado da sala ao conectar, periodicamente e ao voltar para o app (`src/services/roomSync.js`), então ninguém fica preso se um evento se perder. Os eventos de atualização da sala chegam sem o `quiz_data` quando o quiz é grande (o Postgres guarda a coluna à parte), por isso o quiz é lido ao entrar na sala e acompanha o jogador de tela em tela.
 

@@ -4,11 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import { Choice, haptic, ProgressBar } from "../components/ui";
-import { answerQuestion, removePlayer } from "../services/roomService";
+import { answerQuestion, endQuestion, removePlayer, syncClock, timeLeft as restante } from "../services/roomService";
 import { leavePresence, useLeaveGuard, useOnline, useRoom } from "../services/roomSync";
 import { radius, type } from "../theme";
 
-const QUESTION_TIME = 20;
 const LETTERS = "ABCDE";
 const stripLetter = (opt) =>
   String(opt).replace(/^\s*\(?[A-Ea-e][).:-]\s*/, "").replace(/\*\*/g, "");
@@ -20,9 +19,18 @@ export default function PlayerGameScreen({ route, navigation }) {
   const total = quiz?.questions?.length || 0;
 
   const [currentIdx, setCurrentIdx] = useState(room.current_question_index ?? 0);
+  // A sala com a hora de início da questão: o relógio é o do banco
+  const [sala, setSala] = useState(room);
   const [selected, setSelected] = useState(null); // true/false (V ou F) ou letra
-  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME);
+  // O banco confirmou a resposta. Se acertou, só se sabe no ranking: dizer
+  // na hora deixava um segundo aparelho descobrir a certa.
+  const [resultado, setResultado] = useState(null);
+  const tempoTotal = sala.question_time || 20;
+  const [timeLeft, setTimeLeft] = useState(() => Math.ceil(restante(sala)));
   const done = useRef(false);
+  const destravou = useRef(-1);
+  const selectedRef = useRef(null);
+  selectedRef.current = selected;
   const online = useOnline(room.id);
 
   const question = quiz?.questions?.[currentIdx];
@@ -31,12 +39,29 @@ export default function PlayerGameScreen({ route, navigation }) {
   const timeUp = timeLeft === 0 && !hasAnswered;
   const hostOnline = !online || online.has("host");
 
-  // Cronômetro local: para quando o jogador responde
   useEffect(() => {
-    if (timeLeft <= 0 || hasAnswered) return;
-    const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [timeLeft, hasAnswered]);
+    syncClock();
+  }, []);
+
+  // Cronômetro pelo relógio do banco. Acabou o tempo e o anfitrião não fechou
+  // a questão (sumiu, app em segundo plano): o jogador fecha — o banco só
+  // aceita depois do tempo, então ninguém fecha antes da hora.
+  useEffect(() => {
+    const tick = () => {
+      const s = restante(sala);
+      setTimeLeft(Math.ceil(s));
+      if (s <= 0 && sala.question_started_at && destravou.current !== currentIdx) {
+        const passou = -s; // segundos além do tempo (aproximado)
+        if (passou >= 0) {
+          destravou.current = currentIdx;
+          setTimeout(() => endQuestion(room.id, currentIdx, player.id).catch(() => {}), 3000);
+        }
+      }
+    };
+    tick();
+    const t = setInterval(tick, 250);
+    return () => clearInterval(t);
+  }, [sala, currentIdx]);
 
   const leave = (title, message) => {
     if (done.current) return;
@@ -63,12 +88,17 @@ export default function PlayerGameScreen({ route, navigation }) {
         isHost: false,
         isFinal: idx + 1 >= total,
         player,
+        // o ranking compara com o gabarito publicado e diz se acertou
+        escolha: idx === currentIdx && selectedRef.current !== null ? respostaDe(selectedRef.current) : null,
       });
     } else if (idx > currentIdx) {
       // o anfitrião já passou para a próxima
       setCurrentIdx(idx);
+      setSala(current);
       setSelected(null);
-      setTimeLeft(QUESTION_TIME);
+      setResultado(null);
+    } else if (idx === currentIdx && current.question_started_at !== sala.question_started_at) {
+      setSala(current); // chegou a hora de início desta questão
     }
   });
 
@@ -84,32 +114,26 @@ export default function PlayerGameScreen({ route, navigation }) {
     },
   });
 
-  const isCorrect = (choice) =>
-    isVF
-      ? choice === (question?.answer === "Verdadeiro")
-      : choice === String(question?.answer).trim().charAt(0).toUpperCase();
+  // O gabarito não está mais no celular: quem confere e soma os pontos
+  // (500 a 1000, pela rapidez) é o banco, pelo relógio dele.
+  const respostaDe = (choice) => (isVF ? (choice ? "Verdadeiro" : "Falso") : choice);
 
   const handleAnswer = async (choice) => {
     if (hasAnswered || timeLeft === 0) return;
-    const correct = isCorrect(choice);
     setSelected(choice);
-    haptic(correct ? "success" : "error");
-    // resposta rápida vale mais: de 500 a 1000 pontos; errada vale 0 mas conta
-    // como respondida (o anfitrião vê quantos já responderam)
-    const points = correct ? 500 + (timeLeft / QUESTION_TIME) * 500 : 0;
+    haptic("tap");
     try {
-      await answerQuestion(player.id, currentIdx, points);
+      const r = await answerQuestion(player.id, currentIdx, respostaDe(choice));
+      setResultado(r);
     } catch (error) {
       Alert.alert("Sua resposta não foi enviada", error.message);
       setSelected(null);
     }
   };
 
-  const optionState = (choice) => {
-    if (!hasAnswered) return "idle";
-    if (isCorrect(choice)) return "correct";
-    return choice === selected ? "wrong" : "dim";
-  };
+  // Antes do ranking, só a SUA alternativa é marcada (certa ou errada); a
+  // certa de verdade aparece no ranking, quando a questão fecha para todos.
+  const optionState = (choice) => (!hasAnswered || choice === selected ? "idle" : "dim");
 
   if (!question) {
     return (
@@ -130,13 +154,13 @@ export default function PlayerGameScreen({ route, navigation }) {
         letter: LETTERS[i],
       }));
 
-  const acertou = hasAnswered && isCorrect(selected);
+  const enviada = !!resultado;
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={styles.top}>
         <View style={{ flex: 1 }}>
-          <ProgressBar value={timeLeft / QUESTION_TIME} duration={1000} />
+          <ProgressBar value={timeLeft / tempoTotal} duration={1000} />
         </View>
         <Text
           style={[type.label, styles.time, { color: timeLeft <= 5 ? colors.error : colors.text }]}
@@ -162,25 +186,25 @@ export default function PlayerGameScreen({ route, navigation }) {
           {String(question.question || "").replace(/\*\*/g, "")}
         </Text>
 
-        {(hasAnswered || timeUp) && (
+        {(resultado || timeUp) && (
           <View
             accessibilityLiveRegion="polite"
             style={[
               styles.result,
-              { backgroundColor: acertou ? colors.successSoft : colors.errorSoft },
+              { backgroundColor: enviada ? colors.surfaceAlt : colors.errorSoft },
             ]}
           >
             <Ionicons
-              name={acertou ? "checkmark-circle" : timeUp ? "time" : "close-circle"}
+              name={enviada ? "checkmark-done" : "time"}
               size={28}
-              color={acertou ? colors.success : colors.error}
+              color={enviada ? colors.primary : colors.error}
             />
             <View style={{ flex: 1 }}>
               <Text style={[type.title, { color: colors.text }]}>
-                {acertou ? "Você acertou!" : timeUp ? "Tempo esgotado" : "Não foi dessa vez"}
+                {enviada ? "Resposta enviada!" : "Tempo esgotado"}
               </Text>
               <Text style={[type.caption, { color: colors.textMuted }]}>
-                Aguardando os outros jogadores…
+                {enviada ? "O resultado aparece no ranking, quando todos responderem." : "Aguardando os outros jogadores…"}
               </Text>
             </View>
           </View>

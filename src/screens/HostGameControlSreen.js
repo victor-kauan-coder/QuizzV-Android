@@ -5,11 +5,14 @@ import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Button, haptic, ProgressBar } from "../components/ui";
-import { cleanupRoom, endQuestion } from "../services/roomService";
-import { leavePresence, useLeaveGuard, useOnline, usePlayers } from "../services/roomSync";
+import { cleanupRoom, endQuestion, syncClock, timeLeft as restante } from "../services/roomService";
+import { leavePresence, useLeaveGuard, useOnline, usePlayers, useRoom } from "../services/roomSync";
 import { radius, type } from "../theme";
 
-const QUESTION_TIME = 20;
+// A sala só vale para o relógio se já estiver NESTA questão: a que vem do
+// ranking ainda traz a hora de início da questão anterior.
+const daQuestao = (sala, idx) =>
+  sala && sala.current_question_index === idx && !sala.show_results && sala.question_started_at ? sala : null;
 
 export default function HostGameControlScreen({ route, navigation }) {
   const { colors } = useTheme();
@@ -17,7 +20,10 @@ export default function HostGameControlScreen({ route, navigation }) {
   const { room, quiz } = route.params;
   const currentIdx = route.params.currentIdx || 0;
 
-  const [timeLeft, setTimeLeft] = useState(QUESTION_TIME);
+  // O relógio é o do banco (o mesmo dos jogadores), não o deste celular.
+  const [sala, setSala] = useState(() => daQuestao(room, currentIdx));
+  const tempoTotal = room.question_time || 20;
+  const [timeLeft, setTimeLeft] = useState(tempoTotal);
   const [ending, setEnding] = useState(false);
   const hasEnded = useRef(false); // timer, botão e "todos responderam" não disparam duas vezes
 
@@ -56,13 +62,25 @@ export default function HostGameControlScreen({ route, navigation }) {
   };
 
   useEffect(() => {
-    if (timeLeft <= 0) {
-      handleEndQuestion();
-      return;
-    }
-    const t = setTimeout(() => setTimeLeft((s) => s - 1), 1000);
-    return () => clearTimeout(t);
-  }, [timeLeft]);
+    syncClock();
+  }, []);
+
+  useRoom(room.id, (current) => {
+    const s = daQuestao(current, currentIdx);
+    if (s) setSala(s);
+  });
+
+  useEffect(() => {
+    if (!sala) return; // ainda sem a hora de início desta questão
+    const tick = () => {
+      const t = Math.ceil(restante(sala));
+      setTimeLeft(t);
+      if (t <= 0) handleEndQuestion();
+    };
+    tick();
+    const timer = setInterval(tick, 250);
+    return () => clearInterval(timer);
+  }, [sala]);
 
   // Todo mundo respondeu: não precisa esperar o tempo acabar
   useEffect(() => {
@@ -111,7 +129,7 @@ export default function HostGameControlScreen({ route, navigation }) {
         </View>
       </View>
       <View style={{ paddingHorizontal: 16 }}>
-        <ProgressBar value={timeLeft / QUESTION_TIME} duration={1000} />
+        <ProgressBar value={timeLeft / tempoTotal} duration={1000} />
       </View>
 
       <ScrollView contentContainerStyle={styles.body}>
