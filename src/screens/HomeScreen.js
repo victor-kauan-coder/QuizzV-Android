@@ -65,7 +65,8 @@ const ENGINE_LABEL = {
 };
 
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
-const typeLabel = (q) => (q.type === "mc" ? "Múltipla escolha" : "V ou F");
+const typeLabel = (q) => ({ mc: "Múltipla escolha", misto: "V ou F e alternativas" })[q.type] || "V ou F";
+const typeMark = (q) => ({ mc: "A–E", misto: "Mix" })[q.type] || "V/F";
 const metaLine = (q) =>
   [
     plural(q.questions?.length || 0, "questão", "questões"),
@@ -572,7 +573,7 @@ export default function HomeScreen({ navigation, route }) {
             accessibilityLabel={typeLabel(item)}
           >
             <Text style={[styles.typeMark, { color: colors.primary }]}>
-              {item.type === "mc" ? "A–E" : "V/F"}
+              {typeMark(item)}
             </Text>
           </View>
           <View style={{ flex: 1 }}>
@@ -875,7 +876,7 @@ export default function HomeScreen({ navigation, route }) {
           <View style={styles.cardRow}>
             <View style={[styles.iconBox, { backgroundColor: colors.tonal }]}>
               <Text style={[styles.typeMark, { color: colors.primary }]}>
-                {drag.quiz.type === "mc" ? "A–E" : "V/F"}
+                {typeMark(drag.quiz)}
               </Text>
             </View>
             <Text style={[type.title, { flex: 1, color: colors.text }]} numberOfLines={1}>

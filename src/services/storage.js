@@ -251,31 +251,37 @@ const mcLetter = (answer, options = []) => {
   return i >= 0 ? String.fromCharCode(65 + i) : answer.charAt(0).toUpperCase();
 };
 
+// O tipo é de cada questão: sem alternativas é V ou F. Um quiz pode misturar os dois.
+export const isVF = (q) => !q?.options?.length;
+export const quizKind = (questions = []) =>
+  questions.every(isVF) ? "vf" : questions.some(isVF) ? "misto" : "mc";
+
 // Aceita quizzes de outras fontes (JSON feito à mão, outras IAs) no formato do app.
 export const normalizeQuiz = (data, fallbackTitle = "Quiz importado") => {
   const raw = Array.isArray(data) ? { questions: data } : { ...data };
   const questions = Array.isArray(raw.questions) ? raw.questions : [];
-  const isMC = raw.type
-    ? raw.type === "mc" || raw.type === "multipla"
-    : questions.some((q) => Array.isArray(q.options));
+  // Declarado "mc" mantém a regra antiga: questão sem alternativas é erro, não V ou F
+  const allMC = raw.type === "mc" || raw.type === "multipla";
 
-  return {
-    title: String(raw.title || fallbackTitle).trim(),
-    type: isMC ? "mc" : "vf",
-    engine: raw.engine || "importado",
-    questions: questions.map((q) => {
-      const answer = String(q.answer ?? "").trim();
-      return {
-        ...q,
-        question: String(q.question ?? "").trim(),
-        explanation: q.explanation ? String(q.explanation) : "",
-        answer: isMC
+  const normalized = questions.map((q) => {
+    const answer = String(q.answer ?? "").trim();
+    return {
+      ...q,
+      question: String(q.question ?? "").trim(),
+      explanation: q.explanation ? String(q.explanation) : "",
+      answer:
+        allMC || !isVF(q)
           ? mcLetter(answer, q.options)
           : TRUE_WORDS.includes(answer.toLowerCase())
             ? "Verdadeiro"
             : "Falso",
-      };
-    }),
+    };
+  });
+  return {
+    title: String(raw.title || fallbackTitle).trim(),
+    type: allMC ? "mc" : quizKind(normalized),
+    engine: raw.engine || "importado",
+    questions: normalized,
   };
 };
 
@@ -286,7 +292,7 @@ export const validateQuizStructure = (quiz) => {
 
   quiz.questions.forEach((q, i) => {
     if (!q.question) errors.push(`Questão ${i + 1}: enunciado vazio`);
-    if (quiz.type === "mc") {
+    if (quiz.type === "mc" || !isVF(q)) {
       if (!Array.isArray(q.options) || q.options.length < 2) {
         errors.push(`Questão ${i + 1}: alternativas ausentes`);
       } else if (!/^[A-Z]$/.test(q.answer)) {

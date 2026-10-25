@@ -50,7 +50,7 @@ const roomQuiz = (quiz) => ({
 const gabarito = (quiz) =>
   quiz.questions.map((q) => {
     const a = String(q.answer ?? "").trim();
-    if (quiz.type === "mc") return a.charAt(0).toUpperCase();
+    if (q.options?.length) return a.charAt(0).toUpperCase();
     return a === "Verdadeiro" ? "Verdadeiro" : "Falso";
   });
 

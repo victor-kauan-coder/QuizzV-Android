@@ -51,14 +51,13 @@ const clean = (s) => String(s ?? "").replace(/\*\*/g, "").trim();
  * gabarito fora delas) ficam de fora — e a contagem volta junto, para avisar.
  */
 export function quizParaVcall(quiz) {
-  const isVF = !quiz?.type || quiz.type === "vf";
   const perguntas = [];
   let puladas = 0;
   for (const q of quiz?.questions || []) {
     const texto = clean(q.question).slice(0, 1500);
     let opcoes;
     let correta;
-    if (isVF) {
+    if (!q.options?.length) {
       opcoes = ["Verdadeiro", "Falso"];
       correta = q.answer === "Verdadeiro" ? 0 : 1;
     } else {

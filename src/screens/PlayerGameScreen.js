@@ -34,7 +34,7 @@ export default function PlayerGameScreen({ route, navigation }) {
   const online = useOnline(room.id);
 
   const question = quiz?.questions?.[currentIdx];
-  const isVF = !quiz?.type || quiz?.type === "vf";
+  const isVF = !question?.options?.length; // cada questão tem seu tipo (quiz misto)
   const hasAnswered = selected !== null;
   const timeUp = timeLeft === 0 && !hasAnswered;
   const hostOnline = !online || online.has("host");

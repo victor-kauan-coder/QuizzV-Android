@@ -27,7 +27,12 @@ import {
 } from "../components/ui";
 import { ThemeContext } from "../context/ThemeContext";
 import { generateQuestions } from "../services/ai";
-import { recordAttempt, saveQuiz, updateQuizProgress } from "../services/storage";
+import {
+  isVF as isVFQuestion,
+  recordAttempt,
+  saveQuiz,
+  updateQuizProgress,
+} from "../services/storage";
 import { radius, type } from "../theme";
 
 const LETTERS = "ABCDE";
@@ -167,7 +172,7 @@ export default function QuizPlayerScreen({ route, navigation }) {
   // Progresso salvo só vale para a ordem original e para a rodada completa
   const persist = !shuffle && !isRetry;
   const question = questions[idx];
-  const isVF = quiz.type !== "mc";
+  const isVF = isVFQuestion(question);
   const answer = answers[idx];
   const isLast = idx === questions.length - 1;
 
@@ -282,7 +287,7 @@ export default function QuizPlayerScreen({ route, navigation }) {
       const generated = await generateQuestions(aiModel, {
         tema: topics.length ? `${baseTitle}: ${topics.slice(0, 5).join(", ")}` : baseTitle,
         qtd,
-        mode: isVF ? "vf" : "mc",
+        mode: quiz.type === "vf" ? "vf" : "mc",
         context: reinforceContext(baseTitle, wrong, topics),
       });
       const reforco = {
@@ -290,7 +295,7 @@ export default function QuizPlayerScreen({ route, navigation }) {
         title: `Reforço · ${baseTitle}`,
         questions: generated,
         engine: aiModel,
-        type: isVF ? "vf" : "mc",
+        type: quiz.type === "vf" ? "vf" : "mc",
         folderId: quiz.folderId ?? null,
       };
       await saveQuiz(reforco);

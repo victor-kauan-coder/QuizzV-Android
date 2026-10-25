@@ -633,9 +633,9 @@ function Biblioteca({ lista, onClose, onEscolher }) {
           keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (
             <ListItem
-              icon={item.type === "mc" ? "list-outline" : "checkmark-done-outline"}
+              icon={item.type === "vf" ? "checkmark-done-outline" : "list-outline"}
               title={item.title}
-              subtitle={`${item.questions?.length || 0} questões · ${item.type === "mc" ? "múltipla escolha" : "verdadeiro ou falso"}`}
+              subtitle={`${item.questions?.length || 0} questões · ${{ mc: "múltipla escolha", misto: "V ou F e alternativas" }[item.type] || "verdadeiro ou falso"}`}
               onPress={() => onEscolher(item)}
             />
           )}

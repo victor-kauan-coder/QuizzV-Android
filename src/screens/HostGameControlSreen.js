@@ -139,14 +139,13 @@ export default function HostGameControlScreen({ route, navigation }) {
           </Text>
         </View>
 
-        {quiz?.type === "mc" &&
-          question?.options?.map((opt, i) => (
-            <View key={i} style={[styles.option, { backgroundColor: colors.surface }]}>
-              <Text style={[type.body, { color: colors.text }]}>
-                {String(opt).replace(/\*\*/g, "")}
-              </Text>
-            </View>
-          ))}
+        {question?.options?.map((opt, i) => (
+          <View key={i} style={[styles.option, { backgroundColor: colors.surface }]}>
+            <Text style={[type.body, { color: colors.text }]}>
+              {String(opt).replace(/\*\*/g, "")}
+            </Text>
+          </View>
+        ))}
 
         <View
           style={[styles.answered, { backgroundColor: colors.surface }]}
