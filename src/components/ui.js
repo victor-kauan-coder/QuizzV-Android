@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import {
   AccessibilityInfo,
   ActivityIndicator,
+  Alert,
   Animated,
   Easing,
   KeyboardAvoidingView,
@@ -500,6 +501,76 @@ export function SnackbarHost() {
   );
 }
 
+// --- Alert no navegador/desktop: o react-native-web não implementa
+// Alert.alert (não faz nada). Mostramos o mesmo diálogo dentro do app.
+let alertRef = null;
+if (Platform.OS === "web") {
+  Alert.alert = (title, message, buttons) =>
+    alertRef?.({ title, message, buttons: buttons?.length ? buttons : [{ text: "OK" }] });
+}
+
+export function AlertHost() {
+  const { colors } = useTheme();
+  const [alert, setAlert] = useState(null);
+  const anim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    alertRef = (a) => {
+      setAlert(a);
+      anim.setValue(0);
+      Animated.spring(anim, { toValue: 1, speed: 24, bounciness: 4, useNativeDriver: true }).start();
+    };
+    return () => {
+      alertRef = null;
+    };
+  }, [anim]);
+
+  if (!alert) return null;
+  const cancel = alert.buttons.find((b) => b.style === "cancel");
+  const close = (b) => {
+    setAlert(null);
+    b?.onPress?.();
+  };
+  return (
+    <Modal visible transparent animationType="fade" onRequestClose={() => close(cancel)}>
+      <View style={styles.alertRoot}>
+        <Pressable
+          style={[StyleSheet.absoluteFill, { backgroundColor: colors.scrim }]}
+          onPress={cancel ? () => close(cancel) : undefined}
+          accessibilityLabel="Fechar"
+        />
+        <Animated.View
+          accessibilityRole="alert"
+          style={[
+            styles.alert,
+            {
+              backgroundColor: colors.surface,
+              opacity: anim,
+              transform: [{ scale: anim.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) }],
+            },
+          ]}
+        >
+          {!!alert.title && <Text style={[type.title, { color: colors.text }]}>{alert.title}</Text>}
+          {!!alert.message && (
+            <Text style={[type.body, { color: colors.textMuted, marginTop: 8 }]}>{alert.message}</Text>
+          )}
+          <View style={styles.alertButtons}>
+            {alert.buttons.map((b, i) => (
+              <Button
+                key={i}
+                title={b.text}
+                variant={i === alert.buttons.length - 1 && !b.style ? "filled" : "text"}
+                color={b.style === "destructive" ? colors.error : undefined}
+                onPress={() => close(b)}
+              />
+            ))}
+          </View>
+        </Animated.View>
+      </View>
+    </Modal>
+  );
+}
+
 const styles = StyleSheet.create({
   button: {
     minHeight: 52,
@@ -573,6 +644,9 @@ const styles = StyleSheet.create({
     gap: 16,
     paddingVertical: 8,
   },
+  alertRoot: { flex: 1, alignItems: "center", justifyContent: "center", padding: 24 },
+  alert: { width: "100%", maxWidth: 420, borderRadius: radius.xl, padding: 24 },
+  alertButtons: { flexDirection: "row", flexWrap: "wrap", justifyContent: "flex-end", gap: 8, marginTop: 20 },
   snackbar: {
     position: "absolute",
     left: 16,

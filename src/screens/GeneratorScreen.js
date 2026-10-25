@@ -2,7 +2,6 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@react-navigation/native";
 import { Buffer } from "buffer"; // Para DOCX
 import * as DocumentPicker from "expo-document-picker";
-import * as FileSystem from "expo-file-system/legacy";
 import mammoth from "mammoth"; // DOCX funciona no Expo
 import { useContext, useState } from "react";
 import {
@@ -19,7 +18,7 @@ import { Button, Field, IconButton, Segmented, showSnackbar } from "../component
 import { ThemeContext } from "../context/ThemeContext";
 import { generateQuestions } from "../services/ai";
 import { geminiModelLabel } from "../services/geminiService";
-import { saveQuiz } from "../services/storage";
+import { readBase64, saveQuiz } from "../services/storage";
 import { radius, type } from "../theme";
 
 const ENGINE = { gemini: "Gemini", deepseek: "DeepSeek", ollama: "Ollama" };
@@ -54,9 +53,7 @@ export default function GeneratorScreen({ navigation, route }) {
 
   const extractDocxText = async (fileUri) => {
     try {
-      const base64 = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: "base64",
-      });
+      const base64 = await readBase64(fileUri);
       const result = await mammoth.extractRawText({
         arrayBuffer: Buffer.from(base64, "base64"),
       });
@@ -87,7 +84,7 @@ export default function GeneratorScreen({ navigation, route }) {
       for (const file of files) {
         if (file.mimeType?.includes("image") || /\.(jpe?g|png)$/i.test(file.name)) {
           allImagesBase64.push(
-            await FileSystem.readAsStringAsync(file.uri, { encoding: "base64" }),
+            await readBase64(file.uri),
           );
         } else if (isDocx(file)) {
           allTextContent += `\n--- DOCX: ${file.name} ---\n${await extractDocxText(file.uri)}`;

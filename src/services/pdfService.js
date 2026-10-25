@@ -2,13 +2,29 @@ import { Asset } from "expo-asset";
 import * as FileSystem from "expo-file-system/legacy";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
+import { Platform } from "react-native";
 
 // Logo vetorial (mesmo arquivo usado no app), embutida como SVG no HTML
 const loadLogoSvg = async () => {
   const asset = Asset.fromModule(require("../../assets/images/logo.svg"));
+  if (Platform.OS === "web") return (await fetch(asset.uri)).text();
   await asset.downloadAsync();
   return FileSystem.readAsStringAsync(asset.localUri);
 };
+
+const printHtmlWeb = (html, title) =>
+  new Promise((resolve) => {
+    const frame = document.createElement("iframe");
+    frame.style.cssText = "position:fixed;width:0;height:0;border:0";
+    frame.srcdoc = html;
+    frame.onload = () => {
+      frame.contentDocument.title = title; // nome sugerido do PDF
+      frame.contentWindow.print(); // bloqueia até fechar o diálogo
+      frame.remove();
+      resolve();
+    };
+    document.body.appendChild(frame);
+  });
 
 export const exportToPdf = async (quiz) => {
   // 1. FORMATADOR DE TEXTO
@@ -327,6 +343,9 @@ export const exportToPdf = async (quiz) => {
       </body>
     </html>
   `;
+
+  // Web/desktop: abre a impressão do sistema, que tem "Salvar como PDF"
+  if (Platform.OS === "web") return printHtmlWeb(htmlContent, cleanFileName);
 
   try {
     const { uri: tempUri } = await Print.printToFileAsync({

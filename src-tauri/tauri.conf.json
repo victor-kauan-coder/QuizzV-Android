@@ -1,0 +1,26 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "QuizzV",
+  "version": "1.9.0",
+  "identifier": "com.kauan.quizzv",
+  "build": {
+    "beforeDevCommand": "npx expo start --web --port 8081",
+    "devUrl": "http://localhost:8081",
+    "beforeBuildCommand": "npx expo export -p web",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [],
+    "security": { "csp": null }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "windows": {
+      "webviewInstallMode": { "type": "downloadBootstrapper" },
+      "nsis": { "installMode": "currentUser", "languages": ["PortugueseBR"] }
+    }
+  }
+}

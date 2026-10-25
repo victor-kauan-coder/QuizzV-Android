@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import * as FileSystem from "expo-file-system/legacy";
+import { readBase64 } from "./storage";
 
 const MAX_TPM = 240000;
 
@@ -152,9 +152,7 @@ export const generateQuizFromIA = async (
   let estimatedTokens = (topic.length + context.length) / 4;
   const fileParts = await Promise.all(
     files.map(async (file) => {
-      const base64 = await FileSystem.readAsStringAsync(file.uri, {
-        encoding: "base64",
-      });
+      const base64 = await readBase64(file.uri);
 
       estimatedTokens += file.name.toLowerCase().endsWith(".pdf")
         ? base64.length / 4
