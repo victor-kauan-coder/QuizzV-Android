@@ -36,12 +36,26 @@ export const saveSettings = async (newSettings) => {
 let cache = null;
 let queue = Promise.resolve();
 
-// No navegador (preview de design com Playwright/Figma) não há sistema de
-// arquivos: a biblioteca fica no AsyncStorage, que lá é o localStorage.
-const WEB = !FileSystem.documentDirectory;
+// No navegador e no desktop (Tauri) não há sistema de arquivos: a biblioteca
+// fica no IndexedDB. O localStorage tem ~5MB e quizzes com imagens estouram.
+export const WEB = !FileSystem.documentDirectory;
+
+const idb = (mode, fn) =>
+  new Promise((resolve, reject) => {
+    const open = indexedDB.open("quizzv", 1);
+    open.onupgradeneeded = () => open.result.createObjectStore("kv");
+    open.onerror = () => reject(open.error);
+    open.onsuccess = () => {
+      const req = fn(open.result.transaction("kv", mode).objectStore("kv"));
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    };
+  });
+const webGet = () => idb("readonly", (s) => s.get("quizzes"));
+const webSet = (value) => idb("readwrite", (s) => s.put(value, "quizzes"));
 
 const persist = async (list) => {
-  if (WEB) return AsyncStorage.setItem(LEGACY_QUIZZES_KEY, JSON.stringify(list));
+  if (WEB) return webSet(JSON.stringify(list));
   const tmp = LIBRARY_FILE + ".tmp";
   await FileSystem.writeAsStringAsync(tmp, JSON.stringify(list));
   await FileSystem.deleteAsync(LIBRARY_FILE, { idempotent: true });
@@ -51,7 +65,9 @@ const persist = async (list) => {
 const readLibrary = async () => {
   if (cache) return cache;
   if (WEB) {
-    cache = JSON.parse((await AsyncStorage.getItem(LEGACY_QUIZZES_KEY)) || "[]");
+    // migração única do localStorage (versões web antigas)
+    const stored = (await webGet()) ?? (await AsyncStorage.getItem(LEGACY_QUIZZES_KEY));
+    cache = JSON.parse(stored || "[]");
     return cache;
   }
   // uma gravação interrompida deixa só o .tmp: recupera ele
@@ -304,10 +320,49 @@ const assertValid = (quiz) => {
 };
 
 // --- ARQUIVOS ---
+// No web o seletor devolve blob: URLs, que o fetch lê direto
+const readBytes = async (uri) =>
+  new Uint8Array(await (await fetch(uri)).arrayBuffer());
+
+/** Conteúdo de um arquivo escolhido no seletor, em base64. */
+export const readBase64 = async (uri) =>
+  WEB
+    ? Buffer.from(await readBytes(uri)).toString("base64")
+    : FileSystem.readAsStringAsync(uri, { encoding: FileSystem.EncodingType.Base64 });
+
+/** Web/desktop: diálogo "Salvar como" do sistema (download se não houver). */
+export const saveFileWeb = async (bytes, name, mime, description) => {
+  const blob = new Blob([bytes], { type: mime });
+  if (window.showSaveFilePicker) {
+    const ext = name.slice(name.lastIndexOf("."));
+    let handle;
+    try {
+      handle = await window.showSaveFilePicker({
+        suggestedName: name,
+        types: [{ description, accept: { [mime]: [ext] } }],
+      });
+    } catch (e) {
+      if (e.name === "AbortError") return false; // cancelou o diálogo
+      throw e;
+    }
+    const out = await handle.createWritable();
+    await out.write(blob);
+    await out.close();
+    return true;
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+  return true;
+};
+
 const fileBaseName = (name = "") => name.replace(/\.(qv|json|bin)$/i, "");
 
 /** Lê um .qv/.json (file:// ou content://) e devolve o conteúdo decodificado. */
 export const readQuizFile = async (uri) => {
+  if (WEB) return decodeQv(await readBytes(uri));
   let localUri = uri;
   if (uri.startsWith("content://")) {
     // WhatsApp e gerenciadores entregam content://; copiamos antes de ler
@@ -361,6 +416,7 @@ const safeFileName = (title) =>
 
 const shareQv = async (data, name, dialogTitle) => {
   const bytes = encodeQv(data, getRandomBytes);
+  if (WEB) return saveFileWeb(bytes, `${safeFileName(name)}.qv`, QV_MIME, "Quiz do QuizzV");
   const fileUri = `${FileSystem.cacheDirectory}${safeFileName(name)}.qv`;
   await FileSystem.writeAsStringAsync(
     fileUri,

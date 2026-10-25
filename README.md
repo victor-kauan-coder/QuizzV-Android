@@ -23,6 +23,7 @@
 - **Busca na biblioteca**, tema claro/escuro e seis cores de destaque (com contraste acessível).
 - **Animações fluidas**: confete com física (gravidade, resistência do ar e papel girando) ao mandar bem e no pódio final, alternativas que "pulam" quando certas e tremem quando erradas, vibração nas respostas, transição entre questões e botão "Criar com IA" que recolhe ao rolar. Tudo respeita a opção "reduzir movimento" do sistema.
 - **Atualização automática** do APK pelo próprio app.
+- **Windows**: o mesmo app roda no computador, com os diálogos de arquivo do sistema (veja [Windows (desktop)](#windows-desktop)).
 - **iPhone**: o mesmo app compila para iOS; o `.qv` recebido no WhatsApp ou no app Arquivos abre direto no QuizzV.
 
 ## O formato `.qv`
@@ -95,6 +96,33 @@ As telas da partida não dependem só dos eventos em tempo real: cada uma també
 O `.ipa` é gerado pelo GitHub Actions num Mac (`.github/workflows/ios.yml`): a cada release publicada ele é anexado automaticamente, ou rode o workflow "iPhone (.ipa)" na aba Actions. O repositório precisa do segredo `EXPO_PUBLIC_QV_KEY` (a mesma chave do `.env.local`).
 
 O arquivo sai sem assinatura. Para instalar sem pagar a conta de desenvolvedor da Apple, use o [Sideloadly](https://sideloadly.io) (Windows/Mac) ou o [AltStore](https://altstore.io) com o seu Apple ID; com Apple ID gratuito o app precisa ser reinstalado a cada 7 dias (o AltStore renova sozinho). Com a conta paga da Apple (US$ 99/ano) dá para assinar por 1 ano ou publicar via TestFlight.
+
+## Windows (desktop)
+
+O app de desktop é o mesmo código, exportado para a web pelo Expo (`npx expo export -p web`) e empacotado com o [Tauri](https://tauri.app) (`src-tauri/`). O Tauri usa o WebView2 que já vem no Windows 10/11 em vez de embutir um Chromium inteiro como o Electron: o instalador fica com poucos MB e o app gasta bem menos memória. As animações são as mesmas (Reanimated e o confete rodam no WebView2).
+
+O que muda no desktop:
+
+- **Importar** abre o seletor de arquivos do Windows; **compartilhar `.qv`** e **backup** abrem o "Salvar como" do Windows.
+- **Exportar PDF** abre a impressão do sistema; escolha "Salvar como PDF".
+- A biblioteca fica no armazenamento do app (IndexedDB do WebView2), sem limite de tamanho prático.
+- A atualização abre a página de releases em vez de baixar o APK. Links externos abrem no navegador padrão.
+
+Pré-requisitos (uma vez): [Rust](https://rustup.rs) e um linker. Com o Visual Studio Build Tools ("Desenvolvimento para desktop com C++") o toolchain padrão (MSVC) já serve. Sem ele, use o toolchain GNU com o [MSYS2](https://www.msys2.org) (`pacman -S mingw-w64-x86_64-toolchain`), com `C:\msys64\mingw64\bin` no PATH:
+
+```bash
+rustup toolchain install stable-x86_64-pc-windows-gnu --profile minimal
+cd src-tauri && rustup override set stable-x86_64-pc-windows-gnu
+```
+
+O `.env.local` com a `EXPO_PUBLIC_QV_KEY` precisa existir: a chave entra no build, senão o app não abre os `.qv`.
+
+```bash
+npm run desktop          # janela de desenvolvimento, com recarregamento (Metro na porta 8081)
+npm run desktop:build    # gera o instalador
+```
+
+O instalador sai em `src-tauri/target/release/bundle/nsis/QuizzV_<versão>_x64-setup.exe` (instala só para o usuário, sem pedir administrador) e o executável solto em `src-tauri/target/release/quizzv.exe`. Ao lançar uma versão, atualize `version` em `src-tauri/tauri.conf.json` junto com o `app.json`.
 
 ## Rodando o projeto
 

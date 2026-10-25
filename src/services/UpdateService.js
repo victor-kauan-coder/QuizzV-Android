@@ -3,7 +3,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
 import { Linking, Platform } from "react-native";
 
-// iPhone não instala APK: a versão nova (.ipa) fica na página de releases
+// iPhone/desktop não instalam APK: a versão nova (.ipa/.msi) fica na página de releases
 const RELEASES_URL = "https://github.com/victor-kauan-coder/QuizzV-Android/releases/latest";
 
 // URL SEM o hash do commit para pegar sempre o mais recente
@@ -22,9 +22,9 @@ const isNewer = (latest, current) => {
 
 export const checkForUpdates = async () => {
   try {
-    const response = await fetch(`${VERSION_URL}?t=${Date.now()}`, {
-      headers: { "Cache-Control": "no-cache" },
-    });
+    // o ?t= já fura o cache; um header extra faria o navegador/desktop
+    // pedir um preflight CORS que o gist recusa
+    const response = await fetch(`${VERSION_URL}?t=${Date.now()}`);
     const data = await response.json();
 
     const currentVersion = (Constants.expoConfig.version || "").trim();
@@ -45,7 +45,8 @@ export const checkForUpdates = async () => {
 };
 
 export const downloadAndInstall = async (url, onProgress) => {
-  if (Platform.OS === "ios") return Linking.openURL(RELEASES_URL);
+  // iPhone e desktop não instalam APK: abre a página de releases
+  if (Platform.OS !== "android") return Linking.openURL(RELEASES_URL);
   try {
     const fileUri = `${FileSystem.cacheDirectory}quizzv_update.apk`;
 
