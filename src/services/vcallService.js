@@ -84,7 +84,7 @@ const FASES = new Set(["lobby", "preparar", "pergunta", "revelada", "fim"]);
  */
 export function vistaValida(v) {
   if (!v || typeof v !== "object" || !FASES.has(v.fase)) return null;
-  const out = { fase: v.fase, fonte: v.fonte === "quizzv" ? "quizzv" : "vcall" };
+  const out = { fase: v.fase, fonte: v.fonte === "quizzv" ? "quizzv" : "vcall", pausa: v.pausa === true };
   if (v.quizzv && typeof v.quizzv === "object") {
     out.quizzv = {
       titulo: texto(v.quizzv.titulo, 80) || "Quiz",

@@ -525,6 +525,9 @@ function Fase({ vista: v, chegou, colors, minhaLocal, responder, proxima, comeca
         </View>
       )}
 
+      {/* Com pausa, o ranking vem logo depois do resultado e a partida espera o toque. */}
+      {revelada && v.pausa && <ProximaComRanking v={v} colors={colors} proxima={proxima} />}
+
       <View style={styles.opcoes}>
         {v.pergunta.opcoes.map((texto, i) => (
           <Choice
@@ -565,7 +568,7 @@ function Fase({ vista: v, chegou, colors, minhaLocal, responder, proxima, comeca
         </View>
       )}
 
-      {revelada && (
+      {revelada && !v.pausa && (
         <>
           <Button
             icon="play-skip-forward"
@@ -579,6 +582,27 @@ function Fase({ vista: v, chegou, colors, minhaLocal, responder, proxima, comeca
         </>
       )}
     </ScrollView>
+  );
+}
+
+function ProximaComRanking({ v, colors, proxima }) {
+  return (
+    <>
+      <Text style={[type.caption, styles.rotulo, { color: colors.textMuted, marginTop: 4 }]}>RANKING</Text>
+      {v.placar?.length ? (
+        <Placar lista={v.placar} colors={colors} />
+      ) : (
+        <Text style={[type.body, { color: colors.textMuted }]}>Ninguém pontuou ainda.</Text>
+      )}
+      <Button
+        icon="play-skip-forward"
+        title={v.k + 1 >= v.total ? "Ver o resultado" : "Próxima pergunta"}
+        onPress={proxima}
+      />
+      <Text style={[type.caption, { color: colors.textMuted, textAlign: "center" }]}>
+        O tempo está parado. A partida só continua quando você tocar.
+      </Text>
+    </>
   );
 }
 
@@ -652,6 +676,7 @@ function Ajustes({ quiz, onClose, onMandar }) {
   const [tempo, setTempo] = useState(20);
   const [qtd, setQtd] = useState(0);
   const [ordem, setOrdem] = useState("sorteada");
+  const [pausa, setPausa] = useState(true);
   const opcoesQtd = [{ value: 0, label: `Todas (${Math.min(total, 100)})` }, ...[10, 20].filter((n) => n < total).map((n) => ({ value: n, label: String(n) }))];
 
   return (
@@ -677,6 +702,15 @@ function Ajustes({ quiz, onClose, onMandar }) {
             value={ordem}
             onChange={setOrdem}
           />
+          <Text style={[type.caption, styles.rotulo, { color: colors.textMuted }]}>ENTRE AS PERGUNTAS</Text>
+          <Segmented
+            options={[
+              { value: true, label: "Ranking e eu sigo", icon: "pause" },
+              { value: false, label: "Segue sozinho", icon: "play-forward" },
+            ]}
+            value={pausa}
+            onChange={setPausa}
+          />
           {total > 100 && (
             <Text style={[type.caption, { color: colors.textMuted, marginTop: 8 }]}>
               A chamada aceita até 100 perguntas por vez.
@@ -686,7 +720,7 @@ function Ajustes({ quiz, onClose, onMandar }) {
             icon="send"
             title="Mandar para a chamada"
             style={{ marginTop: 20 }}
-            onPress={() => onMandar({ tempo, qtd, embaralhar: ordem === "sorteada" })}
+            onPress={() => onMandar({ tempo, qtd, embaralhar: ordem === "sorteada", pausa })}
           />
         </>
       )}
