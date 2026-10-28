@@ -124,6 +124,8 @@ npm run desktop:build    # gera o instalador
 
 O instalador sai em `src-tauri/target/release/bundle/nsis/QuizzV_<versão>_x64-setup.exe` (instala só para o usuário, sem pedir administrador) e o executável solto em `src-tauri/target/release/quizzv.exe`. Ao lançar uma versão, atualize `version` em `src-tauri/tauri.conf.json` junto com o `app.json`.
 
+Com o toolchain GNU, o `quizzv.exe` carrega o `WebView2Loader.dll` da própria pasta (com o MSVC ele vai embutido). Por isso o `tauri.conf.json` leva a DLL como recurso do instalador: sem ela, o app instalado não abre ("WebView2Loader.dll não foi encontrado"). O executável solto em `target/release` funciona mesmo sem isso, porque a DLL já está ao lado dele; teste sempre pelo instalador.
+
 ## Rodando o projeto
 
 ```bash
