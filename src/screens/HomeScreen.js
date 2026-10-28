@@ -35,6 +35,7 @@ import {
   ListItem,
   Logo,
   ProgressBar,
+  Segmented,
   Sheet,
   showSnackbar,
   useReduceMotion,
@@ -47,8 +48,10 @@ import {
   exportQuiz,
   getFolders,
   getQuizzes,
+  getSettings,
   importQuizFile,
   moveQuiz,
+  saveSettings,
   updateFolder,
 } from "../services/storage";
 import { pingServer } from "../services/roomService";
@@ -96,6 +99,15 @@ export default function HomeScreen({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
+  // "hora": corrige a cada resposta · "final": modo prova, corrige só ao entregar
+  const [answerMode, setAnswerMode] = useState("hora");
+  useEffect(() => {
+    getSettings().then((s) => s.answerMode && setAnswerMode(s.answerMode));
+  }, []);
+  const changeAnswerMode = (mode) => {
+    setAnswerMode(mode);
+    saveSettings({ answerMode: mode });
+  };
   const [isUpdating, setIsUpdating] = useState(false);
   const [progress, setProgress] = useState(0);
 
@@ -290,7 +302,7 @@ export default function HomeScreen({ navigation, route }) {
 
   const play = (quiz, params = {}) => {
     close();
-    navigation.navigate("Quiz", { quiz, ...params });
+    navigation.navigate("Quiz", { quiz, prova: answerMode === "final", ...params });
   };
 
   const share = async (quiz, fn) => {
@@ -924,6 +936,18 @@ export default function HomeScreen({ navigation, route }) {
               {metaLine(selected)}
             </Text>
 
+            <Text style={[type.caption, styles.sheetLabel, { color: colors.textMuted }]}>
+              VER AS RESPOSTAS
+            </Text>
+            <Segmented
+              options={[
+                { value: "hora", label: "Na hora", icon: "flash-outline" },
+                { value: "final", label: "No final (prova)", icon: "document-text-outline" },
+              ]}
+              value={answerMode}
+              onChange={changeAnswerMode}
+            />
+
             <View style={styles.sheetActions}>
               {selected.lastIndex > 0 ? (
                 <>
@@ -1123,6 +1147,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
   },
   sheetActions: { gap: 8, marginTop: 20 },
+  sheetLabel: { marginTop: 20, marginBottom: 8, letterSpacing: 0.6 },
   dock: {
     position: "absolute",
     top: 8,

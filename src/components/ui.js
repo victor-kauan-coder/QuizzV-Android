@@ -232,12 +232,16 @@ export function Choice({ state = "idle", selected, onPress, disabled, leading, c
     correct: { bg: colors.successSoft, border: colors.success, fg: colors.text },
     wrong: { bg: colors.errorSoft, border: colors.error, fg: colors.text },
     dim: { bg: colors.surface, border: colors.border, fg: colors.textMuted },
+    // modo prova: marcada, sem dizer se está certa
+    marked: { bg: colors.accentSoft, border: colors.primary, fg: colors.text },
   }[state];
   const icon =
     state === "correct" ? (
       <Ionicons name="checkmark-circle" size={22} color={colors.success} />
     ) : state === "wrong" ? (
       <Ionicons name="close-circle" size={22} color={colors.error} />
+    ) : state === "marked" ? (
+      <Ionicons name="radio-button-on" size={22} color={colors.primary} />
     ) : null;
 
   return (

@@ -9,6 +9,7 @@ import {
   Easing,
   Image,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,6 +23,7 @@ import {
   Choice,
   haptic,
   ProgressBar,
+  Sheet,
   showSnackbar,
   useReduceMotion,
 } from "../components/ui";
@@ -147,7 +149,8 @@ export default function QuizPlayerScreen({ route, navigation }) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { aiModel } = useContext(ThemeContext);
-  const { quiz, resume = false, shuffle = false } = route.params;
+  // prova: marca e troca à vontade; certo/errado e explicações só depois de entregar
+  const { quiz, resume = false, shuffle = false, prova = false } = route.params;
 
   const fullRun = useMemo(
     () => (shuffle ? shuffled(quiz.questions) : quiz.questions),
@@ -161,6 +164,8 @@ export default function QuizPlayerScreen({ route, navigation }) {
   const [isRetry, setIsRetry] = useState(false);
   const [result, setResult] = useState(null); // { pct, isRecord, celebrate, id }
   const [reinforcing, setReinforcing] = useState(false);
+  const [reviewing, setReviewing] = useState(false); // prova entregue, conferindo questão a questão
+  const [showMap, setShowMap] = useState(false);
   const best = useRef(quiz.bestPct ?? null); // recorde antes desta sessão
   const reduce = useReduceMotion();
 
@@ -175,6 +180,8 @@ export default function QuizPlayerScreen({ route, navigation }) {
   const isVF = isVFQuestion(question);
   const answer = answers[idx];
   const isLast = idx === questions.length - 1;
+  const reveal = !prova || reviewing; // mostra certo/errado e a explicação
+  const answeredCount = Object.keys(answers).length;
 
   useEffect(() => {
     if (persist && !isFinished) updateQuizProgress(quiz.id, idx, answers, score);
@@ -204,9 +211,9 @@ export default function QuizPlayerScreen({ route, navigation }) {
 
   useEffect(() => {
     navigation.setOptions({
-      title: isFinished ? "Resultado" : isRetry ? "Revisando erros" : "",
+      title: isFinished ? "Resultado" : reviewing ? "Conferindo" : isRetry ? "Revisando erros" : "",
     });
-  }, [isFinished, isRetry]);
+  }, [isFinished, isRetry, reviewing]);
 
   const renderHighlightedText = (text, baseStyle) => {
     if (!text) return null;
@@ -240,14 +247,35 @@ export default function QuizPlayerScreen({ route, navigation }) {
       : choice === answerLetter(question);
 
   const handleAnswer = (choice) => {
-    if (answer) return;
+    if (reveal && answer) return; // na hora, a primeira resposta vale
     const correct = isCorrectChoice(choice);
-    const newScore = correct ? score + 1 : score;
-    const newAnswers = { ...answers, [idx]: { userVal: choice, correct } };
+    const newAnswers = { ...answers };
+    // na prova, tocar de novo na marcada deixa a questão em branco
+    if (prova && answer?.userVal === choice) delete newAnswers[idx];
+    else newAnswers[idx] = { userVal: choice, correct };
+    const newScore = Object.values(newAnswers).filter((a) => a.correct).length;
     setScore(newScore);
     setAnswers(newAnswers);
-    haptic(correct ? "success" : "error");
+    haptic(prova ? "tap" : correct ? "success" : "error");
     if (persist) updateQuizProgress(quiz.id, idx, newAnswers, newScore);
+  };
+
+  const submit = () => {
+    const blank = questions.length - answeredCount;
+    if (!blank) return finish();
+    Alert.alert(
+      "Entregar a prova?",
+      `${plural(blank, "questão ficou", "questões ficaram")} em branco e ${blank === 1 ? "conta" : "contam"} como erro.`,
+      [
+        { text: "Continuar respondendo", style: "cancel" },
+        { text: "Entregar", onPress: finish },
+      ],
+    );
+  };
+
+  const goTo = (i) => {
+    setShowMap(false);
+    setIdx(i);
   };
 
   const finish = () => {
@@ -268,7 +296,20 @@ export default function QuizPlayerScreen({ route, navigation }) {
     }
   };
 
+  const review = () => {
+    setReviewing(true);
+    setIdx(0);
+    setIsFinished(false);
+  };
+
+  // da conferência de volta ao resultado, sem contar outra tentativa nem soltar confete de novo
+  const backToResult = () => {
+    setResult((r) => r && { ...r, celebrate: false });
+    setIsFinished(true);
+  };
+
   const redoIncorrect = () => {
+    setReviewing(false);
     setQuestions(questions.filter((_, i) => !answers[i]?.correct));
     setIdx(0);
     setAnswers({});
@@ -308,6 +349,7 @@ export default function QuizPlayerScreen({ route, navigation }) {
   };
 
   const playAgain = () => {
+    setReviewing(false);
     setQuestions(shuffle ? shuffled(quiz.questions) : quiz.questions);
     setIdx(0);
     setAnswers({});
@@ -318,7 +360,9 @@ export default function QuizPlayerScreen({ route, navigation }) {
 
   // Estado visual de uma alternativa depois de responder
   const optionState = (choice) => {
+    if (reviewing && !answer) return isCorrectChoice(choice) ? "correct" : "dim"; // ficou em branco
     if (!answer) return "idle";
+    if (!reveal) return answer.userVal === choice ? "marked" : "idle";
     if (isCorrectChoice(choice)) return "correct";
     if (answer.userVal === choice) return "wrong";
     return "dim";
@@ -449,6 +493,9 @@ export default function QuizPlayerScreen({ route, navigation }) {
 
         {/* Com erros, o próximo passo de quem estuda é revisá-los */}
         <View style={styles.resultActions}>
+          {prova && (
+            <Button variant="tonal" icon="list" title="Conferir as respostas" onPress={review} />
+          )}
           {wrongCount > 0 ? (
             <>
               <Button
@@ -493,10 +540,24 @@ export default function QuizPlayerScreen({ route, navigation }) {
         <Text style={[type.caption, { color: colors.textMuted }]}>
           {idx + 1}/{questions.length}
         </Text>
-        <View style={[styles.scoreChip, { backgroundColor: colors.successSoft }]}>
-          <Ionicons name="checkmark" size={14} color={colors.success} />
-          <Text style={[type.caption, { color: colors.text }]}>{score}</Text>
-        </View>
+        {prova ? (
+          <Pressable
+            onPress={() => setShowMap(true)}
+            accessibilityRole="button"
+            accessibilityLabel={`Mapa das questões: ${answeredCount} de ${questions.length} respondidas`}
+            style={[styles.scoreChip, { backgroundColor: colors.accentSoft }]}
+          >
+            <Ionicons name="grid" size={14} color={colors.primary} />
+            <Text style={[type.caption, { color: colors.text }]}>
+              {reviewing ? plural(score, "certa", "certas") : plural(answeredCount, "respondida", "respondidas")}
+            </Text>
+          </Pressable>
+        ) : (
+          <View style={[styles.scoreChip, { backgroundColor: colors.successSoft }]}>
+            <Ionicons name="checkmark" size={14} color={colors.success} />
+            <Text style={[type.caption, { color: colors.text }]}>{score}</Text>
+          </View>
+        )}
       </View>
 
       <ScrollView
@@ -546,7 +607,7 @@ export default function QuizPlayerScreen({ route, navigation }) {
                   state={optionState(o.value)}
                   selected={answer?.userVal === o.value}
                   onPress={() => handleAnswer(o.value)}
-                  disabled={!!answer}
+                  disabled={reveal && (!!answer || reviewing)}
                   style={styles.vfBtn}
                   leading={(icon, fg) => icon || <Ionicons name={o.icon} size={22} color={fg} />}
                 >
@@ -565,7 +626,7 @@ export default function QuizPlayerScreen({ route, navigation }) {
                     state={state}
                     selected={answer?.userVal === letter}
                     onPress={() => handleAnswer(letter)}
-                    disabled={!!answer}
+                    disabled={reveal && (!!answer || reviewing)}
                     leading={(icon, fg) => (
                       <View
                         style={[
@@ -588,25 +649,25 @@ export default function QuizPlayerScreen({ route, navigation }) {
             </View>
           )}
 
-          {answer && (
+          {reveal && (answer || reviewing) && (
             <Reveal
               key={idx}
               style={[
                 styles.feedback,
-                { backgroundColor: answer.correct ? colors.successSoft : colors.errorSoft },
+                { backgroundColor: answer?.correct ? colors.successSoft : colors.errorSoft },
               ]}
             >
               <View accessibilityLiveRegion="polite">
                 <View style={styles.feedbackTitle}>
                   <Ionicons
-                    name={answer.correct ? "checkmark-circle" : "close-circle"}
+                    name={answer?.correct ? "checkmark-circle" : "close-circle"}
                     size={20}
-                    color={answer.correct ? colors.success : colors.error}
+                    color={answer?.correct ? colors.success : colors.error}
                   />
                   <Text style={[type.title, { color: colors.text }]}>
-                    {answer.correct
+                    {answer?.correct
                       ? "Correto!"
-                      : `Incorreto · resposta: ${isVF ? question.answer : answerLetter(question)}`}
+                      : `${answer ? "Incorreto" : "Em branco"} · resposta: ${isVF ? question.answer : answerLetter(question)}`}
                   </Text>
                 </View>
                 {renderHighlightedText(question.explanation, [
@@ -632,13 +693,68 @@ export default function QuizPlayerScreen({ route, navigation }) {
           onPress={() => setIdx(idx - 1)}
           disabled={idx === 0}
         />
-        <Button
-          variant={answer ? "filled" : "tonal"}
-          title={isLast ? "Ver resultado" : answer ? "Próxima" : "Pular"}
-          onPress={() => (isLast ? finish() : setIdx(idx + 1))}
-          style={{ minWidth: 150 }}
-        />
+        {prova ? (
+          <Button
+            variant={isLast || answer ? "filled" : "tonal"}
+            icon={isLast && !reviewing ? "checkmark-done" : undefined}
+            title={isLast ? (reviewing ? "Ver resultado" : "Entregar") : "Próxima"}
+            onPress={() => (!isLast ? setIdx(idx + 1) : reviewing ? backToResult() : submit())}
+            style={{ minWidth: 150 }}
+          />
+        ) : (
+          <Button
+            variant={answer ? "filled" : "tonal"}
+            title={isLast ? "Ver resultado" : answer ? "Próxima" : "Pular"}
+            onPress={() => (isLast ? finish() : setIdx(idx + 1))}
+            style={{ minWidth: 150 }}
+          />
+        )}
       </View>
+
+      <Sheet visible={showMap} onClose={() => setShowMap(false)}>
+        <Text style={[type.headline, { color: colors.text }]}>Questões</Text>
+        <Text style={[type.caption, { color: colors.textMuted, marginTop: 4 }]}>
+          {reviewing
+            ? `${plural(score, "certa", "certas")} de ${questions.length}. Toque numa questão para conferir.`
+            : `${answeredCount} de ${questions.length} respondidas. Toque numa questão para ir até ela.`}
+        </Text>
+        <ScrollView style={{ maxHeight: 360, marginTop: 16 }} contentContainerStyle={styles.mapGrid}>
+          {questions.map((_, i) => {
+            const a = answers[i];
+            const bg = reviewing
+              ? a?.correct
+                ? colors.successSoft
+                : colors.errorSoft
+              : a
+                ? colors.accentSoft
+                : colors.surfaceAlt;
+            const border = i === idx ? colors.text : !reviewing && a ? colors.primary : "transparent";
+            const status = reviewing ? (a?.correct ? "certa" : a ? "errada" : "em branco") : a ? "respondida" : "em branco";
+            return (
+              <Pressable
+                key={i}
+                onPress={() => goTo(i)}
+                accessibilityRole="button"
+                accessibilityLabel={`Questão ${i + 1}: ${status}`}
+                style={[styles.mapCell, { backgroundColor: bg, borderColor: border }]}
+              >
+                <Text style={[type.label, styles.tabular, { color: colors.text }]}>{i + 1}</Text>
+              </Pressable>
+            );
+          })}
+        </ScrollView>
+        {!reviewing && (
+          <Button
+            icon="checkmark-done"
+            title="Entregar a prova"
+            style={{ marginTop: 16 }}
+            onPress={() => {
+              setShowMap(false);
+              submit();
+            }}
+          />
+        )}
+      </Sheet>
     </View>
   );
 }
@@ -682,6 +798,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   feedback: { padding: 16, borderRadius: radius.md },
+  mapGrid: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  mapCell: {
+    width: 44,
+    height: 44,
+    borderRadius: radius.sm,
+    borderWidth: 2,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   feedbackTitle: { flexDirection: "row", alignItems: "center", gap: 8 },
   bottomBar: {
     flexDirection: "row",
