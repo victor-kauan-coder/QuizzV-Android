@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "QuizzV",
-  "version": "1.9.0",
+  "version": "1.11.0",
   "identifier": "com.kauan.quizzv",
   "build": {
     "beforeDevCommand": "npx expo start --web --port 8081",
